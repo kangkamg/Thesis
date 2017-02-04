@@ -46,37 +46,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Database\CharacterData.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\AutoBlink.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\AutoBlinkforSD.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\CameraController.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\FaceUpdate.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\IKCtrlRightHand.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\IKLookAt.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\IdleChanger.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\RandomWind.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\SpringBone.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\SpringCollider.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\SpringManager.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\ThirdPersonCamera.cs" />
-     <Compile Include="Assets\Resources\Character\UnityChan\Scripts\UnityChanControlScriptWithRgidBody.cs" />
-     <Compile Include="Assets\Scripts\AISelectManager.cs" />
-     <Compile Include="Assets\Scripts\CharacterManager.cs" />
-     <Compile Include="Assets\Scripts\GamePlayManager.cs" />
-     <Compile Include="Assets\Scripts\MoveSlot.cs" />
-     <Compile Include="Assets\Scripts\SelectManager.cs" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eye.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\readme.txt" />
-     <None Include="Assets\Resources\Character\UnityChan\README_SD_KohakuChanz.txt" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku_ds.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eye_blend.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hair_ds.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_akarami_blend.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hair.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eyelash_blend.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hada.shader" />
-     <None Include="Assets\Resources\Character\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_hada_blend.shader" />
+     <Compile Include="Assets\EasyJson\Json\JSON.cs" />
+     <Compile Include="Assets\EasyJson\Json\JSONSerialised.cs" />
+     <Compile Include="Assets\EasyJson\Json\JSONStructAttribute.cs" />
+     <Compile Include="Assets\Scripts\AICharacter.cs" />
+     <Compile Include="Assets\Scripts\CameraManager.cs" />
+     <Compile Include="Assets\Scripts\Character.cs" />
+     <Compile Include="Assets\Scripts\EncodeAndDeCode.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\MapCreator\MapCreatorManager.cs" />
+     <Compile Include="Assets\Scripts\MapCreator\MapSaveAndLoad.cs" />
+     <Compile Include="Assets\Scripts\MapCreator\TileTypes.cs" />
+     <Compile Include="Assets\Scripts\PlayerCharacter.cs" />
+     <Compile Include="Assets\Scripts\PrefabHolder.cs" />
+     <Compile Include="Assets\Scripts\Tile\Tile.cs" />
+     <Compile Include="Assets\Scripts\Tile\TileHighLight.cs" />
+     <Compile Include="Assets\Scripts\Tile\TilePath.cs" />
+     <Compile Include="Assets\Scripts\Tile\TilePathFinder.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

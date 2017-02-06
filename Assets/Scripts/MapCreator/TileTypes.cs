@@ -6,5 +6,6 @@ public enum TileTypes
 {
   Normal,
   Impassible,
-  StartPos,
+  StartPlayer,
+  StartEnemy
 }

@@ -25,7 +25,7 @@ public class MapCreatorManager : MonoBehaviour
 
   void Awake()
   {
-    instance = GetComponent<MapCreatorManager> ();
+    instance = GetComponent<MapCreatorManager>();
   }
 
   private void GenerateBlankMap(int mSize)
@@ -43,7 +43,8 @@ public class MapCreatorManager : MonoBehaviour
       List<Tile> row = new List<Tile> ();
       for (int z = 0; z < mapSize; z++)
       {
-        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 (x - Mathf.Floor (mapSize / 2) + x,0,z - Mathf.Floor (mapSize / 2) + z), Quaternion.identity).gameObject.GetComponent<Tile> ();
+        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize / 2),
+          0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType (TileTypes.Normal);
         tile.transform.SetParent (mapTransform);
@@ -75,7 +76,7 @@ public class MapCreatorManager : MonoBehaviour
       List<Tile> row = new List<Tile> ();
       for (int z = 0; z < mapSize; z++)
       {
-        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 (x - Mathf.Floor (mapSize / 2) + x,0,z - Mathf.Floor (mapSize / 2) + z), Quaternion.identity).gameObject.GetComponent<Tile> ();
+        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize / 2),0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType ((TileTypes)container.tiles.Where(a=>a.locX == x && a.locZ ==z).First().type);
         tile.transform.SetParent (mapTransform);
@@ -92,11 +93,18 @@ public class MapCreatorManager : MonoBehaviour
       palletSelection = TileTypes.Normal;
     }
 
-    rect = new Rect(10 + (100+10) * 2, Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "StartPos")) 
+    rect = new Rect(10 + (100+10), Screen.height - 80, 100, 60);
+    if (GUI.Button (rect, "StartPlayer")) 
     {
-      palletSelection = TileTypes.StartPos;
+      palletSelection = TileTypes.StartPlayer;
     }
+
+    rect = new Rect(10 + (100+10) * 2, Screen.height - 80, 100, 60);
+    if (GUI.Button (rect, "StartEnemy")) 
+    {
+      palletSelection = TileTypes.StartEnemy;
+    }
+
 
     rect = new Rect(10 + (100+10) * 3, Screen.height - 80, 100, 60);
     if (GUI.Button (rect, "Impassible")) 

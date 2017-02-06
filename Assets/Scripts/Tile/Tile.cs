@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Tile : MonoBehaviour 
 {
-  private GameObject _Prefab;
+  GameObject _Prefab;
 
   public Vector3 gridPosition = Vector3.zero;
 
@@ -14,44 +14,68 @@ public class Tile : MonoBehaviour
   public TileTypes type = TileTypes.Normal;
   public Renderer rend;
 
-  public List<Tile> neighbors = new List<Tile>();
+  public List<Tile> neighborsPlus = new List<Tile>();
+  public List<Tile> neighborsCross = new List<Tile>();
 
   public int movementCost = 1;
   public bool impassible = false;
-
+ 
   private void Start()
   {
-    rend = visual.GetComponent<Renderer> ();
-
     if (SceneManager.GetActiveScene().name == "TestScene") GenerateNeighbors ();
-  }
 
+    rend = visual.GetComponent<Renderer> ();
+  }
   private void GenerateNeighbors()
   {
-    neighbors = new List<Tile> ();
+    neighborsPlus = new List<Tile> ();
     //forward
     if (gridPosition.z < GameManager.GetInstance()._mapSize-1)
     {
       Vector3 n = new Vector3 (gridPosition.x, 0, gridPosition.z + 1);
-      neighbors.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+      neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //backward
     if (gridPosition.z > 0)
     {
       Vector3 n = new Vector3 (gridPosition.x, 0, gridPosition.z - 1);
-      neighbors.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+      neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //right
     if (gridPosition.x < GameManager.GetInstance()._mapSize-1)
     {
       Vector3 n = new Vector3 (gridPosition.x+1, 0, gridPosition.z);
-      neighbors.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+      neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //left
     if (gridPosition.x > 0)
     {
       Vector3 n = new Vector3 (gridPosition.x-1, 0, gridPosition.z);
-      neighbors.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+      neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+    }
+    //rightforward
+    if (gridPosition.x < GameManager.GetInstance()._mapSize-1 && gridPosition.z < GameManager.GetInstance()._mapSize-1)
+    {
+      Vector3 n = new Vector3 (gridPosition.x + 1, 0, gridPosition.z + 1);
+      neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+    }
+    //leftforward
+    if (gridPosition.x > 0 && gridPosition.z < GameManager.GetInstance()._mapSize-1)
+    {
+      Vector3 n = new Vector3 (gridPosition.x - 1, 0, gridPosition.z + 1);
+      neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+    }
+    //rightbackward
+    if (gridPosition.x < GameManager.GetInstance()._mapSize-1 && gridPosition.z > 0)
+    {
+      Vector3 n = new Vector3 (gridPosition.x + 1, 0, gridPosition.z - 1);
+      neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
+    }
+    //leftbackward
+    if (gridPosition.x < 0 && gridPosition.z > 0)
+    {
+      Vector3 n = new Vector3 (gridPosition.x - 1, 0, gridPosition.z - 1);
+      neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
 
   }
@@ -74,10 +98,17 @@ public class Tile : MonoBehaviour
       _Prefab = PrefabHolder.GetInstance ().Impassible_TilePrefab;
       break;
 
-      case TileTypes.StartPos:
+      case TileTypes.StartPlayer:
       movementCost = 1;
       impassible = false;
-      if (SceneManager.GetActiveScene ().name == "MapCreator") _Prefab = PrefabHolder.GetInstance ().StartPos_TilePrefab;
+      if (SceneManager.GetActiveScene ().name == "MapCreator") _Prefab = PrefabHolder.GetInstance ().StartPlayer_TilePrefab;
+      else _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
+      break;
+
+      case TileTypes.StartEnemy:
+      movementCost = 1;
+      impassible = false;
+      if (SceneManager.GetActiveScene ().name == "MapCreator") _Prefab = PrefabHolder.GetInstance ().StartEnemy_TilePrefab;
       else _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
       break;
     }
@@ -93,7 +124,7 @@ public class Tile : MonoBehaviour
     {
       Destroy (container.transform.GetChild (i).gameObject);
     }
-
+      
     GameObject newVisual = Instantiate (_Prefab, transform.position, Quaternion.identity) as GameObject;
     newVisual.transform.SetParent (container.transform);
 

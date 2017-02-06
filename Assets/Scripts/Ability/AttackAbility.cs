@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AICharacter : Character
+public class AttackAbility : MonoBehaviour 
 {
   
 }

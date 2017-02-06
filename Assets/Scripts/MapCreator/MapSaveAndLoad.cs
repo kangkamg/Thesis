@@ -8,6 +8,7 @@ using System.Data;
 using System;
 using System.Text;
 
+[System.Serializable]
 public class TileData
 {
   public int type;
@@ -54,27 +55,9 @@ public class MapSaveAndLoad
     };
   }
 
-  public static ArrayList ChangeToArrayList(MapDatabaseContainner data)
-  {
-    list.Clear ();
-    foreach (TileData t in data.tiles)
-    {
-      Hashtable h = new Hashtable();
-
-      h.Clear ();
-
-      h.Add ("type", t.type);
-      h.Add ("locX", t.locX);
-      h.Add ("locZ", t.locZ);
-
-      list.Add (h);
-    }
-    return list;
-  }
-
   public static void SaveData(MapDatabaseContainner data, int mapNumber)
   {
-    ArrayList list = ChangeToArrayList(data);
+    List<int> MapNumber = new List<int> ();
 
     string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
 
@@ -83,9 +66,39 @@ public class MapSaveAndLoad
     dbconn.Open ();
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
-    string sqlQuery = "INSERT INTO MapData(mapno,mapsize,mapdata)" + "VALUES ("+ mapNumber + "," + data.size + ", '" + easy.JSON.JsonEncode(list).ToString() + "' );" ; 
+    string sqlQuery = "SELECT *" + "FROM MapData" ; 
     dbcmd.CommandText = sqlQuery;
     IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      MapNumber.Add (reader.GetInt32 (0));
+    }
+      
+    if (MapNumber.Contains(mapNumber)) 
+    {
+      IDbCommand ucmd = dbconn.CreateCommand ();
+      string updateMapSize = "UPDATE MapData SET mapsize = " + data.size + " where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData"; 
+      string updateMapData = "UPDATE MapData SET mapdata = '" + EncodeAndDeCode.Encode (data.tiles) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
+      ucmd.CommandText = updateMapSize;
+      IDataReader update = ucmd.ExecuteReader ();
+      update.Close ();
+
+      ucmd.CommandText = updateMapData;
+      update = ucmd.ExecuteReader ();
+
+      update.Close ();
+      ucmd.Dispose ();
+    }
+    else 
+    {
+      IDbCommand icmd = dbconn.CreateCommand ();
+      string insertQuery = "INSERT INTO MapData(mapno,mapsize,mapdata)" + "VALUES (" + mapNumber + "," + data.size + ", '" + EncodeAndDeCode.Encode (data.tiles) + "' );"; 
+      icmd.CommandText = insertQuery;
+      IDataReader insert = icmd.ExecuteReader ();
+     
+      insert.Close ();
+      icmd.Dispose ();
+    }
 
     reader.Close ();
     reader = null;
@@ -115,18 +128,7 @@ public class MapSaveAndLoad
       if (reader.GetInt32 (0) == mapNumber)
       {
         size = reader.GetInt32 (1);
-        ArrayList l = easy.JSON.JsonDecode (reader.GetString (2)) as ArrayList;
-
-        foreach (Hashtable h in l)
-        {
-          TileData tile = new TileData();
-          tile.type = (int)h ["type"];
-          tile.locX = (int)h ["locX"];
-          tile.locZ = (int)h ["locZ"];
-
-          data.Add (tile);
-        }
-        break;
+        data = EncodeAndDeCode.Decode (reader.GetString (2)) as List<TileData>;
       }
     }
     reader.Close ();

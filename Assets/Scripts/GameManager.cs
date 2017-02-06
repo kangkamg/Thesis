@@ -9,18 +9,20 @@ public class GameManager : MonoBehaviour
   public static GameManager GetInstance() { return instance;}
 
   public int _mapSize = 11;
+  public int currentCharacterIndex;
   public Transform mapTransform;
 
   public List<List<Tile>> map = new List<List<Tile>>();
   public List<Character> character = new List<Character> ();
 
   public Character selectedCharacter;
+  public GameObject chaSelector;
 
   private void Awake()
   {
     instance = GetComponent<GameManager> ();
 
-    GenerateMap (4);
+    GenerateMap (1);
     GenerateCharacter ();
   }
 
@@ -34,9 +36,9 @@ public class GameManager : MonoBehaviour
       {
         if (hit.transform.tag == "Player") 
         {
+          RemoveMapHighlight ();
           selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-          HighlightTileAt (hit.transform.GetComponent<PlayerCharacter> ().gridPosition, Color.blue, hit.transform.GetComponent<PlayerCharacter> ().movementPoint);
-          CameraManager.GetInstance ().SetOffset (selectedCharacter.transform.position);
+          HighlightTileAt (selectedCharacter.gridPosition, Color.blue,selectedCharacter.characterStatus.movementPoint, true);
         }
 
         if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.blue)
@@ -69,7 +71,8 @@ public class GameManager : MonoBehaviour
       List<Tile> row = new List<Tile> ();
       for (int z = 0; z < _mapSize; z++)
       {
-        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 (x - Mathf.Floor (_mapSize / 2) + x,0,z - Mathf.Floor (_mapSize / 2) + z), Quaternion.identity).gameObject.GetComponent<Tile> ();
+        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (_mapSize / 2),0,
+        (PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (_mapSize / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType ((TileTypes)container.tiles.Where(a=>a.locX == x && a.locZ ==z).First().type);
         tile.transform.SetParent (mapTransform);
@@ -81,35 +84,50 @@ public class GameManager : MonoBehaviour
 
   public void GenerateCharacter()
   {
-    List<Tile> startPos = new List<Tile> ();
+    List<Tile> startPlayer = new List<Tile> ();
+    List<Tile> startEnemy = new List<Tile> ();
 
     foreach (List<Tile> t in map)
     {
       foreach (Tile a in t) 
       {
-        if (a.type == TileTypes.StartPos) 
+        if (a.type == TileTypes.StartPlayer) 
         {
-          startPos.Add (a);
+          startPlayer.Add (a);
+        }
+        else if (a.type == TileTypes.StartEnemy) 
+        {
+          startEnemy.Add (a);
         }
       }
     }
 
-    PlayerCharacter player;
+    foreach (Tile a in startPlayer) 
+    {
+      PlayerCharacter player;
 
-    player = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3(startPos [0].transform.position.x, 1.5f, startPos [0].transform.position.z), Quaternion.Euler (new Vector3 (0, 90, 0))).GetComponent<PlayerCharacter>();
-    player.gridPosition = startPos [0].gridPosition;
+      player = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3(a.transform.position.x, 1.5f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, 90, 0))).GetComponent<PlayerCharacter>();
+      player.gridPosition = a.gridPosition;
+      character.Add (player);
+    }
 
-    character.Add (player);
+    foreach (Tile a in startEnemy) 
+    {
+      AICharacter aiPlayer;
 
-    player = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3(startPos [1].transform.position.x, 1.5f, startPos [1].transform.position.z), Quaternion.Euler (new Vector3 (0, 90, 0))).GetComponent<PlayerCharacter>();
-    player.gridPosition = startPos [1].gridPosition;
-
-    character.Add (player);
+      aiPlayer = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3(a.transform.position.x, 2.175f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, -90, 0))).GetComponent<AICharacter>();
+      aiPlayer.gridPosition = a.gridPosition;
+      character.Add (aiPlayer);
+    }
   }
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance)
+
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreCharacter = false)
   {
     List<Tile> highlightedTiles = new List<Tile> ();
-    highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance);
+    if (ignoreCharacter)
+      highlightedTiles = TileHighLight.FindHighLightPlus (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where(x=>x.gridPosition!=originLocation).Select(x=>x.gridPosition).ToArray());
+    else
+      highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance);
 
     foreach (Tile t in highlightedTiles) 
     {
@@ -130,16 +148,31 @@ public class GameManager : MonoBehaviour
 
   public void MoveCurrentCharacter(Tile desTile)
   {
-    if (desTile.rend.material.color != Color.white) 
+    if (desTile.rend.material.color != Color.white && character [currentCharacterIndex].positionQueue.Count == 0)
     {
       RemoveMapHighlight ();
-      List<Tile> highlightedTiles = new List<Tile> ();
-      foreach (Tile t in TilePathFinder.FindPath(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile))
+      foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, character.Where(x=>x.gridPosition!=character[currentCharacterIndex].gridPosition).Select(x=>x.gridPosition).ToArray())) 
       {
         selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + 1.5f * Vector3.up);
-        highlightedTiles.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z]);
       }
       selectedCharacter.gridPosition = desTile.gridPosition;
+    } 
+  }
+
+  public void NextTurn()
+  {
+    if (currentCharacterIndex < character.Count - 1) 
+    {
+      currentCharacterIndex++;
+    } 
+    else 
+    {
+      currentCharacterIndex = 0;
     }
+    selectedCharacter = character [currentCharacterIndex];
+    Destroy (chaSelector);
+    chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler(90,0,0));
+    chaSelector.transform.SetParent (selectedCharacter.transform);
+    character [currentCharacterIndex].TurnUpdate ();
   }
 }

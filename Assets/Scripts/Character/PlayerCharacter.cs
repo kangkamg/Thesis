@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerCharacter : Character 
 {
-  private void Awake()
+  public override void Awake()
   {
-    movementPoint = 5;
+    characterStatus.movementPoint = 5;
+
+    base.Awake ();
   }
 	
   private void Update()
@@ -22,10 +24,11 @@ public class PlayerCharacter : Character
           positionQueue.RemoveAt (0);
           if (positionQueue.Count == 0)
           {
-            
+            GameManager.GetInstance ().NextTurn ();
           }
         }
       }
     }
+    base.Update ();
   }
 }

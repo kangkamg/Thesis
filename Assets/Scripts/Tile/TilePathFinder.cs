@@ -7,10 +7,9 @@ public class TilePathFinder : MonoBehaviour
 {
   public static List<Tile>FindPath (Tile originTile, Tile desTile, bool cross = false)
   {
-    if (!cross)
-      return FindPathPlus (originTile, desTile, new Vector3 [0]);
-    else
-      return FindPathCross (originTile, desTile, new Vector3 [0]);
+    /*if (!cross)*/ return FindPathPlus (originTile, desTile, new Vector3 [0]);
+   /* else
+      return FindPathCross (originTile, desTile, new Vector3 [0]);*/
   }
 
   public static List<Tile>FindPathPlus (Tile originTile, Tile desTile, Vector3[] occupied)
@@ -51,7 +50,7 @@ public class TilePathFinder : MonoBehaviour
     return null;
   }
 
-  public static List<Tile>FindPathCross (Tile originTile, Tile desTile, Vector3[] occupied)
+  /*public static List<Tile>FindPathCross (Tile originTile, Tile desTile, Vector3[] occupied)
   {
     List<Tile> closed = new List<Tile> ();
     List<TilePath> path = new List<TilePath> ();
@@ -87,5 +86,5 @@ public class TilePathFinder : MonoBehaviour
 
     closed.Remove (originTile);
     return null;
-  }
+  }*/
 }

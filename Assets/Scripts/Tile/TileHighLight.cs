@@ -5,21 +5,35 @@ using System.Linq;
 
 public class TileHighLight : MonoBehaviour
 {
-  public static List<Tile>FindHighLight (Tile originTile, int movementPoints, bool cross = false)
+  public TileHighLight()
+  {
+    
+  }
+
+  public static List<Tile>FindHighLight(Tile originTile, int movementPoints, bool staticRange = false, bool cross = false)
   {
     if (!cross)
-    return FindHighLightPlus (originTile, movementPoints, new Vector3 [0]);
+      return FindHighLightPlus (originTile, movementPoints, new Vector3 [0], staticRange);
     else
-    return FindHighLightCross (originTile, movementPoints, new Vector3 [0]);
+      return FindHighLightCross (originTile, movementPoints, new Vector3 [0]);
   }
-  
-  public static List<Tile>FindHighLightPlus (Tile originTile, int movementPoints, Vector3[] occupied)
+
+  public static List<Tile>FindHighLight(Tile originTile, int movementPoints, Vector3[] occupied, bool staticRange = false, bool cross = false)
+  {
+    if (!cross)
+      return FindHighLightPlus (originTile, movementPoints, occupied, staticRange);
+    else
+      return FindHighLightCross (originTile, movementPoints, occupied);
+  }
+
+  public static List<Tile>FindHighLightPlus (Tile originTile, int movementPoints, Vector3[] occupied, bool staticRange)
   {
     List<Tile> closed = new List<Tile> ();
     List<TilePath> path = new List<TilePath> ();
 
     TilePath originPath = new TilePath ();
-    originPath.AddTile (originTile);
+    if (staticRange) originPath.AddStaticTile (originTile);
+    else originPath.AddTile (originTile);
 
     path.Add (originPath);
     while (path.Count > 0) 
@@ -41,11 +55,13 @@ public class TileHighLight : MonoBehaviour
       {
         if (t.impassible || occupied.Contains(t.gridPosition)) continue;
         TilePath newTilePath = new TilePath (current);
-        newTilePath.AddTile (t);
+        if (staticRange) newTilePath.AddStaticTile (t);
+        else newTilePath.AddTile (t);
         path.Add (newTilePath);
       }
     }
-      
+    closed.Remove (originTile);
+    closed.Distinct ();
     return closed;
   }
 
@@ -55,7 +71,7 @@ public class TileHighLight : MonoBehaviour
     List<TilePath> path = new List<TilePath> ();
 
     TilePath originPath = new TilePath ();
-    originPath.AddTile (originTile);
+    originPath.AddStaticTile (originTile);
 
     path.Add (originPath);
     while (path.Count > 0) 
@@ -77,7 +93,7 @@ public class TileHighLight : MonoBehaviour
       {
         if (t.impassible || occupied.Contains(t.gridPosition)) continue;
         TilePath newTilePath = new TilePath (current);
-        newTilePath.AddTile (t);
+        newTilePath.AddStaticTile (t);
         path.Add (newTilePath);
       }
     }

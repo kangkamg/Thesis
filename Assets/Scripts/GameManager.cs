@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
+using System;
 
 public class GameManager : MonoBehaviour 
 {
   private static GameManager instance;
   public static GameManager GetInstance() { return instance;}
-
   public int _mapSize = 11;
   public int currentCharacterIndex;
   public Transform mapTransform;
@@ -18,12 +19,18 @@ public class GameManager : MonoBehaviour
   public Character selectedCharacter;
   public GameObject chaSelector;
 
+  public GameObject playerUI;
+
+  public Button[] skillButton;
+
   private void Awake()
   {
     instance = GetComponent<GameManager> ();
 
     GenerateMap (1);
     GenerateCharacter ();
+
+    GetDataFromSql.GetCharacter ("Hero");
   }
 
   private void Update()
@@ -38,12 +45,20 @@ public class GameManager : MonoBehaviour
         {
           RemoveMapHighlight ();
           selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-          HighlightTileAt (selectedCharacter.gridPosition, Color.blue,selectedCharacter.characterStatus.movementPoint, true);
+          HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint,false);
         }
 
         if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.blue)
         {
           MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
+        }
+
+        if (selectedCharacter.attacking)
+        {
+          if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.red)
+          {
+            AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+          }
         }
       }
     }
@@ -121,11 +136,21 @@ public class GameManager : MonoBehaviour
     }
   }
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreCharacter = false)
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreSelfOnly = false)
+  {
+    HighlightTileAt(originLocation, highlightColor, distance, true, ignoreSelfOnly);
+  }
+
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreCharacter = false, bool ignoreSelfOnly = false)
   {
     List<Tile> highlightedTiles = new List<Tile> ();
     if (ignoreCharacter)
-      highlightedTiles = TileHighLight.FindHighLightPlus (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where(x=>x.gridPosition!=originLocation).Select(x=>x.gridPosition).ToArray());
+    {
+      if (!ignoreSelfOnly)
+        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation).Select (x => x.gridPosition).ToArray ());
+      else 
+        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, new Vector3[]{ selectedCharacter.gridPosition }, true, false);
+    }
     else
       highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance);
 
@@ -153,12 +178,41 @@ public class GameManager : MonoBehaviour
       RemoveMapHighlight ();
       foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, character.Where(x=>x.gridPosition!=character[currentCharacterIndex].gridPosition).Select(x=>x.gridPosition).ToArray())) 
       {
-        selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + 1.5f * Vector3.up);
+        selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
       }
       selectedCharacter.gridPosition = desTile.gridPosition;
     } 
   }
+  public void AttackWithCurrentCharacter(Tile desTile)
+  {
+    if (desTile.rend.material.color != Color.white && !desTile.impassible)
+    {
+      Character target = null;
+      foreach (Character p in character)
+      {
+        if (p.gridPosition == desTile.gridPosition)
+        {
+          target = p;
+        }
+      }
+      if (target != null)
+      {
+        RemoveMapHighlight ();
+        selectedCharacter.attacking = false;
+        bool hit = Math.Round(UnityEngine.Random.Range(0.0f,1.0f) , 2) >= target.characterStatus.dogdeRate;
+        if (hit) 
+        {
+          int amountOfDamage = Mathf.Max (0, (int)Mathf.Floor (character [currentCharacterIndex].characterStatus.attack)) - target.characterStatus.defense;
 
+          target.currentHP -= amountOfDamage;
+        } 
+        else
+        {
+          
+        }
+      }
+    }
+  }
   public void NextTurn()
   {
     if (currentCharacterIndex < character.Count - 1) 
@@ -174,5 +228,39 @@ public class GameManager : MonoBehaviour
     chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler(90,0,0));
     chaSelector.transform.SetParent (selectedCharacter.transform);
     character [currentCharacterIndex].TurnUpdate ();
+    if (character [currentCharacterIndex].GetComponent<PlayerCharacter> () != null)
+    {
+      ShowPlayerUI (true);
+    }
+    else
+    {
+      ShowPlayerUI (false);
+    }
+  }
+
+  private void ShowPlayerUI(bool showing)
+  {
+    playerUI.SetActive (showing);
+    if (showing)
+    {
+      SetUpSkillButton ();
+    }
+  }
+
+  public int skillNumber;
+
+  public void SetUpSkillButton()
+  {
+    for (int i = 0; i < skillButton.Length; i++)
+    {
+      skillNumber = i;
+      skillButton [i].onClick.AddListener (ChangingSkillButton);
+    }
+  }
+
+  public void ChangingSkillButton()
+  {
+    HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility [skillNumber].range, true);
+    selectedCharacter.attacking = true;
   }
 }

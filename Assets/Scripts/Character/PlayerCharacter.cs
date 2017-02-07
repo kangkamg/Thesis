@@ -29,6 +29,10 @@ public class PlayerCharacter : Character
         }
       }
     }
-    base.Update ();
+  }
+
+  public void UpdateUI()
+  {
+    
   }
 }

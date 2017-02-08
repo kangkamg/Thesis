@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Ability
 {
   public int ID = 001;
@@ -19,5 +20,6 @@ public class Ability
 
   public bool usingAround = false;
   public bool active = false;
+  public string rangeType; 
 }
 

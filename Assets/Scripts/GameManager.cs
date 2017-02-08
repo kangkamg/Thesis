@@ -20,8 +20,7 @@ public class GameManager : MonoBehaviour
   public GameObject chaSelector;
 
   public GameObject playerUI;
-
-  public Button[] skillButton;
+  List<GameObject> targetInRange = new List<GameObject> ();
 
   private void Awake()
   {
@@ -30,7 +29,11 @@ public class GameManager : MonoBehaviour
     GenerateMap (1);
     GenerateCharacter ();
 
-    GetDataFromSql.GetCharacter ("Hero");
+    selectedCharacter = character [currentCharacterIndex];
+    HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint);
+    HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
+    selectedCharacter.attacking = true;
+    HighlightTargetInRange ();
   }
 
   private void Update()
@@ -41,25 +44,24 @@ public class GameManager : MonoBehaviour
       RaycastHit hit;
       if (Physics.Raycast(ray,out hit, 1000f))
       {
+       
         if (hit.transform.tag == "Player") 
         {
           RemoveMapHighlight ();
           selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-          HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint,false);
+          HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint);
+          HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
+          selectedCharacter.attacking = true;
+          HighlightTargetInRange ();
         }
-
-        if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.blue)
+        if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.blue) 
         {
           MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
         }
-
-        if (selectedCharacter.attacking)
+        if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.red)
         {
-          if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.red)
-          {
-            AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
-          }
-        }
+          AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+        } 
       }
     }
   }
@@ -136,23 +138,45 @@ public class GameManager : MonoBehaviour
     }
   }
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreSelfOnly = false)
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance)
   {
-    HighlightTileAt(originLocation, highlightColor, distance, true, ignoreSelfOnly);
+    HighlightTileAt(originLocation, highlightColor, distance, "plus", true);
+  } 
+
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, string type = "")
+  {
+    HighlightTileAt(originLocation, highlightColor, distance, type, false);
   }
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, bool ignoreCharacter = false, bool ignoreSelfOnly = false)
+  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, string type = "", bool ignoreCharacter = false)
   {
     List<Tile> highlightedTiles = new List<Tile> ();
-    if (ignoreCharacter)
+    if (ignoreCharacter) 
     {
-      if (!ignoreSelfOnly)
-        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation).Select (x => x.gridPosition).ToArray ());
+      highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation).Select (x => x.gridPosition).ToArray ());
+    } 
+    else 
+    {
+      if (type == "both") 
+      {
+        foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, true)) 
+        {
+          highlightedTiles.Add (t);
+        }
+        foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false)) 
+        {
+          highlightedTiles.Add (t);
+        }
+      } 
+      else if (type == "cross") 
+      {
+        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, true);
+      } 
       else 
-        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, new Vector3[]{ selectedCharacter.gridPosition }, true, false);
+      {
+        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false);
+      }
     }
-    else
-      highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance);
 
     foreach (Tile t in highlightedTiles) 
     {
@@ -241,26 +265,54 @@ public class GameManager : MonoBehaviour
   private void ShowPlayerUI(bool showing)
   {
     playerUI.SetActive (showing);
-    if (showing)
-    {
-      SetUpSkillButton ();
-    }
   }
 
-  public int skillNumber;
-
-  public void SetUpSkillButton()
+  public void HighlightTargetInRange()
   {
-    for (int i = 0; i < skillButton.Length; i++)
+    foreach (GameObject obj in targetInRange) 
     {
-      skillNumber = i;
-      skillButton [i].onClick.AddListener (ChangingSkillButton);
+      Destroy (obj);
     }
-  }
 
-  public void ChangingSkillButton()
-  {
-    HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility [skillNumber].range, true);
-    selectedCharacter.attacking = true;
+    List<Tile> highlighted = new List<Tile> ();
+
+    foreach (Tile t in TileHighLight.FindHighLight(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z],selectedCharacter.characterStatus.movementPoint))
+    {
+      if (selectedCharacter.setupAbility [0].rangeType == "both")
+      {
+        foreach (Tile a in TileHighLight.FindHighLight (t, selectedCharacter.setupAbility [0].range, true))
+        {
+          highlighted.Add (a);
+        }
+        foreach (Tile b in TileHighLight.FindHighLight (t, selectedCharacter.setupAbility [0].range, true, true)) 
+        {
+          highlighted.Add (b);
+        }
+      } 
+      else if (selectedCharacter.setupAbility [0].rangeType == "plus")
+      {
+        highlighted = TileHighLight.FindHighLight (t, selectedCharacter.setupAbility [0].range, true);
+      }
+      else
+      {
+        highlighted = TileHighLight.FindHighLight (t, selectedCharacter.setupAbility [0].range, true, true);
+      }
+    }
+
+    foreach (Tile t in highlighted) 
+    {
+      GameObject inRange;
+
+      Character[] cha = character.Where (x => x.gridPosition == t.gridPosition && x.gridPosition != selectedCharacter.gridPosition).Select(x=>x).ToArray();
+
+      foreach (Character c in cha) 
+      {
+        inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+        inRange.GetComponent<Renderer> ().material.color = Color.red;
+        inRange.transform.SetParent (c.transform);
+
+        targetInRange.Add (inRange);
+      }
+    }
   }
 }

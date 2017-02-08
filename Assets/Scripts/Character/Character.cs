@@ -17,6 +17,7 @@ public class CharacterStatus
   public float dogdeRate = 0.10f;
   public float guardRate = 0.10f;
   public string job;
+  public string type;
   public List<Ability> characterAbility = new List<Ability> ();
 }
 

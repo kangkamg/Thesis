@@ -38,6 +38,7 @@ public class GetDataFromSql
         n.range = reader.GetInt32 (10);
         n.usingAround = reader.GetBoolean (11);
         n.active = reader.GetBoolean (12);
+        n.rangeType = reader.GetString (13);
       }
     }
     reader.Close ();
@@ -68,7 +69,7 @@ public class GetDataFromSql
     {
       if (reader.GetString (1) == name)
       {
-        if (reader.GetString (reader.FieldCount - 1) == "Lancer") 
+        if (reader.GetString (11) == "Lancer") 
         {
           n.ID = reader.GetInt32 (0);
           n.characterName = reader.GetString (1);
@@ -81,6 +82,7 @@ public class GetDataFromSql
           n.dogdeRate = (int)reader.GetFloat (8) * n.level;
           n.guardRate = (int)reader.GetFloat (9) * n.level;
           n.job = reader.GetString (11);
+          n.type = reader.GetString (12);
           string ability = reader.GetString (10);
           string[] ab = ability.Split (" "[0]);
           for (int i = 0; i < ab.Length - 1; i = i + 2) 

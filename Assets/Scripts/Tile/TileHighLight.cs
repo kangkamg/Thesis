@@ -97,6 +97,8 @@ public class TileHighLight : MonoBehaviour
         path.Add (newTilePath);
       }
     }
+    closed.Remove (originTile);
+    closed.Distinct ();
     return closed;
   }
 }

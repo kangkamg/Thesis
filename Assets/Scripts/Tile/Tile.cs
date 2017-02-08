@@ -28,7 +28,6 @@ public class Tile : MonoBehaviour
   }
   private void GenerateNeighbors()
   {
-    neighborsPlus = new List<Tile> ();
     //forward
     if (gridPosition.z < GameManager.GetInstance()._mapSize-1)
     {
@@ -72,7 +71,7 @@ public class Tile : MonoBehaviour
       neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //leftbackward
-    if (gridPosition.x < 0 && gridPosition.z > 0)
+    if (gridPosition.x > 0 && gridPosition.z > 0)
     {
       Vector3 n = new Vector3 (gridPosition.x - 1, 0, gridPosition.z - 1);
       neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);

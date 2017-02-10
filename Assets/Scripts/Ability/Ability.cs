@@ -15,11 +15,13 @@ public class Ability
   public float atkIncrease = 0f;
   public float criRateIncrease = 0f;
   public float movementIncrease = 0f;
-  public float dodgeIncrease = 0f;
   public float guardRateIncrease = 0f;
 
   public bool usingAround = false;
   public bool active = false;
-  public string rangeType; 
+  public string abnormalStatusGiven;
+  public string rangeType;
+  public string abilityType;
+  public int gaugeUse;
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 [System.Serializable]
 public class CharacterStatus
@@ -12,13 +13,13 @@ public class CharacterStatus
   public int maxHP = 25;
   public int attack;
   public int defense;
+  public int resistance;
   public int movementPoint = 5;
   public float criRate = 0.10f;
-  public float dogdeRate = 0.10f;
   public float guardRate = 0.10f;
   public string job;
   public string type;
-  public List<Ability> characterAbility = new List<Ability> ();
+  public List<string> weaponProficiency = new List<string> ();
 }
 
 public class Character : MonoBehaviour
@@ -43,20 +44,65 @@ public class Character : MonoBehaviour
 
   public CharacterStatus characterStatus = new CharacterStatus();
   public List<Ability> setupAbility = new List<Ability>();
+  public List<Item> characterItem = new List<Item>();
 
   public Slider hpSlider;
+
+  public int attackOverAll
+  {
+    get 
+    { int ret = characterStatus.attack;
+      foreach (Item i in characterItem) 
+      {
+        if (i.itemType == "Weapon")
+        {
+          ret += i.increaseAttack;
+        }
+      }
+      return ret;
+    }
+    set{ }
+  }
 
   public virtual void Awake()
   {
     characterStatus = GetDataFromSql.GetCharacter (characterName);
-    setupAbility = characterStatus.characterAbility;
+
+    characterItem.Add (GetDataFromSql.GetItem ("WoodSword"));
+
+    foreach (Item i in characterItem)
+    {
+      foreach (Ability a in i.itemAb)
+      {
+        setupAbility.Add (a);
+      }
+    }
 
     currentHP = characterStatus.maxHP;
 
     hpSlider.maxValue = characterStatus.maxHP;
     hpSlider.value = currentHP;
   }
-    
+   
+  public virtual void Update()
+  {
+    if (currentHP <= 0)
+    {
+      Destroy (gameObject);
+
+      List<Character> cha = GameManager.GetInstance ().character;
+
+      for (int i = 0; i < cha.Count; i++) 
+      {
+        if (cha [i].gridPosition == gridPosition) 
+        {
+          GameManager.GetInstance ().character.RemoveAt (i);
+        }
+      }
+
+    }
+  }
+
   public virtual void TurnUpdate()
   {
     

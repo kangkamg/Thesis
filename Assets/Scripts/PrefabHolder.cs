@@ -85,6 +85,26 @@ public class PrefabHolder
     private set {} 
   }
     
+  public GameObject MovementTile 
+  { 
+    get 
+    { 
+      GameObject movement = (GameObject)Resources.Load ("TilePrefab/Highlight/Movement"); 
+      return movement;
+    } 
+    private set {} 
+  }
+
+  public GameObject AttackTile 
+  { 
+    get 
+    { 
+      GameObject attack = (GameObject)Resources.Load ("TilePrefab/Highlight/Attack"); 
+      return attack;
+    } 
+    private set {} 
+  }
+
   private static PrefabHolder instance;
 
   public static PrefabHolder GetInstance()
@@ -92,5 +112,6 @@ public class PrefabHolder
       if (instance == null) instance = new PrefabHolder();
     return instance;
   }
+
 
 }

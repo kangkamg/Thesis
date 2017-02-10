@@ -5,7 +5,7 @@ using System.Linq;
 
 public class AICharacter : Character
 {
-  private void Update()
+  public override void Update()
   {
     if (positionQueue.Count > 0)
     {
@@ -20,7 +20,9 @@ public class AICharacter : Character
         }
       }
     }
+    base.Update ();
   }
+
   public override void TurnUpdate()
   {
     List<Tile> attackTilesInRange = TileHighLight.FindHighLight (GameManager.GetInstance ().map [(int)gridPosition.x] [(int)gridPosition.z], setupAbility [0].range,true,false); 
@@ -32,7 +34,7 @@ public class AICharacter : Character
       Character opponent = opponentsInRange.OrderBy (x => x != null ? -x.currentHP : 1000).First ();
 
       GameManager.GetInstance().RemoveMapHighlight();
-      GameManager.GetInstance().HighlightTileAt(gridPosition, Color.red, setupAbility [0].range, setupAbility[0].rangeType);
+      GameManager.GetInstance().HighlightTileAt(gridPosition, PrefabHolder.GetInstance().AttackTile, setupAbility [0].range, setupAbility[0].rangeType);
 
       GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)opponent.gridPosition.x] [(int)opponent.gridPosition.z]);
     }
@@ -43,7 +45,7 @@ public class AICharacter : Character
       Character opponent = opponentsInRange.OrderBy (x => x != null ? -x.currentHP : 1000).ThenBy (x => x != null ? TilePathFinder.FindPath(GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],GameManager.GetInstance().map[(int)x.gridPosition.x][(int)x.gridPosition.z]).Count() : 1000).First ();
 
       GameManager.GetInstance().RemoveMapHighlight();
-      GameManager.GetInstance().HighlightTileAt(gridPosition, Color.blue, characterStatus.movementPoint);
+      GameManager.GetInstance().HighlightTileAt(gridPosition, PrefabHolder.GetInstance().MovementTile, characterStatus.movementPoint);
 
       List<Tile> path = TilePathFinder.FindPathPlus (GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],GameManager.GetInstance().map[(int)opponent.gridPosition.x][(int)opponent.gridPosition.z], GameManager.GetInstance().character.Where(x => x.gridPosition != gridPosition && x.gridPosition != opponent.gridPosition).Select(x => x.gridPosition).ToArray());
       if (path.Count () > 1) 

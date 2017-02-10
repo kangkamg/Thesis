@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
 
   public GameObject playerUI;
   List<GameObject> targetInRange = new List<GameObject> ();
+  List<GameObject> highlightTileMovement = new List<GameObject> ();
+  List<GameObject> highlightTileAttack = new List<GameObject> ();
 
   private void Awake()
   {
@@ -29,9 +31,9 @@ public class GameManager : MonoBehaviour
     GenerateMap (1);
     GenerateCharacter ();
 
-    selectedCharacter = character [currentCharacterIndex];
-    HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint);
-    HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
+    selectedCharacter = character [0];
+    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().MovementTile, selectedCharacter.characterStatus.movementPoint);
+    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().AttackTile, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
     selectedCharacter.attacking = true;
     HighlightTargetInRange ();
   }
@@ -44,24 +46,31 @@ public class GameManager : MonoBehaviour
       RaycastHit hit;
       if (Physics.Raycast(ray,out hit, 1000f))
       {
-       
         if (hit.transform.tag == "Player") 
         {
           RemoveMapHighlight ();
           selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-          HighlightTileAt (selectedCharacter.gridPosition, Color.blue, selectedCharacter.characterStatus.movementPoint);
-          HighlightTileAt (selectedCharacter.gridPosition, Color.red, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
+          HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().MovementTile, selectedCharacter.characterStatus.movementPoint);
+          HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().AttackTile, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
           selectedCharacter.attacking = true;
           HighlightTargetInRange ();
         }
-        if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.blue) 
+        if (hit.transform.name.Contains ("Tile") ) 
         {
           MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
-        }
-        if (hit.transform.name.Contains ("Tile") && hit.transform.GetComponent<Tile> ().rend.material.color == Color.red)
-        {
           AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
-        } 
+        }
+        if (hit.transform.tag == "Enemy")
+        {
+          foreach (GameObject h in targetInRange)
+          {
+            if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+            {
+              
+            }
+          }
+        }
+
       }
     }
   }
@@ -138,22 +147,29 @@ public class GameManager : MonoBehaviour
     }
   }
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance)
+  public void HighlightTileAt(Vector3 originLocation, GameObject highlight, int distance)
   {
-    HighlightTileAt(originLocation, highlightColor, distance, "plus", true);
+    HighlightTileAt(originLocation, highlight, distance, "plus", true);
   } 
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, string type = "")
+  public void HighlightTileAt(Vector3 originLocation, GameObject highlight, int distance, string type = "")
   {
-    HighlightTileAt(originLocation, highlightColor, distance, type, false);
+    HighlightTileAt(originLocation, highlight, distance, type, false);
   }
 
-  public void HighlightTileAt(Vector3 originLocation, Color highlightColor, int distance, string type = "", bool ignoreCharacter = false)
+  public void HighlightTileAt(Vector3 originLocation, GameObject highlight, int distance, string type = "", bool ignoreCharacter = false)
   {
     List<Tile> highlightedTiles = new List<Tile> ();
     if (ignoreCharacter) 
     {
       highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation).Select (x => x.gridPosition).ToArray ());
+      foreach (Tile t in highlightedTiles) 
+      {
+        GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
+        h.transform.SetParent (t.transform);
+        h.name = "highlightMovement";
+        highlightTileMovement.Add (h);
+      }
     } 
     else 
     {
@@ -176,64 +192,70 @@ public class GameManager : MonoBehaviour
       {
         highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false);
       }
-    }
 
-    foreach (Tile t in highlightedTiles) 
-    {
-      t.rend.material.color = highlightColor;
+      foreach (Tile t in highlightedTiles) 
+      {
+        GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
+        h.transform.SetParent (t.transform);
+        h.name = "highlightAttack";
+        highlightTileAttack.Add (h);
+      }
     }
   }
 
   public void RemoveMapHighlight()
   {
-    for (int x = 0; x < _mapSize; x++) 
+    foreach (GameObject a in highlightTileMovement) 
     {
-      for (int z = 0; z < _mapSize; z++) 
-      {
-        if (!map[x][z].impassible) map [x] [z].rend.material.color = Color.white;
-      }
+      Destroy (a);
     }
+    foreach (GameObject b in highlightTileAttack) 
+    {
+      Destroy (b);
+    }
+    highlightTileMovement.Clear ();
+    highlightTileAttack.Clear ();
   }
 
   public void MoveCurrentCharacter(Tile desTile)
   {
-    if (desTile.rend.material.color != Color.white && character [currentCharacterIndex].positionQueue.Count == 0)
+    foreach(GameObject h in highlightTileMovement)
     {
-      RemoveMapHighlight ();
-      foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, character.Where(x=>x.gridPosition!=character[currentCharacterIndex].gridPosition).Select(x=>x.gridPosition).ToArray())) 
+      if (desTile.transform.position.x == h.transform.position.x && desTile.transform.position.z == h.transform.position.z && selectedCharacter.positionQueue.Count == 0)
       {
-        selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
-      }
-      selectedCharacter.gridPosition = desTile.gridPosition;
-    } 
+        RemoveMapHighlight ();
+        foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, character.Where(x=>x.gridPosition != selectedCharacter.gridPosition).Select(x=>x.gridPosition).ToArray())) 
+        {
+          selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
+        }
+        selectedCharacter.gridPosition = desTile.gridPosition;
+        break;
+      } 
+    }
   }
   public void AttackWithCurrentCharacter(Tile desTile)
   {
-    if (desTile.rend.material.color != Color.white && !desTile.impassible)
+    foreach (GameObject h in highlightTileAttack) 
     {
-      Character target = null;
-      foreach (Character p in character)
+      if (desTile.transform.position.x == h.transform.position.x && desTile.transform.position.z == h.transform.position.z && !desTile.impassible) 
       {
-        if (p.gridPosition == desTile.gridPosition)
+        Character target = null;
+        foreach (Character p in character) 
         {
-          target = p;
+          if (p.gridPosition == desTile.gridPosition)
+          {
+            target = p;
+          }
         }
-      }
-      if (target != null)
-      {
-        RemoveMapHighlight ();
-        selectedCharacter.attacking = false;
-        bool hit = Math.Round(UnityEngine.Random.Range(0.0f,1.0f) , 2) >= target.characterStatus.dogdeRate;
-        if (hit) 
+        if (target != null)
         {
-          int amountOfDamage = Mathf.Max (0, (int)Mathf.Floor (character [currentCharacterIndex].characterStatus.attack)) - target.characterStatus.defense;
+          RemoveMapHighlight ();
+          selectedCharacter.attacking = false;
 
+          int amountOfDamage = Mathf.Max (0, (int)Mathf.Floor (selectedCharacter.attackOverAll)) - target.characterStatus.defense;
           target.currentHP -= amountOfDamage;
-        } 
-        else
-        {
-          
         }
+        break;
       }
     }
   }
@@ -273,6 +295,7 @@ public class GameManager : MonoBehaviour
     {
       Destroy (obj);
     }
+    targetInRange.Clear ();
 
     List<Tile> highlighted = new List<Tile> ();
 

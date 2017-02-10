@@ -28,10 +28,8 @@ public class MapCreatorManager : MonoBehaviour
     instance = GetComponent<MapCreatorManager>();
   }
 
-  private void GenerateBlankMap(int mSize)
+  private void GenerateBlankMap(int mapSize)
   {
-    mapSize = mSize;
-
     for (int i = 0; i < mapTransform.childCount; i++) 
     {
       Destroy (mapTransform.GetChild (i).gameObject);

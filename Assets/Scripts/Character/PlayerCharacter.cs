@@ -11,7 +11,7 @@ public class PlayerCharacter : Character
     base.Awake ();
   }
 	
-  private void Update()
+  public override void Update()
   {
     if (positionQueue.Count > 0)
     {
@@ -29,6 +29,7 @@ public class PlayerCharacter : Character
         }
       }
     }
+    base.Update ();
   }
 
   public void UpdateUI()

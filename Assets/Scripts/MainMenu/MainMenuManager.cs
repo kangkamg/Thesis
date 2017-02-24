@@ -1,0 +1,70 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class MainMenuManager : MonoBehaviour
+{
+  public GameObject playerMenu;
+  public GameObject dungeonMenu;
+  public GameObject townMenu;
+  public GameObject bgMenu;
+
+  public Button showMenuBT;
+  public bool menuOn = false;
+
+  public void ShowMenu()
+  {
+    if (menuOn) 
+    {
+      playerMenu.SetActive (false);
+      menuOn = false;
+      showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+    } 
+    else
+    {
+      playerMenu.SetActive(true);
+      menuOn = true;
+      showMenuBT.transform.localPosition = new Vector3 (0, 47, 0);
+    }
+  }
+
+  public void ShowTownMenu(int townSceneNumber)
+  {
+    townMenu.SetActive (true);
+    bgMenu.SetActive (true);
+    PlayerPrefs.SetInt (Const.TownSceneNo, townSceneNumber);
+    playerMenu.SetActive (false);
+    menuOn = false;
+    showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+  }
+
+  public void ShowDungeonMenu(int mapNumber)
+  {
+    dungeonMenu.SetActive (true);
+    bgMenu.SetActive (true);
+    PlayerPrefs.SetInt (Const.MapNo, mapNumber);
+    playerMenu.SetActive (false);
+    menuOn = false;
+    showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+  }
+    
+  public void GoPlayScene()
+  {
+    SceneManager.LoadScene ("GamePlayScene");
+  }
+
+  public void GoInTownScene(int inTownSceneNumber)
+  {
+    SceneManager.LoadScene ("InTownScene");
+    PlayerPrefs.SetInt (Const.InTownScene, inTownSceneNumber);
+  }
+
+  public void Exit()
+  {
+    townMenu.SetActive (false);
+    dungeonMenu.SetActive (false);
+    bgMenu.SetActive (false);
+  }
+}

@@ -54,11 +54,16 @@
      <Compile Include="Assets\Scripts\Character\AICharacter.cs" />
      <Compile Include="Assets\Scripts\Character\Character.cs" />
      <Compile Include="Assets\Scripts\Character\PlayerCharacter.cs" />
+     <Compile Include="Assets\Scripts\Const.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Item\Accessory.cs" />
      <Compile Include="Assets\Scripts\Item\Armor.cs" />
      <Compile Include="Assets\Scripts\Item\Item.cs" />
      <Compile Include="Assets\Scripts\Item\Weapon.cs" />
+     <Compile Include="Assets\Scripts\MainMenu\ItemInformation.cs" />
+     <Compile Include="Assets\Scripts\MainMenu\ItemManager.cs" />
+     <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
+     <Compile Include="Assets\Scripts\MainMenu\TownSceneManager.cs" />
      <Compile Include="Assets\Scripts\MapCreator\MapCreatorManager.cs" />
      <Compile Include="Assets\Scripts\MapCreator\MapSaveAndLoad.cs" />
      <Compile Include="Assets\Scripts\MapCreator\TileTypes.cs" />

@@ -22,7 +22,7 @@ public class Tile : MonoBehaviour
  
   private void Start()
   {
-    if (SceneManager.GetActiveScene().name == "TestScene") GenerateNeighbors ();
+    if (SceneManager.GetActiveScene().name == "GamePlayScene") GenerateNeighbors ();
 
     rend = visual.GetComponent<Renderer> ();
   }

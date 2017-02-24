@@ -103,7 +103,7 @@ public class GetDataFromSql
     return n;
   }
 
-  public static Item GetItem(string name)
+  public static Item GetItemFromName(string name)
   {
     Item n = new Item ();
 
@@ -122,13 +122,14 @@ public class GetDataFromSql
       if (reader.GetString (1) == name)
       {
         n.name = reader.GetString (1);
-        n.increaseHP = reader.GetInt32 (3);
-        n.increaseAttack = reader.GetInt32 (4);
-        n.increaseDefense = reader.GetInt32 (5);
-        n.increaseCriRate = (int)reader.GetFloat (6);
-        n.increaseGuardRate = (int)reader.GetFloat (7);
-        n.increaseMovementPoint = (int)reader.GetInt32 (8);
-        string ability = reader.GetString (9);
+        n.price = reader.GetInt32 (2);
+        n.increaseHP = reader.GetInt32 (4);
+        n.increaseAttack = reader.GetInt32 (5);
+        n.increaseDefense = reader.GetInt32 (6);
+        n.increaseCriRate = (int)reader.GetFloat (7);
+        n.increaseGuardRate = (int)reader.GetFloat (8);
+        n.increaseMovementPoint = (int)reader.GetInt32 (9);
+        string ability = reader.GetString (10);
         string[] ab = ability.Split (" "[0]);
         for(int i = 0; i < ab.Length-1; i=i+2)
         {
@@ -137,8 +138,14 @@ public class GetDataFromSql
             n.itemAb.Add (GetAbility(ab[i]));
           }
         }
-        n.IsRuneStone = reader.GetBoolean (10);
-        n.itemType = reader.GetString(11);
+        n.IsRuneStone = reader.GetBoolean (11);
+        n.itemType = reader.GetString(12);
+        string sellMap = reader.GetString (13);
+        string[] sm = sellMap.Split ("," [0]);
+        for(int i = 0; i < sm.Length; i++)
+        {
+          n.sellMap.Add (sm[i]);
+        }
       }
     }
     reader.Close ();
@@ -150,4 +157,69 @@ public class GetDataFromSql
 
     return n;
   }
+
+  public static List<Item> GetItemFromMap(string mapNumber)
+  {
+    List<Item> list = new List<Item> ();
+
+    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
+
+    IDbConnection dbconn;
+    dbconn = new SqliteConnection (conn) as IDbConnection;
+    dbconn.Open ();
+    IDbCommand dbcmd = dbconn.CreateCommand ();
+
+    string sqlQuery = "SELECT *" + "FROM Item" ; 
+    dbcmd.CommandText = sqlQuery;
+    IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      Item n = new Item ();
+      List<string> s = new List<string> ();
+
+      string sellMap = reader.GetString (13);
+      string[] sm = sellMap.Split ("," [0]);
+      for(int i = 0; i < sm.Length; i++)
+      {
+        s.Add (sm[i]);
+      }
+
+      if (s.Contains(mapNumber))
+      {
+        n.name = reader.GetString (1);
+        n.price = reader.GetInt32 (2);
+        n.increaseHP = reader.GetInt32 (4);
+        n.increaseAttack = reader.GetInt32 (5);
+        n.increaseDefense = reader.GetInt32 (6);
+        n.increaseCriRate = (int)reader.GetFloat (7);
+        n.increaseGuardRate = (int)reader.GetFloat (8);
+        n.increaseMovementPoint = (int)reader.GetInt32 (9);
+        string ability = reader.GetString (10);
+        string[] ab = ability.Split (" "[0]);
+        for(int i = 0; i < ab.Length-1; i=i+2)
+        {
+          if (int.Parse(ab[i+1]) == 1)
+          {
+            n.itemAb.Add (GetAbility(ab[i]));
+          }
+        }
+        n.IsRuneStone = reader.GetBoolean (11);
+        n.itemType = reader.GetString(12);
+        for(int i = 0; i < sm.Length; i++)
+        {
+          n.sellMap = s;
+        }
+      }
+      list.Add (n);
+    }
+    reader.Close ();
+    reader = null;
+    dbcmd.Dispose ();
+    dbcmd = null;
+    dbconn.Close ();
+    dbconn = null;
+
+    return list;
+  }
+
 }

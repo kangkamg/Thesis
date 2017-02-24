@@ -33,14 +33,18 @@ public class Character : MonoBehaviour
   public Vector3 gridPosition = Vector3.zero;
 
   public int currentHP;
+  public int ordering;
 
   public bool floating = false;
   public bool stunning = false;
   public bool poisoning = false;
   public bool blinding = false;
 
-  public bool moving = false;
-  public bool attacking = false;
+  public bool played = false;
+
+  public bool isAI;
+
+  public Character target;
 
   public CharacterStatus characterStatus = new CharacterStatus();
   public List<Ability> setupAbility = new List<Ability>();
@@ -68,7 +72,7 @@ public class Character : MonoBehaviour
   {
     characterStatus = GetDataFromSql.GetCharacter (characterName);
 
-    characterItem.Add (GetDataFromSql.GetItem ("WoodSword"));
+    characterItem.Add (GetDataFromSql.GetItemFromName ("WoodSword"));
 
     foreach (Item i in characterItem)
     {
@@ -89,22 +93,11 @@ public class Character : MonoBehaviour
     if (currentHP <= 0)
     {
       Destroy (gameObject);
-
-      List<Character> cha = GameManager.GetInstance ().character;
-
-      for (int i = 0; i < cha.Count; i++) 
-      {
-        if (cha [i].gridPosition == gridPosition) 
-        {
-          GameManager.GetInstance ().character.RemoveAt (i);
-        }
-      }
-
     }
   }
 
   public virtual void TurnUpdate()
   {
-    
+   
   }
 }

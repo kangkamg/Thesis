@@ -17,29 +17,43 @@ public class GameManager : MonoBehaviour
   public List<Character> character = new List<Character> ();
 
   public Character selectedCharacter;
+  public Character previousSelectedCharacter;
   public GameObject chaSelector;
 
   public GameObject playerUI;
+
   List<GameObject> targetInRange = new List<GameObject> ();
   List<GameObject> highlightTileMovement = new List<GameObject> ();
   List<GameObject> highlightTileAttack = new List<GameObject> ();
+
+  public Vector3 originPos;
+  public Vector3 originGrid;
+  public int oldCharacterNo = -1;
 
   private void Awake()
   {
     instance = GetComponent<GameManager> ();
 
-    GenerateMap (1);
+    GenerateMap (PlayerPrefs.GetInt(Const.MapNo,1));
     GenerateCharacter ();
+  }
 
+  private void Start()
+  {
     selectedCharacter = character [0];
     HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().MovementTile, selectedCharacter.characterStatus.movementPoint);
     HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().AttackTile, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
-    selectedCharacter.attacking = true;
     HighlightTargetInRange ();
   }
 
   private void Update()
   {
+    if (character [currentCharacterIndex].currentHP <= 0 || character[currentCharacterIndex] == null) 
+    {
+      character.Remove(character[currentCharacterIndex]);
+      NextTurn ();
+    }
+
     if (Input.GetMouseButtonDown (0))
     {
       Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
@@ -48,29 +62,100 @@ public class GameManager : MonoBehaviour
       {
         if (hit.transform.tag == "Player") 
         {
-          RemoveMapHighlight ();
           selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-          HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().MovementTile, selectedCharacter.characterStatus.movementPoint);
-          HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().AttackTile, selectedCharacter.setupAbility[0].range,selectedCharacter.setupAbility[0].rangeType);
-          selectedCharacter.attacking = true;
-          HighlightTargetInRange ();
-        }
-        if (hit.transform.name.Contains ("Tile") ) 
-        {
-          MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
-          AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
-        }
-        if (hit.transform.tag == "Enemy")
-        {
-          foreach (GameObject h in targetInRange)
+          currentCharacterIndex = selectedCharacter.ordering;
+
+          if (oldCharacterNo < 0) 
           {
-            if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+            RemoveMapHighlight ();
+            previousSelectedCharacter = selectedCharacter;
+            oldCharacterNo = selectedCharacter.ordering;
+            originGrid = selectedCharacter.gridPosition;
+            originPos = selectedCharacter.transform.position;
+            HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+            HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.setupAbility [0].range, selectedCharacter.setupAbility [0].rangeType);
+            HighlightTargetInRange ();
+          } 
+          else
+          {
+            if (oldCharacterNo != selectedCharacter.ordering) 
             {
-              
+              RemoveMapHighlight ();
+              previousSelectedCharacter.transform.position = originPos;
+              previousSelectedCharacter.gridPosition = originGrid;
+              previousSelectedCharacter = selectedCharacter;
+              oldCharacterNo = selectedCharacter.ordering;
+              originGrid = selectedCharacter.gridPosition;
+              originPos = selectedCharacter.transform.position;
+              HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+              HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.setupAbility [0].range, selectedCharacter.setupAbility [0].rangeType);
+              HighlightTargetInRange ();
             }
           }
         }
 
+        if (hit.transform.name.Contains ("Tile") ) 
+        {
+          foreach (Character c in character) 
+          {
+            if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy") 
+            {
+              AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+              break;
+            }
+            else if (c.gridPosition != hit.transform.GetComponent<Tile> ().gridPosition)
+            {
+              foreach (GameObject m in highlightTileMovement)
+              {
+                if (m.transform.position.x == hit.transform.position.x && m.transform.position.z == hit.transform.position.z) 
+                {
+                  RemoveAttackHighLightOnly ();
+                  MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
+                  break;
+                }
+              }
+              break;
+            }
+          }
+        }
+        if (hit.transform.tag == "Enemy")
+        {
+          if (targetInRange.Count > 0) 
+          {
+            foreach (GameObject h in targetInRange)
+            {
+              if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+              {
+                if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count() <= 0) 
+                {
+                  highlightTileMovement.Sort (delegate(GameObject a, GameObject b)
+                    {
+                    return (Vector3.Distance (a.transform.position, hit.transform.position).CompareTo (Vector3.Distance (b.transform.position, hit.transform.position)));
+                  });
+                      
+                  Tile desTile = highlightTileMovement [0].GetComponentInParent<Tile> ();
+
+                  MoveCurrentCharacter (desTile);
+
+                  selectedCharacter.target = hit.transform.GetComponent<Character> ();
+
+                  break;
+                }
+                else
+                {
+                  AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
+                  selectedCharacter.played = true;
+                  NextTurn ();
+                  break;
+                }
+              }
+            }
+          } 
+          else 
+          {
+            
+          }
+        }
       }
     }
   }
@@ -127,7 +212,7 @@ public class GameManager : MonoBehaviour
         }
       }
     }
-
+     
     foreach (Tile a in startPlayer) 
     {
       PlayerCharacter player;
@@ -135,6 +220,7 @@ public class GameManager : MonoBehaviour
       player = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3(a.transform.position.x, 1.5f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, 90, 0))).GetComponent<PlayerCharacter>();
       player.gridPosition = a.gridPosition;
       character.Add (player);
+      player.ordering = character.Count - 1;
     }
 
     foreach (Tile a in startEnemy) 
@@ -144,6 +230,7 @@ public class GameManager : MonoBehaviour
       aiPlayer = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3(a.transform.position.x, 2.175f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, -90, 0))).GetComponent<AICharacter>();
       aiPlayer.gridPosition = a.gridPosition;
       character.Add (aiPlayer);
+      aiPlayer.ordering = character.Count - 1;
     }
   }
 
@@ -217,13 +304,21 @@ public class GameManager : MonoBehaviour
     highlightTileAttack.Clear ();
   }
 
+  public void RemoveAttackHighLightOnly()
+  {
+    foreach (GameObject a in highlightTileAttack) 
+    {
+      Destroy (a);
+    }
+    highlightTileAttack.Clear ();
+  }
+
   public void MoveCurrentCharacter(Tile desTile)
   {
     foreach(GameObject h in highlightTileMovement)
     {
-      if (desTile.transform.position.x == h.transform.position.x && desTile.transform.position.z == h.transform.position.z && selectedCharacter.positionQueue.Count == 0)
+      if (desTile.gridPosition == h.GetComponentInParent<Tile>().gridPosition && selectedCharacter.positionQueue.Count == 0)
       {
-        RemoveMapHighlight ();
         foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, character.Where(x=>x.gridPosition != selectedCharacter.gridPosition).Select(x=>x.gridPosition).ToArray())) 
         {
           selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
@@ -233,11 +328,12 @@ public class GameManager : MonoBehaviour
       } 
     }
   }
+
   public void AttackWithCurrentCharacter(Tile desTile)
   {
     foreach (GameObject h in highlightTileAttack) 
     {
-      if (desTile.transform.position.x == h.transform.position.x && desTile.transform.position.z == h.transform.position.z && !desTile.impassible) 
+      if (desTile.gridPosition == h.GetComponentInParent<Tile>().gridPosition && !desTile.impassible) 
       {
         Character target = null;
         foreach (Character p in character) 
@@ -247,41 +343,76 @@ public class GameManager : MonoBehaviour
             target = p;
           }
         }
+
         if (target != null)
         {
           RemoveMapHighlight ();
-          selectedCharacter.attacking = false;
 
           int amountOfDamage = Mathf.Max (0, (int)Mathf.Floor (selectedCharacter.attackOverAll)) - target.characterStatus.defense;
           target.currentHP -= amountOfDamage;
+
+          Debug.Log (target.currentHP);
         }
         break;
       }
     }
   }
+
   public void NextTurn()
   {
-    if (currentCharacterIndex < character.Count - 1) 
+    if (character [currentCharacterIndex] != null && character [currentCharacterIndex].played) 
     {
-      currentCharacterIndex++;
-    } 
-    else 
-    {
-      currentCharacterIndex = 0;
+      if (!character [0].played) 
+      {
+        currentCharacterIndex = 0;
+      }
+      else
+      {
+        if (currentCharacterIndex < character.Count - 1) 
+        {
+          currentCharacterIndex++;
+        }
+        else
+        {
+          foreach (Character c in character) 
+          {
+            c.played = false;
+            currentCharacterIndex = 0;
+          }
+        }
+      } 
     }
-    selectedCharacter = character [currentCharacterIndex];
-    Destroy (chaSelector);
-    chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler(90,0,0));
-    chaSelector.transform.SetParent (selectedCharacter.transform);
-    character [currentCharacterIndex].TurnUpdate ();
-    if (character [currentCharacterIndex].GetComponent<PlayerCharacter> () != null)
+
+    RemoveMapHighlight ();
+
+    if (character[currentCharacterIndex] != null && character [currentCharacterIndex].currentHP > 0) 
     {
-      ShowPlayerUI (true);
+      selectedCharacter = character [currentCharacterIndex];
+      HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+      HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.setupAbility [0].range, selectedCharacter.setupAbility [0].rangeType);
+      HighlightTargetInRange ();
+      Destroy (chaSelector);
+      chaSelector = null;
+      chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
+      chaSelector.transform.SetParent (selectedCharacter.transform);
+      character [currentCharacterIndex].TurnUpdate ();
+
+      if (!character[currentCharacterIndex].isAI) 
+      {
+        ShowPlayerUI (true);
+      } 
+      else 
+      {
+        ShowPlayerUI (false);
+      }
     }
-    else
-    {
-      ShowPlayerUI (false);
-    }
+  }
+
+  public void EndTurn()
+  {
+    character [currentCharacterIndex].played = true;
+    oldCharacterNo = -1;
+    NextTurn ();
   }
 
   private void ShowPlayerUI(bool showing)
@@ -299,7 +430,7 @@ public class GameManager : MonoBehaviour
 
     List<Tile> highlighted = new List<Tile> ();
 
-    foreach (Tile t in TileHighLight.FindHighLight(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z],selectedCharacter.characterStatus.movementPoint))
+    foreach (Tile t in TileHighLight.FindHighLight(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z],selectedCharacter.characterStatus.movementPoint, character.Where (x => x.gridPosition != selectedCharacter.gridPosition).Select (x => x.gridPosition).ToArray ()))
     {
       if (selectedCharacter.setupAbility [0].rangeType == "both")
       {
@@ -321,6 +452,11 @@ public class GameManager : MonoBehaviour
         highlighted = TileHighLight.FindHighLight (t, selectedCharacter.setupAbility [0].range, true, true);
       }
     }
+      
+    foreach (GameObject a in highlightTileAttack) 
+    {
+      highlighted.Add(a.GetComponentInParent<Tile> ());
+    }
 
     foreach (Tile t in highlighted) 
     {
@@ -330,12 +466,26 @@ public class GameManager : MonoBehaviour
 
       foreach (Character c in cha) 
       {
-        inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
-        inRange.GetComponent<Renderer> ().material.color = Color.red;
-        inRange.transform.SetParent (c.transform);
+        if (c != null && c.tag != selectedCharacter.tag) 
+        {
+          inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+          inRange.GetComponent<Renderer> ().material.color = Color.red;
+          inRange.transform.SetParent (c.transform);
 
-        targetInRange.Add (inRange);
+          targetInRange.Add (inRange);
+        }
       }
     }
+  }
+
+  public void Auto()
+  {
+    foreach (Character c in character)
+    {
+      c.isAI = true;
+      ShowPlayerUI (false);
+    }
+
+    character [0].TurnUpdate ();
   }
 }

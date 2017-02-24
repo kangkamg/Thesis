@@ -6,6 +6,7 @@ using UnityEngine;
 public class Item
 {
   public string name;
+  public int price;
   public int increaseHP;
   public int increaseAttack;
   public int increaseDefense;
@@ -15,4 +16,5 @@ public class Item
   public List<Ability> itemAb = new List<Ability>();
   public bool IsRuneStone = false;
   public string itemType;
+  public List<string> sellMap = new List<string>();
 }

@@ -30,6 +30,7 @@ public class TilePathFinder : MonoBehaviour
       }
       if (current.lastTile == desTile )
       {
+        current.listOfTiles.Distinct ();
         current.listOfTiles.Remove (originTile);
         return current.listOfTiles;
       }
@@ -43,8 +44,6 @@ public class TilePathFinder : MonoBehaviour
         path.Add (newTilePath);
       }
     }
-
-    closed.Remove (originTile);
     return null;
   }
 }

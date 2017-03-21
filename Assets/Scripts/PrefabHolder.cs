@@ -8,7 +8,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/BaseTile"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/BaseTile"); 
       return tile;
     } 
     private set {} 
@@ -18,7 +18,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/Normal"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/Normal"); 
       return tile;
     } 
     private set {} 
@@ -28,7 +28,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/Impassible"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/Impassible"); 
       return tile;
     } 
     private set {} 
@@ -38,7 +38,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/StartPlayer"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/StartPlayer"); 
       return tile;
     } 
     private set {} 
@@ -48,7 +48,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/StartEnemy"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/StartEnemy"); 
       return tile;
     } 
     private set {} 
@@ -58,7 +58,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject tile = (GameObject)Resources.Load ("TilePrefab/SelectedCharacter"); 
+      GameObject tile = Resources.Load<GameObject> ("TilePrefab/SelectedCharacter"); 
       return tile;
     } 
     private set {} 
@@ -69,7 +69,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject player = (GameObject)Resources.Load ("PlayerPrefab/Player"); 
+      GameObject player = Resources.Load<GameObject> ("PlayerPrefab/PlayerA"); 
       return player;
     } 
     private set {} 
@@ -79,7 +79,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject aiPlayer = (GameObject)Resources.Load ("PlayerPrefab/AIPlayer"); 
+      GameObject aiPlayer = Resources.Load<GameObject>("PlayerPrefab/AIPlayer"); 
       return aiPlayer;
     } 
     private set {} 
@@ -89,7 +89,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject movement = (GameObject)Resources.Load ("TilePrefab/Highlight/Movement"); 
+      GameObject movement = Resources.Load<GameObject> ("TilePrefab/Highlight/Movement"); 
       return movement;
     } 
     private set {} 
@@ -99,7 +99,7 @@ public class PrefabHolder
   { 
     get 
     { 
-      GameObject attack = (GameObject)Resources.Load ("TilePrefab/Highlight/Attack"); 
+      GameObject attack = Resources.Load<GameObject> ("TilePrefab/Highlight/Attack"); 
       return attack;
     } 
     private set {} 
@@ -112,6 +112,5 @@ public class PrefabHolder
       if (instance == null) instance = new PrefabHolder();
     return instance;
   }
-
 
 }

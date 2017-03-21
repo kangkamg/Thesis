@@ -30,3 +30,4 @@ D:\5611610025\thesis\Temp\bin\Debug\UnityEngine.HoloLens.xml
 D:\5611610025\thesis\Temp\bin\Debug\UnityEngine.VR.xml
 D:\5611610025\thesis\obj\Debug\Assembly-CSharp.dll
 D:\5611610025\thesis\obj\Debug\Assembly-CSharp.pdb
+D:\5611610025\thesis\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache

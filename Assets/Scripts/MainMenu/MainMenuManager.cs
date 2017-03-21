@@ -10,6 +10,7 @@ public class MainMenuManager : MonoBehaviour
   public GameObject dungeonMenu;
   public GameObject townMenu;
   public GameObject bgMenu;
+  public GameObject optionMenu;
 
   public Button showMenuBT;
   public bool menuOn = false;
@@ -50,6 +51,12 @@ public class MainMenuManager : MonoBehaviour
     showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
   }
     
+  public void ShowOptionMenu()
+  {
+    optionMenu.SetActive (true);
+    bgMenu.SetActive (true);
+  }
+
   public void GoPlayScene()
   {
     SceneManager.LoadScene ("GamePlayScene");
@@ -61,10 +68,27 @@ public class MainMenuManager : MonoBehaviour
     PlayerPrefs.SetInt (Const.InTownScene, inTownSceneNumber);
   }
 
+  public void GoToStartScene()
+  {
+    SceneManager.LoadScene ("StartScene");
+  }
+
+  public void GoToSupMenuScene(string supmenu)
+  {
+    SceneManager.LoadScene ("SupMenuScene");
+    PlayerPrefs.SetString (Const.OpenSupMenuScene, supmenu);
+  }
+
+  public void ExitGame()
+  {
+    Application.Quit ();
+  }
+
   public void Exit()
   {
     townMenu.SetActive (false);
     dungeonMenu.SetActive (false);
+    optionMenu.SetActive (false);
     bgMenu.SetActive (false);
   }
 }

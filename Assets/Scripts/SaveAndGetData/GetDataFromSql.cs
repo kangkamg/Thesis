@@ -7,15 +7,39 @@ using System.Data;
 
 public class GetDataFromSql
 {
+  public static IDbConnection dbconn;
+
+  public static void OpenDB(string Databasename)
+  {
+    #if UNITY_EDITOR
+    var dbPath = string.Format(@"Assets/StreamingAssets/{0}",Databasename);
+    #else
+    var filepath = string.Format("{0}/{1}",Application.persistentDataPath, Databasename);
+
+    if(!File.Exists(filepath))
+    {
+      #if UNITY_ANDROID
+      var loadDb = new WWW(Application.streamingAssetsPath + "/" + Databasename);
+      while(!loadDb.isDone) {Debug.Log("Error");}
+      File.WriteAllBytes(filepath, loadDb.bytes);
+      #elif UNITY_STANDALONE
+      var loadDb = Application.streamingAssetsPath + "/" + Databasename;
+      File.Copy(loadDb, filepath);
+      #endif
+    }
+    var dbPath = filepath;
+    #endif
+  
+    string conn = "URI=file:" + dbPath;
+
+    dbconn = new SqliteConnection (conn) as IDbConnection;
+    dbconn.Open ();
+  }
+
   public static Ability GetAbility(string name)
   {
     Ability n = new Ability ();
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
     string sqlQuery = "SELECT *" + "FROM Ability" ; 
@@ -27,91 +51,72 @@ public class GetDataFromSql
       {
         n.ID = reader.GetInt32 (0);
         n.abilityName = reader.GetString (1);
-        n.atkMultiply = reader.GetFloat (2);
-        n.healMultiply = reader.GetFloat (3);
-        n.atkIncrease = reader.GetFloat (4);
-        n.defIncrease = reader.GetFloat (5);
-        n.criRateIncrease = reader.GetFloat (6);
-        n.movementIncrease = reader.GetFloat (7);
-        n.guardRateIncrease = reader.GetFloat (8);
-        n.range = reader.GetInt32 (9);
-        n.usingAround = reader.GetBoolean (10);
-        n.abnormalStatusGiven = reader.GetString (11);
-        n.rangeType = reader.GetString (12);
-        n.abilityType = reader.GetString (13);
-        n.gaugeUse = reader.GetInt32 (14);
+        n.power = reader.GetFloat (2);
+        n.powerGrowth = reader.GetFloat (3);
+        n.hitAmount = (int)reader.GetFloat (4);
+        n.hitAmountGrowth = (int)reader.GetFloat (5);
+        n.range = (int)reader.GetFloat (6);
+        n.rangeGrowth = (int)reader.GetFloat (7);
+        n.usingAround = reader.GetBoolean (8);
+        n.rangeType = reader.GetString (9);
+        n.abilityType = reader.GetString (10);
+        n.gaugeUse = reader.GetInt32 (11);
       }
     }
     reader.Close ();
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
 
     return n;
   }
 
-  public static CharacterStatus GetCharacter(string name)
+  public static CharacterBasicStatus GetCharacter(string name)
   {
-    CharacterStatus n = new CharacterStatus ();
+    CharacterBasicStatus n = new CharacterBasicStatus ();
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
-    string sqlQuery = "SELECT *" + "FROM CharacterStatusBasic" ; 
+    string sqlQuery = "SELECT *" + "FROM CharacterStatus" ; 
     dbcmd.CommandText = sqlQuery;
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
       if (reader.GetString (1) == name)
       {
-        if (reader.GetString (11) == "SwordMan") 
+        n.ID = reader.GetInt32 (0);
+        n.characterName = reader.GetString (1);
+        n.maxHP = (int)reader.GetFloat (2); 
+        n.maxHpGrowth= (int)reader.GetFloat (3) ;
+        n.attack = (int)reader.GetFloat (4);
+        n.attackGrowth = (int)reader.GetFloat (5);
+        n.defense = (int)reader.GetFloat (6);
+        n.defenseGrowth = (int)reader.GetFloat (7);
+        n.criRate = (int)reader.GetFloat (8);
+        n.criRateGrowth = (int)reader.GetFloat (9);
+        n.movementPoint = (int)reader.GetFloat (10);
+        n.normalAttack = GetAbility (reader.GetString (11));
+        if (reader.GetString (12) != "None") 
         {
-          n.ID = reader.GetInt32 (0);
-          n.characterName = reader.GetString (1);
-          n.level = reader.GetInt32 (2);
-          n.experience = reader.GetInt32 (3);
-          n.maxHP = (int)reader.GetFloat (4) * n.level + 25;
-          n.attack = (int)reader.GetFloat (5) * n.level;
-          n.defense = (int)reader.GetFloat (6) * n.level ;
-          n.resistance = (int)reader.GetFloat (7) * n.level ;
-          n.criRate = (int)reader.GetFloat (8) * n.level ;
-          n.guardRate = (int)reader.GetFloat (9) * n.level;
-          n.job = reader.GetString (11);
-          n.type = reader.GetString (12);
-          string weaponPro = reader.GetString (13);
-          string[] wp = weaponPro.Split (","[0]);
-          foreach (string w in wp) 
-          {
-            n.weaponProficiency.Add (w);
-          }
+          n.specialAttack = GetAbility (reader.GetString (12));
         }
+        n.weaponEff = reader.GetString (13);
+        n.armorEff = reader.GetString (14);
+        n.type = reader.GetString (15);
       }
     }
     reader.Close ();
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
 
     return n;
   }
-
-  public static Item GetItemFromName(string name)
+    
+  public static ItemStatus GetItemFromName(string name)
   {
-    Item n = new Item ();
+    ItemStatus n = new ItemStatus ();
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
     string sqlQuery = "SELECT *" + "FROM Item" ; 
@@ -121,52 +126,37 @@ public class GetDataFromSql
     {
       if (reader.GetString (1) == name)
       {
+        n.ID = reader.GetInt32 (0);
         n.name = reader.GetString (1);
         n.price = reader.GetInt32 (2);
-        n.increaseHP = reader.GetInt32 (4);
-        n.increaseAttack = reader.GetInt32 (5);
-        n.increaseDefense = reader.GetInt32 (6);
-        n.increaseCriRate = (int)reader.GetFloat (7);
-        n.increaseGuardRate = (int)reader.GetFloat (8);
-        n.increaseMovementPoint = (int)reader.GetInt32 (9);
-        string ability = reader.GetString (10);
-        string[] ab = ability.Split (" "[0]);
-        for(int i = 0; i < ab.Length-1; i=i+2)
-        {
-          if (int.Parse(ab[i+1]) == 1)
-          {
-            n.itemAb.Add (GetAbility(ab[i]));
-          }
-        }
-        n.IsRuneStone = reader.GetBoolean (11);
-        n.itemType = reader.GetString(12);
-        string sellMap = reader.GetString (13);
+        n.increaseHP = (int)reader.GetFloat (3);
+        n.increaseAttack = (int)reader.GetFloat (4);
+        n.increaseDefense = (int)reader.GetFloat (5);
+        n.increaseCriRate = (int)reader.GetFloat (6);
+        n.increaseMovementPoint = (int)reader.GetFloat (7);
+        n.itemType1 = reader.GetString(8);
+        n.itemType2 = reader.GetString(9);
+        string sellMap = reader.GetString (10);
         string[] sm = sellMap.Split ("," [0]);
         for(int i = 0; i < sm.Length; i++)
         {
           n.sellMap.Add (sm[i]);
         }
+        n.stackable = reader.GetBoolean (11);
       }
     }
     reader.Close ();
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
 
     return n;
   }
 
-  public static List<Item> GetItemFromMap(string mapNumber)
+  public static List<ItemStatus> GetItemFromMap(string mapNumber)
   {
-    List<Item> list = new List<Item> ();
+    List<ItemStatus> list = new List<ItemStatus> ();
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
     string sqlQuery = "SELECT *" + "FROM Item" ; 
@@ -174,10 +164,10 @@ public class GetDataFromSql
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      Item n = new Item ();
+      ItemStatus n = new ItemStatus ();
       List<string> s = new List<string> ();
 
-      string sellMap = reader.GetString (13);
+      string sellMap = reader.GetString (10);
       string[] sm = sellMap.Split ("," [0]);
       for(int i = 0; i < sm.Length; i++)
       {
@@ -188,27 +178,18 @@ public class GetDataFromSql
       {
         n.name = reader.GetString (1);
         n.price = reader.GetInt32 (2);
-        n.increaseHP = reader.GetInt32 (4);
-        n.increaseAttack = reader.GetInt32 (5);
-        n.increaseDefense = reader.GetInt32 (6);
-        n.increaseCriRate = (int)reader.GetFloat (7);
-        n.increaseGuardRate = (int)reader.GetFloat (8);
-        n.increaseMovementPoint = (int)reader.GetInt32 (9);
-        string ability = reader.GetString (10);
-        string[] ab = ability.Split (" "[0]);
-        for(int i = 0; i < ab.Length-1; i=i+2)
-        {
-          if (int.Parse(ab[i+1]) == 1)
-          {
-            n.itemAb.Add (GetAbility(ab[i]));
-          }
-        }
-        n.IsRuneStone = reader.GetBoolean (11);
-        n.itemType = reader.GetString(12);
+        n.increaseHP = (int)reader.GetFloat (3);
+        n.increaseAttack = (int)reader.GetFloat (4);
+        n.increaseDefense = (int)reader.GetFloat (5);
+        n.increaseCriRate = (int)reader.GetFloat (6);
+        n.increaseMovementPoint = (int)reader.GetFloat (7);
+        n.itemType1 = reader.GetString(8);
+        n.itemType2 = reader.GetString(9);
         for(int i = 0; i < sm.Length; i++)
         {
           n.sellMap = s;
         }
+        n.stackable = reader.GetBoolean (11);
       }
       list.Add (n);
     }
@@ -216,10 +197,44 @@ public class GetDataFromSql
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
 
     return list;
   }
 
+  public static StoryDialogue storyDialogue(int ID)
+  {
+    StoryDialogue dialogue = new StoryDialogue ();
+
+    IDbCommand dbcmd = dbconn.CreateCommand ();
+
+    string sqlQuery = "SELECT *" + "FROM StoryData" ; 
+    dbcmd.CommandText = sqlQuery;
+    IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      if (reader.GetInt32(0) == ID)
+      {
+        string allDialogue = reader.GetString (1);
+        string[] allDialogueSplit = allDialogue.Split ("," [0]);
+        for (int i = 0; i < allDialogueSplit.Length; i++)
+        {
+          dialogue.allDialogue.Add (allDialogueSplit [i]);
+        }
+        string characterName = reader.GetString (2);
+        string[] characterNameSplit = characterName.Split ("," [0]);
+        for (int i = 0; i < characterNameSplit.Length; i++)
+        {
+          dialogue.characterName.Add (characterNameSplit [i]);
+        }
+
+        break;
+      }
+    }
+    reader.Close ();
+    reader = null;
+    dbcmd.Dispose ();
+    dbcmd = null;
+
+    return dialogue;
+  }
 }

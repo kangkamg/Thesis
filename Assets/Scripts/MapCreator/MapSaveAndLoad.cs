@@ -59,12 +59,7 @@ public class MapSaveAndLoad
   {
     List<int> MapNumber = new List<int> ();
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
-    IDbCommand dbcmd = dbconn.CreateCommand ();
+    IDbCommand dbcmd = GetDataFromSql.dbconn.CreateCommand ();
 
     string sqlQuery = "SELECT *" + "FROM MapData" ; 
     dbcmd.CommandText = sqlQuery;
@@ -76,7 +71,7 @@ public class MapSaveAndLoad
       
     if (MapNumber.Contains(mapNumber)) 
     {
-      IDbCommand ucmd = dbconn.CreateCommand ();
+      IDbCommand ucmd = GetDataFromSql.dbconn.CreateCommand ();
       string updateMapSize = "UPDATE MapData SET mapsize = " + data.size + " where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData"; 
       string updateMapData = "UPDATE MapData SET mapdata = '" + EncodeAndDeCode.Encode (data.tiles) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
       ucmd.CommandText = updateMapSize;
@@ -91,7 +86,7 @@ public class MapSaveAndLoad
     }
     else 
     {
-      IDbCommand icmd = dbconn.CreateCommand ();
+      IDbCommand icmd = GetDataFromSql.dbconn.CreateCommand ();
       string insertQuery = "INSERT INTO MapData(mapno,mapsize,mapdata)" + "VALUES (" + mapNumber + "," + data.size + ", '" + EncodeAndDeCode.Encode (data.tiles) + "' );"; 
       icmd.CommandText = insertQuery;
       IDataReader insert = icmd.ExecuteReader ();
@@ -104,8 +99,6 @@ public class MapSaveAndLoad
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
   }
 
   public static MapDatabaseContainner Load(int mapNumber)
@@ -113,12 +106,7 @@ public class MapSaveAndLoad
     List<TileData> data = new List<TileData> ();
     int size = 0;
 
-    string conn = "URI=file:" + Application.dataPath + "/Database/ThesisDatabase.db";
-
-    IDbConnection dbconn;
-    dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
-    IDbCommand dbcmd = dbconn.CreateCommand ();
+    IDbCommand dbcmd = GetDataFromSql.dbconn.CreateCommand ();
 
     string sqlQuery = "SELECT *" + "FROM MapData" ; 
     dbcmd.CommandText = sqlQuery;
@@ -135,8 +123,6 @@ public class MapSaveAndLoad
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
-    dbconn.Close ();
-    dbconn = null;
 
     return new MapDatabaseContainner () 
     {

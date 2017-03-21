@@ -53,11 +53,26 @@ public class TileHighLight : MonoBehaviour
 
       foreach (Tile t in current.lastTile.neighborsPlus)
       {
-        if (t.impassible || occupied.Contains(t.gridPosition)) continue;
+        if (!staticRange)
+        {
+          if (t.impassible || occupied.Contains (t.gridPosition))
+            continue;
+        }
+
         TilePath newTilePath = new TilePath (current);
         if (staticRange) newTilePath.AddStaticTile (t);
         else newTilePath.AddTile (t);
         path.Add (newTilePath);
+      }
+    }
+    if (staticRange) 
+    {
+      for(int i = closed.Count-1 ; i > 0;i--) 
+      {
+        if (closed [i].impassible) 
+        {
+          closed.RemoveAt (i);
+        }
       }
     }
     closed.Remove (originTile);
@@ -95,6 +110,13 @@ public class TileHighLight : MonoBehaviour
         TilePath newTilePath = new TilePath (current);
         newTilePath.AddStaticTile (t);
         path.Add (newTilePath);
+      }
+    }
+    for(int i = closed.Count-1 ; i > 0;i--) 
+    {
+      if (closed [i].impassible) 
+      {
+        closed.RemoveAt (i);
       }
     }
     closed.Remove (originTile);

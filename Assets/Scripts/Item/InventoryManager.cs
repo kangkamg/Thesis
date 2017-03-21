@@ -1,0 +1,105 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using System.Linq;
+public class InventoryManager : MonoBehaviour
+{
+  public GameObject inventoryPanel;
+  public GameObject slotPanel;
+  public GameObject inventoryItem;
+
+  public List<Item> items = new List<Item>();
+  public List<GameObject> slots = new List<GameObject> ();
+
+  private void Start()
+  {
+    GenerateInventoryItem ("Weapon");
+  }
+    
+  public void GenerateInventoryItem(string itemType)
+  {
+    foreach (GameObject a in slots)
+    {
+      Destroy (a);
+    }
+    slots.Clear ();
+    items.Clear ();
+
+    for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
+    {
+      if (TemporaryData.GetInstance().playerData.inventory [i].item.itemType1 == itemType)
+      {
+        if (TemporaryData.GetInstance().playerData.inventory[i].item.stackable && CheckIfItemIsInInventory(TemporaryData.GetInstance().playerData.inventory[i])) 
+        {
+          for (int j = 0; j < slots.Count; j++) 
+          {
+            if (slots [j].GetComponent<ItemData>().items.item.ID == TemporaryData.GetInstance().playerData.inventory[i].item.ID) 
+            {
+              items.Add (TemporaryData.GetInstance().playerData.inventory[i]);
+              ItemData data = slots [j].GetComponent<ItemData> ();
+              data.amount++;
+              data.transform.GetChild (2).GetComponent<Text> ().text = data.amount.ToString ();
+              break;
+            }
+          }
+        }
+        else
+        {
+          items.Add (TemporaryData.GetInstance().playerData.inventory [i]);
+          GameObject itemObj = Instantiate (inventoryItem);
+          itemObj.transform.SetParent (slotPanel.transform);
+          itemObj.GetComponent<ItemData> ().items = TemporaryData.GetInstance().playerData.inventory [i];
+          itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
+
+          Sprite sprite = new Sprite();
+          if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
+          else sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[0].item.name);
+
+          itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
+          slots.Add (itemObj);
+
+          itemObj.GetComponent<ItemData> ().amount = 1;
+          itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
+        }
+      }
+    }
+
+    if (slots.Count > 6)
+    {
+      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (slots.Count - 1));
+      slotPanel.transform.localPosition = slotPanel.GetComponent<RectTransform> ().sizeDelta / -(slots.Count - 2);
+      slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+    } 
+    else
+    {
+      slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+    }
+
+    items.Sort (delegate(Item a, Item b) 
+      {
+        return (a.item.ID.CompareTo (b.item.ID));
+      });
+  }
+
+  public void AddItem(string name)
+  {
+    Item itemToAdd = new Item();
+
+    itemToAdd.item = GetDataFromSql.GetItemFromName (name);
+
+    items.Add(itemToAdd);
+  }
+
+  private bool CheckIfItemIsInInventory(Item item)
+  {
+    for (int i = 0; i < items.Count; i++) 
+    {
+      if (items [i].item.ID == item.item.ID) 
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+}

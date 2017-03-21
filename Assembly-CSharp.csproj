@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_ANDROID;ENABLE_SUBSTANCE;UNITY_ANDROID_API;ENABLE_EGL;ENABLE_NETWORK;ENABLE_RUNTIME_GI;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;PLATFORM_SUPPORTS_ADS_ID;UNITY_CAN_SHOW_SPLASH_SCREEN;ENABLE_VIDEO;ENABLE_VR;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_2;UNITY_5_5;UNITY_5;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_ANDROID;ENABLE_SUBSTANCE;UNITY_ANDROID_API;ENABLE_EGL;ENABLE_NETWORK;ENABLE_RUNTIME_GI;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;PLATFORM_SUPPORTS_ADS_ID;UNITY_CAN_SHOW_SPLASH_SCREEN;ENABLE_VIDEO;ENABLE_VR;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -46,31 +46,45 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\EasyJson\Json\JSON.cs" />
-     <Compile Include="Assets\EasyJson\Json\JSONSerialised.cs" />
-     <Compile Include="Assets\EasyJson\Json\JSONStructAttribute.cs" />
      <Compile Include="Assets\Scripts\Ability\Ability.cs" />
      <Compile Include="Assets\Scripts\CameraManager.cs" />
      <Compile Include="Assets\Scripts\Character\AICharacter.cs" />
+     <Compile Include="Assets\Scripts\Character\ChangeCharacterParty.cs" />
      <Compile Include="Assets\Scripts\Character\Character.cs" />
+     <Compile Include="Assets\Scripts\Character\CharacterStatus.cs" />
+     <Compile Include="Assets\Scripts\Character\OtherCharacterData.cs" />
+     <Compile Include="Assets\Scripts\Character\PartyCharacterData.cs" />
      <Compile Include="Assets\Scripts\Character\PlayerCharacter.cs" />
      <Compile Include="Assets\Scripts\Const.cs" />
-     <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\GamePlay\FloatingText.cs" />
+     <Compile Include="Assets\Scripts\GamePlay\GameManager.cs" />
      <Compile Include="Assets\Scripts\Item\Accessory.cs" />
      <Compile Include="Assets\Scripts\Item\Armor.cs" />
+     <Compile Include="Assets\Scripts\Item\InventoryManager.cs" />
      <Compile Include="Assets\Scripts\Item\Item.cs" />
+     <Compile Include="Assets\Scripts\Item\ItemData.cs" />
+     <Compile Include="Assets\Scripts\Item\ItemManager.cs" />
      <Compile Include="Assets\Scripts\Item\Weapon.cs" />
-     <Compile Include="Assets\Scripts\MainMenu\ItemInformation.cs" />
-     <Compile Include="Assets\Scripts\MainMenu\ItemManager.cs" />
      <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
      <Compile Include="Assets\Scripts\MainMenu\TownSceneManager.cs" />
      <Compile Include="Assets\Scripts\MapCreator\MapCreatorManager.cs" />
      <Compile Include="Assets\Scripts\MapCreator\MapSaveAndLoad.cs" />
      <Compile Include="Assets\Scripts\MapCreator\TileTypes.cs" />
+     <Compile Include="Assets\Scripts\Misc.cs" />
+     <Compile Include="Assets\Scripts\Player\ChangeEquipmentManager.cs" />
+     <Compile Include="Assets\Scripts\Player\CharacterStatusSceneManager.cs" />
+     <Compile Include="Assets\Scripts\Player\EquipItem.cs" />
+     <Compile Include="Assets\Scripts\Player\PartySceneManager.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerData.cs" />
+     <Compile Include="Assets\Scripts\Player\ShowingCharacterStatusManager.cs" />
+     <Compile Include="Assets\Scripts\Player\SkillStatusManager.cs" />
      <Compile Include="Assets\Scripts\PrefabHolder.cs" />
      <Compile Include="Assets\Scripts\SaveAndGetData\EncodeAndDeCode.cs" />
      <Compile Include="Assets\Scripts\SaveAndGetData\GetDataFromSql.cs" />
-     <Compile Include="Assets\Scripts\SaveAndGetData\SaveDataToSql.cs" />
+     <Compile Include="Assets\Scripts\SaveAndGetData\SaveAndLoadPlayerData.cs" />
+     <Compile Include="Assets\Scripts\StartSceneManager.cs" />
+     <Compile Include="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs" />
+     <Compile Include="Assets\Scripts\SupMenuSceneManager.cs" />
      <Compile Include="Assets\Scripts\Tile\Tile.cs" />
      <Compile Include="Assets\Scripts\Tile\TileHighLight.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePath.cs" />
@@ -93,11 +107,26 @@
  <Reference Include="UnityEngine.VR">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
  </Reference>
+ <Reference Include="Mono.Data">
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.dll</HintPath>
+ </Reference>
  <Reference Include="Mono.Data.Sqlite">
- <HintPath>D:/5611610025/thesis/Assets/Plugin/Mono.Data.Sqlite.dll</HintPath>
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
+ </Reference>
+ <Reference Include="Mono.Data.SqliteClient">
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.SqliteClient.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Configuration">
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Configuration.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
- <HintPath>D:/5611610025/thesis/Assets/Plugin/System.Data.dll</HintPath>
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Data.dll</HintPath>
+ </Reference>
+ <Reference Include="System.EnterpriseServices">
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/System.EnterpriseServices.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Security">
+ <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Security.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

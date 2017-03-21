@@ -12,21 +12,21 @@ public class Tile : MonoBehaviour
   public GameObject visual;
 
   public TileTypes type = TileTypes.Normal;
-  public Renderer rend;
+  public Renderer rend = new Renderer();
 
   public List<Tile> neighborsPlus = new List<Tile>();
   public List<Tile> neighborsCross = new List<Tile>();
 
   public int movementCost = 1;
   public bool impassible = false;
- 
+  public bool canMove = false;
+
   private void Start()
   {
-    if (SceneManager.GetActiveScene().name == "GamePlayScene") GenerateNeighbors ();
-
     rend = visual.GetComponent<Renderer> ();
   }
-  private void GenerateNeighbors()
+
+  public void GenerateNeighbors()
   {
     //forward
     if (gridPosition.z < GameManager.GetInstance()._mapSize-1)

@@ -14,6 +14,10 @@ public class TownSceneManager : MonoBehaviour
   public GameObject shopSup;
   public GameObject shopBg;
 
+  public GameObject libraryMain;
+  public GameObject libraryQuest;
+  public GameObject libraryQuestDetail;
+
   public void Start()
   {
     if (PlayerPrefs.GetInt (Const.InTownScene, 1) == 1) shop.SetActive (true);
@@ -34,6 +38,22 @@ public class TownSceneManager : MonoBehaviour
     }
   }
 
+  public void AcceptAndReportQuest(string option)
+  {
+    libraryMain.SetActive (false);
+    libraryQuest.SetActive (true);
+    libraryQuestDetail.SetActive (true);
+
+    if (option == "Accept") 
+    {
+      
+    }
+    else 
+    {
+      
+    }
+  }
+
   public void ExitToMainScene()
   {
     SceneManager.LoadScene ("MainMenuScene");
@@ -41,8 +61,23 @@ public class TownSceneManager : MonoBehaviour
 
   public void HideSupMenu()
   {
-    shopMain.SetActive (true);
-    shopSup.SetActive (false);
-    shopBg.SetActive (false);
+    if (PlayerPrefs.GetInt (Const.InTownScene, 1) == 1)
+    {
+      shopMain.SetActive (true);
+      shopSup.SetActive (false);
+      shopBg.SetActive (false);
+      libraryMain.SetActive (false);
+      libraryQuest.SetActive (false);
+      libraryQuestDetail.SetActive (false);
+    }
+    else 
+    {
+      libraryMain.SetActive (true);
+      libraryQuest.SetActive (false);
+      libraryQuestDetail.SetActive (false);
+      shopMain.SetActive (false);
+      shopSup.SetActive (false);
+      shopBg.SetActive (false);
+    }
   }
 }

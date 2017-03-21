@@ -14,22 +14,46 @@ public class CameraManager : MonoBehaviour
   Vector3 offset;
   private Vector3 velocity = Vector3.zero;
 
+  Vector3 target = new Vector3(-9999,-9999,-9999);
+
   public float smoothing;
 
-  void Awake()
+  private void Awake()
   {
     instance = GetComponent<CameraManager> ();
   }
-    
-	void LateUpdate () 
+
+  private void LateUpdate () 
   {
-    if (GameManager.GetInstance ().selectedCharacter != null)
+    if (target.x != -9999)
     {
-      Vector3 targetCamPos = GameManager.GetInstance ().selectedCharacter.transform.position - new Vector3(7,0,7);
+      Vector3 targetCamPos = target;
 
       targetCamPos.y = transform.position.y;
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
+
+      if (transform.position.x == targetCamPos.x && transform.position.z == targetCamPos.z)
+      {
+        target = new Vector3 (-9999, -9999, -9999);
+      }
     }
 	}
+    
+  public void MoveCameraToTarget(Vector3 _target,bool _start = false)
+  {
+    if (!_start) 
+    {
+      target = _target;
+    }
+    else 
+    {
+      this.GetComponent<Camera> ().orthographicSize = (_target.x * 4);
+
+      _target.y = transform.position.y;
+
+      transform.position = _target;
+    }
+
+  }
 }

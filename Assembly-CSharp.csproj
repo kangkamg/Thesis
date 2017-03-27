@@ -58,6 +58,8 @@
      <Compile Include="Assets\Scripts\Const.cs" />
      <Compile Include="Assets\Scripts\GamePlay\FloatingText.cs" />
      <Compile Include="Assets\Scripts\GamePlay\GameManager.cs" />
+     <Compile Include="Assets\Scripts\GamePlay\ShowingResultOfAttack.cs" />
+     <Compile Include="Assets\Scripts\GamePlay\UpdateCharacterInfo.cs" />
      <Compile Include="Assets\Scripts\Item\Accessory.cs" />
      <Compile Include="Assets\Scripts\Item\Armor.cs" />
      <Compile Include="Assets\Scripts\Item\InventoryManager.cs" />

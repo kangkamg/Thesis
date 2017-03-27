@@ -20,8 +20,20 @@ public class TownSceneManager : MonoBehaviour
 
   public void Start()
   {
-    if (PlayerPrefs.GetInt (Const.InTownScene, 1) == 1) shop.SetActive (true);
-    else library.SetActive (true);
+    if (PlayerPrefs.GetInt (Const.InTownScene, 1) == 1)
+    {
+      shop.SetActive (true);
+      shopMain.SetActive (true);
+      shopSup.SetActive (false);
+      shopBg.SetActive (false);
+    } 
+    else
+    {
+      library.SetActive (true);
+      libraryMain.SetActive (true);
+      libraryQuest.SetActive (false);
+      libraryQuestDetail.SetActive (false);
+    }
   }
 
   public void BuyAndSellItem(string option)

@@ -105,6 +105,16 @@ public class PrefabHolder
     private set {} 
   }
 
+  public GameObject HealingTile 
+  { 
+    get 
+    { 
+      GameObject attack = Resources.Load<GameObject> ("TilePrefab/Highlight/Healing"); 
+      return attack;
+    } 
+    private set {} 
+  }
+
   private static PrefabHolder instance;
 
   public static PrefabHolder GetInstance()

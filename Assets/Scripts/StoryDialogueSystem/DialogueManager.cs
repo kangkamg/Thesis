@@ -6,8 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class StoryDialogue
 {
+  public int ID;
   public List<string> characterName = new List<string>();
   public List<string> allDialogue =  new List<string>();
+  public int sequence = 0;
 }
 
 public class DialogueManager : MonoBehaviour 
@@ -30,8 +32,7 @@ public class DialogueManager : MonoBehaviour
   public GameObject LeftCharacter;
   public GameObject RightCharacter;
 
-  public GameObject Talking1;
-  public GameObject Talking2;
+  public GameObject talkingCharacter;
 
   public string oldLeft;
   public string oldRight;
@@ -40,7 +41,7 @@ public class DialogueManager : MonoBehaviour
   {
     _textComponent.text = "";
 
-    storyDialogue = GetDataFromSql.storyDialogue (PlayerPrefs.GetInt (Const.StoryNumber, 1));
+    storyDialogue = GetDataFromSql.GetStoryDialogue (TemporaryData.GetInstance().storyID);
      
     for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
     {
@@ -61,7 +62,6 @@ public class DialogueManager : MonoBehaviour
       }
 
       dialogueWord.Add(storyDialogue.allDialogue [i]);
-
     }
   }
 
@@ -75,9 +75,9 @@ public class DialogueManager : MonoBehaviour
 
     if(_isEndOfDialogue)
     {
+      TemporaryData.GetInstance ().storyID += 1;
       if(Input.GetMouseButtonDown(0))
         {
-          PlayerPrefs.SetInt(Const.MapNo,PlayerPrefs.GetInt(Const.StoryNumber,1));
           SceneManager.LoadScene("GamePlayScene");
         }
     }
@@ -128,9 +128,8 @@ public class DialogueManager : MonoBehaviour
     {
       ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
       oldLeft = dialogueSpeaker [currentDialogueIndex];
-      Talking1.SetActive (true);
-      Talking2.SetActive (false);
-      Talking1.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+      talkingCharacter.SetActive (true);
+      talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
     }
       
     if (dialogueSpeaker[currentDialogueIndex] == oldLeft || dialogueSpeaker[currentDialogueIndex] == oldRight) 
@@ -140,16 +139,14 @@ public class DialogueManager : MonoBehaviour
         if (!string.IsNullOrEmpty(oldRight)) 
         {
           ShowCha (true, true, oldLeft, oldRight);
-          Talking1.SetActive (true);
-          Talking2.SetActive (false);
-          Talking1.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          talkingCharacter.SetActive (true);
+          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
         }
         else
         {
           ShowCha (true, false, oldLeft, null);
-          Talking1.SetActive (true);
-          Talking2.SetActive (false);
-          Talking1.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          talkingCharacter.SetActive (true);
+          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
         }
       } 
       else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight)
@@ -157,16 +154,14 @@ public class DialogueManager : MonoBehaviour
         if (!string.IsNullOrEmpty(oldLeft)) 
         {
           ShowCha (true, true, oldLeft, oldRight);
-          Talking1.SetActive (false);
-          Talking2.SetActive (true);
-          Talking2.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          talkingCharacter.SetActive (true);
+          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
         }
         else
         {
           ShowCha (false, true, null, oldRight);
-          Talking1.SetActive (false);
-          Talking2.SetActive (true);
-          Talking2.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          talkingCharacter.SetActive (true);
+          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
         }
       } 
     }
@@ -179,8 +174,7 @@ public class DialogueManager : MonoBehaviour
           ShowCha (false, false, null, null);
           oldLeft = null;
           oldRight = null;
-          Talking1.SetActive (false);
-          Talking2.SetActive (false);
+          talkingCharacter.SetActive (false);
         }
         else
         {
@@ -188,9 +182,8 @@ public class DialogueManager : MonoBehaviour
           {
             ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
             oldRight = dialogueSpeaker [currentDialogueIndex];
-            Talking1.SetActive (false);
-            Talking2.SetActive (true);
-            Talking2.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
           }
         }
       }
@@ -200,9 +193,8 @@ public class DialogueManager : MonoBehaviour
         {
           ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
           oldLeft = dialogueSpeaker [currentDialogueIndex];
-          Talking1.SetActive (true);
-          Talking2.SetActive (false);
-          Talking1.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          talkingCharacter.SetActive (true);
+          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
         }
       }
     }

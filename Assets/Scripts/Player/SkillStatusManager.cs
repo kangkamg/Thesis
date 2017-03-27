@@ -18,6 +18,7 @@ public class SkillStatusManager : MonoBehaviour
     {
       GameObject exp = Instantiate (skillExp);
       exp.transform.SetParent (transform.GetChild (2));
+      exp.transform.localScale = new Vector3 (1, 1, 1);
     }
     transform.GetChild (3).GetComponent<Text> ().text = "Power:\t" + ability.power.ToString () +"\nHitAmount:\t" + ability.hitAmount.ToString () +"\nRange:\t" + ability.range.ToString ();
   }

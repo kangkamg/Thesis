@@ -235,7 +235,7 @@ public class ChangeEquipmentManager : MonoBehaviour
 
     items.Sort (delegate(Item a, Item b) 
       {
-        return (a.ordering.CompareTo (b.ordering));
+        return (a.item.ID.CompareTo (b.item.ID));
       });
   }
 
@@ -301,7 +301,7 @@ public class ChangeEquipmentManager : MonoBehaviour
 
     items.Sort (delegate(Item a, Item b) 
       {
-        return (a.ordering.CompareTo (b.ordering));
+        return (a.item.ID.CompareTo (b.item.ID));
       });
   }
 

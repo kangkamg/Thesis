@@ -54,18 +54,28 @@ public class StartSceneManager : MonoBehaviour
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
+
+    equipedItem = new Item ();
+    equipedItem.item = GetDataFromSql.GetItemFromName ("RedPotion");
+    equipedItem.equiped = true;
+    adding.equipItem.Add (equipedItem);
+    data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     data.characters.Add (adding);
 
@@ -85,18 +95,21 @@ public class StartSceneManager : MonoBehaviour
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     data.characters.Add (adding);
 
@@ -106,7 +119,6 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-
     if(Input.GetMouseButtonDown(0) /*|| Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       if (!bookOpen) 
@@ -115,7 +127,7 @@ public class StartSceneManager : MonoBehaviour
       } 
       else
       {
-        if (PlayerPrefs.GetInt (Const.NewGame, 1) == 1)
+        /*if (PlayerPrefs.GetInt (Const.NewGame, 1) == 1)
         {
           InitFirstData ();
           PlayerPrefs.SetInt (Const.MapNo, 1);
@@ -123,9 +135,10 @@ public class StartSceneManager : MonoBehaviour
           //SceneManager.LoadScene ("StoryScene");
         }
         else
-        {
+        {*/
+          InitFirstData ();
           SceneManager.LoadScene ("MainMenuScene");
-        } 
+        //} 
       }
     }
   }
@@ -144,7 +157,6 @@ public class StartSceneManager : MonoBehaviour
   {
     PlayerPrefs.SetInt (Const.NewGame, 1);
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Openbook");
-    touchText.transform.position = new Vector2 (touchText.transform.position.x, 240);
     touchText.text = "Touch To Start NewGame";
     bookOpen = true;
     openBook.SetActive (bookOpen);

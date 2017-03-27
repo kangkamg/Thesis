@@ -6,8 +6,6 @@ using System.Linq;
 
 public class Character : MonoBehaviour
 {
-  public string characterName;
-
   public List<Vector3>positionQueue = new List<Vector3>();
  
   public float moveSpeed = 10;
@@ -25,22 +23,29 @@ public class Character : MonoBehaviour
 
   public CharacterStatus characterStatus = new CharacterStatus();
 
-  public virtual void Awake()
-  {
-    characterStatus.basicStatus = GetDataFromSql.GetCharacter (characterName);
-    currentHP = characterStatus.maxHp;
-  }
-   
   public virtual void Update()
   {
-    if (currentHP <= 0)
-    {
-      Destroy (gameObject);
-    }
+
   }
 
   public virtual void TurnUpdate()
   {
    
+  }
+
+  public virtual void SetStatus(string name)
+  {
+    characterStatus.basicStatus = GetDataFromSql.GetCharacter (name);
+
+    currentHP = characterStatus.maxHp;
+    this.name = characterStatus.basicStatus.characterName;
+  }
+
+  public virtual void SetStatus(CharacterStatus status)
+  {
+    characterStatus = status;
+
+    currentHP = characterStatus.maxHp;
+    this.name = characterStatus.basicStatus.characterName;
   }
 }

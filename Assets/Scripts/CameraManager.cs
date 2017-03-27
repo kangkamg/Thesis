@@ -18,6 +18,11 @@ public class CameraManager : MonoBehaviour
 
   public float smoothing;
 
+  private Vector3 _originPos;
+  private float _orthographicSize;
+
+  public bool isFocus;
+
   private void Awake()
   {
     instance = GetComponent<CameraManager> ();
@@ -48,12 +53,28 @@ public class CameraManager : MonoBehaviour
     }
     else 
     {
-      this.GetComponent<Camera> ().orthographicSize = (_target.x * 4);
+      _orthographicSize = _target.x * 2.5f;
+      this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
 
       _target.y = transform.position.y;
+      _target.z = transform.position.z;
 
       transform.position = _target;
+      _originPos = transform.position;
     }
 
+  }
+
+  public void FocusCamera(Vector3 _selectedCharacter, Vector3 _target)
+  {
+    this.GetComponent<Camera> ().orthographicSize = Mathf.RoundToInt(Vector3.Distance (_selectedCharacter, _target));
+
+    transform.position = (_selectedCharacter+_target)/2;
+  }
+
+  public void ResetCamera()
+  {
+    transform.position = _originPos;
+    this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
   }
 }

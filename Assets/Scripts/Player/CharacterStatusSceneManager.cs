@@ -72,6 +72,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
         otherObj.transform.SetParent (otherCharacterPanel.transform);
         otherObj.GetComponentInChildren<OtherCharacterData> ().characterData.status = TemporaryData.GetInstance ().playerData.characters [i];
         otherObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(otherObj.GetComponentInChildren<OtherCharacterData>().characterData.status));
+        otherObj.transform.localScale = new Vector3 (1, 1, 1);
 
         slotsOtherCharacter.Add (otherObj);
       }
@@ -87,6 +88,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
       partyObj.transform.SetParent (partyPanel.transform);
       partyObj.GetComponent<PartyCharacterData> ().characterData.status = party [i];
       partyObj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(()=>LookStatus(partyObj.GetComponent<PartyCharacterData>().characterData.status));
+      partyObj.transform.localScale = new Vector3 (1, 1, 1);
 
       slotsParty.Add (partyObj);
     }

@@ -44,6 +44,7 @@ public class ItemManager : MonoBehaviour
         else sprite = Resources.Load<Sprite>("Item/Texture/" + canBuy[0].name);
          
         items.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
+        items.transform.localScale = Vector3.one;
         allItem.Add (items);
       }
     }
@@ -52,11 +53,11 @@ public class ItemManager : MonoBehaviour
     {
       showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (allItem.Count - 1));
       showing.transform.localPosition = showing.GetComponent<RectTransform> ().sizeDelta / -(allItem.Count - 2);
-      showing.GetComponentInParent<ScrollRect> ().enabled = true;
+      showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
-      showing.GetComponentInParent<ScrollRect> ().enabled = false;
+      showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
     for (int i = 0; i < allItem.Count; i++)
     {

@@ -16,16 +16,21 @@ public class GameManager : MonoBehaviour
 
   public List<List<Tile>> map = new List<List<Tile>>();
   public List<Character> character = new List<Character> ();
+  public List<int> enemyID = new List<int>();
 
   public Character selectedCharacter;
   public Character previousSelectedCharacter;
   public GameObject chaSelector;
 
   public GameObject playerUI;
+  public GameObject results;
+  public ShowingResultOfAttack showingResultOfAttack;
 
   List<GameObject> targetInRange = new List<GameObject> ();
   List<GameObject> highlightTileMovement = new List<GameObject> ();
   List<GameObject> highlightTileAttack = new List<GameObject> ();
+
+  List<Text> allHpText = new List<Text>();
 
   public Vector3 originPos;
   public Vector3 originGrid;
@@ -33,6 +38,9 @@ public class GameManager : MonoBehaviour
   public bool isPlayerTurn;
 
   public bool hitButton = false;
+
+  private int usingWhat = -1;
+  public AbilityStatus usingAbility;
 
   private void Awake()
   {
@@ -42,26 +50,19 @@ public class GameManager : MonoBehaviour
     GenerateCharacter ();
 
     isPlayerTurn = true;
+    results.SetActive (false);
   }
 
   private void Start()
   {
     selectedCharacter = character [0];
     previousSelectedCharacter = selectedCharacter;
-    oldCharacterNo = selectedCharacter.ordering;
-    originGrid = selectedCharacter.gridPosition;
-    originPos = selectedCharacter.transform.position;
-    chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
-    chaSelector.transform.SetParent (selectedCharacter.transform);
-    RemoveMapHighlight ();
-    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().MovementTile, selectedCharacter.characterStatus.movementPoint);
-    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance().AttackTile, selectedCharacter.characterStatus.normalAttack.range,selectedCharacter.characterStatus.normalAttack.ability.rangeType);
-    HighlightTargetInRange ();
+    SelectedCharacter ();
   }
 
   private void Update()
   {
-    if (Input.GetMouseButtonDown(0) && !hitButton/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+    if (Input.GetMouseButtonDown(0) && !hitButton && isPlayerTurn/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition/*Input.GetTouch(0).position*/);
 
@@ -70,44 +71,53 @@ public class GameManager : MonoBehaviour
       {
         if (hit.transform.tag == "Player") 
         {
-          selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
-
           if (!selectedCharacter.played)
             currentCharacterIndex = selectedCharacter.ordering;
-
+          
           if (oldCharacterNo < 0) 
           {
-            previousSelectedCharacter = selectedCharacter;
-            oldCharacterNo = selectedCharacter.ordering;
-            originGrid = selectedCharacter.gridPosition;
-            originPos = selectedCharacter.transform.position;
-            RemoveMapHighlight ();
-            HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-            HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.characterStatus.normalAttack.range, selectedCharacter.characterStatus.normalAttack.ability.rangeType);
-            HighlightTargetInRange ();
-            Destroy (chaSelector);
-            chaSelector = null;
-            chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
-            chaSelector.transform.SetParent (selectedCharacter.transform);
+            selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
+            SelectedCharacter ();
           }
           else
           {
-            if (oldCharacterNo != selectedCharacter.ordering) 
+            if (oldCharacterNo != hit.transform.GetComponent<PlayerCharacter>().ordering) 
             {
-              RemoveMapHighlight ();
-              previousSelectedCharacter.transform.position = originPos;
-              previousSelectedCharacter.gridPosition = originGrid;
-              previousSelectedCharacter = selectedCharacter;
-              oldCharacterNo = selectedCharacter.ordering;
-              originGrid = selectedCharacter.gridPosition;
-              originPos = selectedCharacter.transform.position;
-              HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-              HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.characterStatus.normalAttack.range, selectedCharacter.characterStatus.normalAttack.ability.rangeType);
-              HighlightTargetInRange ();
-              Destroy (chaSelector);
-              chaSelector = null;
-              chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
-              chaSelector.transform.SetParent (selectedCharacter.transform);
+              if (usingWhat != 1)
+              {
+                RemoveMapHighlight ();
+                previousSelectedCharacter.transform.position = originPos;
+                previousSelectedCharacter.gridPosition = originGrid;
+                selectedCharacter = hit.transform.GetComponent<PlayerCharacter> ();
+                SelectedCharacter ();
+              } 
+              else 
+              {
+                if (targetInRange.Count > 0) 
+                {
+                  foreach (GameObject h in targetInRange)
+                  {
+                    if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+                    {
+                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0)
+                      {
+                        Tile desTile = CheckingMovementToAttackTarget (hit.transform);
+
+                        MoveCurrentCharacter (desTile);
+
+                        selectedCharacter.target = hit.transform.GetComponent<Character> ();
+
+                        break;
+                      } 
+                      else 
+                      {
+                        AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -119,6 +129,11 @@ public class GameManager : MonoBehaviour
             foreach (Character c in character) 
             {
               if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy")
+              {
+                AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+                break;
+              }
+              else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player" && usingWhat == 1)
               {
                 AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
                 break;
@@ -173,6 +188,11 @@ public class GameManager : MonoBehaviour
         }
       }
     }
+
+    if (character.Where (x => x.GetType () == typeof(AICharacter)).Count() <= 0 && !results.activeSelf) 
+    {
+      ShowResults ();
+    }
   }
 
   public void GenerateMap(int mapNumber)
@@ -217,7 +237,7 @@ public class GameManager : MonoBehaviour
     }
       
     mapTransform.gameObject.SetActive (true);
-    CameraManager.GetInstance ().MoveCameraToTarget (new Vector3(_mapSize/2,0,-_mapSize/2),true);
+    CameraManager.GetInstance ().MoveCameraToTarget (new Vector3(_mapSize,0,0),true);
   }
 
   public void GenerateCharacter()
@@ -249,23 +269,106 @@ public class GameManager : MonoBehaviour
 
       GameObject playerObj = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3 (startPlayer [i].transform.position.x, 1.5f, startPlayer [i].transform.position.z), Quaternion.Euler (new Vector3 (0, 90, 0)));
       PlayerCharacter player = playerObj.GetComponent<PlayerCharacter> ();
-      player.characterStatus = TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == i).First();
-      player.name = player.characterStatus.basicStatus.characterName;
+      player.SetStatus(TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == i).First());
       player.gridPosition = startPlayer[i].gridPosition;
       character.Add (player);
       player.ordering = character.Count - 1;
+      CharacterInMapInfo (player);
     }
 
     foreach (Tile a in startEnemy) 
     {
-      GameObject aiPlayerObj = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3 (a.transform.position.x, 2.175f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, -90, 0)));
+      GameObject aiPlayerObj = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3 (a.transform.position.x, 1.5f, a.transform.position.z), Quaternion.Euler (new Vector3 (0, -90, 0)));
       AICharacter aiPlayer = aiPlayerObj.GetComponent<AICharacter> ();
+      aiPlayer.SetStatus ("Crodile");
+      aiPlayer.characterStatus.normalAttack.ability = aiPlayer.characterStatus.basicStatus.normalAttack;
+      aiPlayer.characterStatus.normalAttack.level = 1;
+      if (aiPlayer.characterStatus.specialAttack.ability != null)
+      {
+        aiPlayer.characterStatus.specialAttack.ability = aiPlayer.characterStatus.basicStatus.specialAttack;
+        aiPlayer.characterStatus.specialAttack.level = 1;
+      }
       aiPlayer.gridPosition = a.gridPosition;
       character.Add (aiPlayer);
       aiPlayer.ordering = character.Count - 1;
+      CharacterInMapInfo (aiPlayer);
     }
   }
 
+  public void SetUseAble()
+  {
+    Transform showing = playerUI.transform.GetChild (0).GetChild (1).transform;
+    for (int i = 0; i < showing.childCount; i++)
+    {
+      Destroy (showing.GetChild (i).gameObject);
+    }
+    List<Transform> useAble = new List<Transform>();
+
+    if (selectedCharacter.GetType () == typeof(PlayerCharacter)) 
+    {
+      for (int i = 0; i < 2; i++) 
+      {
+        GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/Using"));
+        abilityObj.transform.SetParent (showing);
+        abilityObj.transform.localScale = Vector3.one;
+        abilityObj.name = "useAble" + i;
+        abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/NoAttack");
+        abilityObj.GetComponent<Button> ().interactable = false;
+        useAble.Add (abilityObj.transform);
+      }
+
+      if (selectedCharacter.characterStatus.specialAttack.ability != null) 
+      {
+        useAble [0].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/" + selectedCharacter.characterStatus.specialAttack.ability.abilityName);
+        useAble [0].GetComponent<Button> ().interactable = true;
+        useAble[0].GetComponent<Button>().onClick.AddListener(()=>SetUsing(0));
+      }
+
+      if (selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").Count()>0) 
+      {
+        useAble [1].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/" + selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").First().item.name);
+        useAble [1].GetComponent<Button> ().interactable = true;
+        useAble[1].GetComponent<Button>().onClick.AddListener(()=>SetUsing(1));
+      }
+    }
+  }
+
+  public void SetUsing(int selected)
+  {
+    GameObject highlighted = new GameObject();
+    if (usingWhat != selected) 
+    {
+      usingWhat = selected;
+      if (usingWhat == 0) 
+      {
+        usingAbility = selectedCharacter.characterStatus.specialAttack;
+        highlighted = PrefabHolder.GetInstance ().AttackTile;
+      } 
+
+      else if (usingWhat == 1) 
+      {
+        ItemStatus usingItem = selectedCharacter.characterStatus.equipItem.Where (x => x.item.itemType1 == "Items").First ().item;
+        usingAbility = new AbilityStatus ();
+        usingAbility.ability = GetDataFromSql.itemAbilityStatus (usingItem.ID);
+        usingAbility.ability.power = usingItem.increaseHP;
+        usingAbility.level = 1;
+        usingAbility.ability.hitAmount = 1;
+        highlighted = PrefabHolder.GetInstance ().HealingTile;
+      }
+    }
+    else
+    {
+      usingWhat = -1;
+      usingAbility = selectedCharacter.characterStatus.normalAttack;
+      highlighted = PrefabHolder.GetInstance ().AttackTile;
+    }
+      
+    RemoveMapHighlight ();
+    HighlightTileAt (originGrid, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+    HighlightTileAt (selectedCharacter.gridPosition, highlighted, usingAbility.range, usingAbility.ability.rangeType);
+    HighlightTargetInRange (usingAbility);
+  }
+    
   public void HighlightTileAt(Vector3 originLocation, GameObject highlight, int distance)
   {
     HighlightTileAt(originLocation, highlight, distance, "plus", true);
@@ -282,7 +385,7 @@ public class GameManager : MonoBehaviour
     if (ignoreCharacter) 
     {
       map [(int)originLocation.x] [(int)originLocation.z].canMove = true;
-      highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation).Select (x => x.gridPosition).ToArray ());
+      highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, character.Where (x => x.gridPosition != originLocation && x.ordering != selectedCharacter.ordering).Select (x => x.gridPosition).ToArray ());
 
       foreach (Tile t in highlightedTiles) 
       {
@@ -326,31 +429,32 @@ public class GameManager : MonoBehaviour
       }
     }
   }
+
   public Tile CheckingMovementToAttackTarget(Transform target)
   {
     List<Tile> targetTile = new List<Tile> ();
 
-    if(selectedCharacter.characterStatus.normalAttack.ability.rangeType == "cross")
+    if(usingAbility.ability.rangeType == "cross")
     {
       for(int i = 0;i<highlightTileMovement.Count;i++)
       {
-        List<Tile> canAttacking = TileHighLight.FindHighLight (highlightTileMovement[i].transform.parent.GetComponent<Tile>(), selectedCharacter.characterStatus.normalAttack.ability.range, true, true);
+        List<Tile> canAttacking = TileHighLight.FindHighLight (highlightTileMovement[i].transform.parent.GetComponent<Tile>(), usingAbility.ability.range, true, true);
         if (canAttacking.Where (x => x.transform.position.x == target.position.x && x.transform.position.z == target.position.z).Count () > 0)
         {
           targetTile.Add(highlightTileMovement [i].transform.parent.GetComponent<Tile>());
         }
       }
     }
-    else if (selectedCharacter.characterStatus.normalAttack.ability.rangeType == "both") 
+    else if (usingAbility.ability.rangeType == "both") 
     {
       for (int i = 0; i < highlightTileMovement.Count; i++)
       {
         List<Tile> canAttacking = new List<Tile> ();
-        foreach (Tile t in TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), selectedCharacter.characterStatus.normalAttack.ability.range, true, true)) 
+        foreach (Tile t in TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), usingAbility.ability.range, true, true)) 
         {
           canAttacking.Add (t);
         }
-        foreach (Tile t in TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), selectedCharacter.characterStatus.normalAttack.ability.range, true, false)) 
+        foreach (Tile t in TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), usingAbility.ability.range, true, false)) 
         {
           canAttacking.Add (t);
         }
@@ -364,7 +468,7 @@ public class GameManager : MonoBehaviour
     {
       for (int i = 0; i < highlightTileMovement.Count; i++)
       {
-        List<Tile> canAttacking = TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), selectedCharacter.characterStatus.normalAttack.ability.range, true, false);
+        List<Tile> canAttacking = TileHighLight.FindHighLight (highlightTileMovement [i].transform.parent.GetComponent<Tile> (), usingAbility.ability.range, true, false);
         if (canAttacking.Where (x => x.transform.position.x == target.position.x && x.transform.position.z == target.position.z).Count () > 0) 
         {
           targetTile.Add(highlightTileMovement [i].transform.parent.GetComponent<Tile>());
@@ -386,6 +490,7 @@ public class GameManager : MonoBehaviour
 
     else return null;
   }
+
   public void RemoveMapHighlight()
   {
     foreach (List<Tile> t in map)
@@ -415,6 +520,35 @@ public class GameManager : MonoBehaviour
       Destroy (a);
     }
     highlightTileAttack.Clear ();
+  }
+
+  public void SelectedCharacter()
+  {
+    RemoveMapHighlight ();
+    usingWhat = -1;
+    usingAbility = selectedCharacter.characterStatus.normalAttack;
+    previousSelectedCharacter = selectedCharacter;
+    oldCharacterNo = selectedCharacter.ordering;
+    originGrid = selectedCharacter.gridPosition;
+    originPos = selectedCharacter.transform.position;
+    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+    HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, usingAbility.range, usingAbility.ability.rangeType);
+    HighlightTargetInRange (usingAbility);
+    Destroy (chaSelector);
+    chaSelector = null;
+    chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
+    chaSelector.transform.SetParent (selectedCharacter.transform);
+
+    if (selectedCharacter.GetType () == typeof(PlayerCharacter)) 
+    {
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedCharacter.name);
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Text> ().text = "Name : " + selectedCharacter.name.ToString ();
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (2).GetComponent<Text> ().text = "HP : " + selectedCharacter.currentHP.ToString ();
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (3).GetComponent<Text> ().text = "Attack : " + selectedCharacter.characterStatus.attack.ToString ();
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (4).GetComponent<Text> ().text = "Defense : " + selectedCharacter.characterStatus.defense.ToString ();
+    }
+
+    SetUseAble ();
   }
 
   public void MoveCurrentCharacter(Tile desTile)
@@ -462,27 +596,47 @@ public class GameManager : MonoBehaviour
         {
           RemoveMapHighlight ();
           selectedCharacter.GetComponent<Animator> ().Play ("Test");
-          for (int i = 0; i < selectedCharacter.characterStatus.normalAttack.hitAmount; i++) 
+          foreach (Text text in allHpText) 
           {
-            int amountOfDamage = Mathf.Max (0, (int)Mathf.Floor (selectedCharacter.characterStatus.attack * selectedCharacter.characterStatus.normalAttack.power)) - target.characterStatus.defense;
-            if (amountOfDamage <= 0) amountOfDamage = 0;
-            target.currentHP -= amountOfDamage;
-            FloatingTextController (amountOfDamage, target.transform);
-            StartCoroutine (WaitDamageFloating ());
+            text.gameObject.SetActive (false);
           }
-          selectedCharacter.played = true;
-          NextTurn ();
+          if (usingAbility.ability.abilityType != "Support")
+          {
+            int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
+            if (amountOfDamage <= 0) amountOfDamage = 0;
+            showingResultOfAttack.UpdateStatus (selectedCharacter, target, amountOfDamage);
+            StartCoroutine (WaitDamageFloating (target, -amountOfDamage));
+          }
+          else
+          {
+            int healing = Mathf.Clamp (Mathf.FloorToInt (usingAbility.power), Mathf.FloorToInt (usingAbility.power), target.characterStatus.maxHp - target.currentHP);
+            showingResultOfAttack.UpdateStatus (selectedCharacter, target, healing);
+            StartCoroutine (WaitDamageFloating (target, healing));
+          }
         }
         break;
       }
     }
   }
 
-  private IEnumerator WaitDamageFloating()
+  private IEnumerator WaitDamageFloating(Character target, int amountOfResults)
   {
-    Animator anim = GameObject.Find ("PopupTextParent(Clone)").GetComponentInChildren<Animator> ();
-
-    yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo(0).length * anim.GetCurrentAnimatorStateInfo(0).speed);
+    int i = 0;
+    CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
+    while (i < usingAbility.hitAmount) 
+    {
+      target.currentHP += amountOfResults;
+      if(amountOfResults <= 0) FloatingTextController (amountOfResults*-1, target.transform);
+      else FloatingTextController (amountOfResults, target.transform);
+      i++;
+      yield return 0;
+    }
+    selectedCharacter.played = true;
+    if (target.currentHP <= 0) 
+    {
+      RemoveDead ();
+    }
+    NextTurn ();
   }
 
   public void NextTurn()
@@ -492,74 +646,72 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator WaitEndTurn()
   {
-    while (true)
+    while (true) 
     {
       Animator anim = selectedCharacter.GetComponent<Animator> ();
 
-      yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo(0).length * anim.GetCurrentAnimatorStateInfo(0).speed);
+      yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo (0).length * anim.GetCurrentAnimatorStateInfo (0).speed);
 
       break;
     }
-
-    while (character [currentCharacterIndex].played) 
-    {
-      int playAbleAmount = 0;
-      int playAbleCharacter = 0;
-      if (isPlayerTurn) 
-      {
-        playAbleAmount = character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).Count ();
-        if (character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).FirstOrDefault () != null)
-          playAbleCharacter = character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).FirstOrDefault ().ordering;
-      }
-      else
-      {
-        playAbleAmount = character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).Count ();
-        if (character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).FirstOrDefault () != null)
-          playAbleCharacter = character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).FirstOrDefault ().ordering;
-      }
       
-      if (playAbleAmount > 0) 
+    CameraManager.GetInstance ().ResetCamera ();
+    GameManager.GetInstance ().playerUI.transform.GetChild (0).gameObject.SetActive (true);
+    showingResultOfAttack.gameObject.SetActive (false);
+    foreach (Text text in allHpText) 
+    {
+      text.gameObject.SetActive (true);
+    }
+
+    int playAbleAmount = 0;
+    int playAbleCharacter = -1;
+    if (isPlayerTurn) 
+    {
+      playAbleAmount = character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).Count ();
+      if (character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).FirstOrDefault () != null)
+        playAbleCharacter = character.Where (x => x.GetType () == typeof(PlayerCharacter) && !x.played).FirstOrDefault ().ordering;
+    }
+    else
+    {
+      playAbleAmount = character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).Count ();
+      if (character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).FirstOrDefault () != null)
+        playAbleCharacter = character.Where (x => x.GetType () == typeof(AICharacter) && !x.played).FirstOrDefault ().ordering;
+    }
+      
+    if (playAbleAmount > 0) 
+    {
+      if (playAbleCharacter != -1) 
       {
-        if (playAbleCharacter != -1)
-          currentCharacterIndex = playAbleCharacter;
-        else
-          currentCharacterIndex++;
+        currentCharacterIndex = playAbleCharacter;
       }
+      else 
+      {
+        currentCharacterIndex++;
+      }
+    }
+    else
+    {
+      isPlayerTurn = !isPlayerTurn;
+      if (currentCharacterIndex >= character.Count - 1) 
+      {
+        foreach (Character c in character) 
+        {
+          c.played = false;
+        }
+        currentCharacterIndex = 0;
+        HitButton (false);
+      } 
       else
       {
-        isPlayerTurn = !isPlayerTurn;
-        if (currentCharacterIndex >= character.Count - 1) 
-        {
-          foreach (Character c in character) 
-          {
-            c.played = false;
-          }
-          RemoveDead ();
-          currentCharacterIndex = 0;
-        } 
-        else
-        {
-          currentCharacterIndex++;
-        }
+        currentCharacterIndex ++;
       }
-
-      ShowPlayerUI (isPlayerTurn);
     }
-    if (character [currentCharacterIndex] != null && character [currentCharacterIndex].currentHP > 0)
+    ShowPlayerUI (isPlayerTurn);
+
+    if (character [currentCharacterIndex] != null && character [currentCharacterIndex].currentHP > 0 && character[currentCharacterIndex].played == false)
     {
       selectedCharacter = character [currentCharacterIndex];
-      previousSelectedCharacter = selectedCharacter;
-      oldCharacterNo = selectedCharacter.ordering;
-      originGrid = selectedCharacter.gridPosition;
-      originPos = selectedCharacter.transform.position;
-      RemoveMapHighlight ();
-      HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-      HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, selectedCharacter.characterStatus.normalAttack.range, selectedCharacter.characterStatus.normalAttack.ability.rangeType);
-      HighlightTargetInRange ();
-      Destroy (chaSelector);
-      chaSelector = null;
-      chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
-      chaSelector.transform.SetParent (selectedCharacter.transform);
+      SelectedCharacter ();
       character [currentCharacterIndex].TurnUpdate ();
     } 
     else
@@ -586,7 +738,7 @@ public class GameManager : MonoBehaviour
     playerUI.SetActive (showing);
   }
 
-  public void HighlightTargetInRange()
+  public void HighlightTargetInRange(AbilityStatus usingAbility)
   {
     if (selectedCharacter.played) return;
 
@@ -598,29 +750,29 @@ public class GameManager : MonoBehaviour
 
     List<Tile> highlighted = new List<Tile> ();
 
-    foreach (Tile t in TileHighLight.FindHighLight(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z],selectedCharacter.characterStatus.movementPoint, character.Where (x => x.gridPosition != selectedCharacter.gridPosition).Select (x => x.gridPosition).ToArray ()))
+    foreach (Tile t in TileHighLight.FindHighLight(map[(int)originGrid.x][(int)originGrid.z],selectedCharacter.characterStatus.movementPoint, character.Where (x => x.gridPosition != selectedCharacter.gridPosition && x.ordering != selectedCharacter.ordering).Select (x => x.gridPosition).ToArray ()))
     {
-      if (selectedCharacter.characterStatus.normalAttack.ability.rangeType == "both")
+      if (usingAbility.ability.rangeType == "both")
       {
-        foreach (Tile a in TileHighLight.FindHighLight (t, selectedCharacter.characterStatus.normalAttack.range, true))
+        foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true))
         {
           highlighted.Add (a);
         }
-        foreach (Tile b in TileHighLight.FindHighLight (t, selectedCharacter.characterStatus.normalAttack.range, true, true)) 
+        foreach (Tile b in TileHighLight.FindHighLight (t, usingAbility.range, true, true)) 
         {
           highlighted.Add (b);
         }
       } 
-      else if (selectedCharacter.characterStatus.normalAttack.ability.rangeType == "plus")
+      else if (usingAbility.ability.rangeType == "plus")
       {
-        foreach (Tile a in TileHighLight.FindHighLight (t, selectedCharacter.characterStatus.normalAttack.range, true))
+        foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true))
         {
           highlighted.Add (a);
         }
       }
       else
       {
-        foreach (Tile a in TileHighLight.FindHighLight (t, selectedCharacter.characterStatus.normalAttack.range, true, true))
+        foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true, true))
         {
           highlighted.Add (a);
         }
@@ -640,13 +792,27 @@ public class GameManager : MonoBehaviour
 
       foreach (Character c in cha) 
       {
-        if (c != null && c.tag != selectedCharacter.tag) 
+        if (usingAbility.ability.abilityType != "Support") 
         {
-          inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
-          inRange.GetComponent<Renderer> ().material.color = Color.red;
-          inRange.transform.SetParent (c.transform);
+          if (c != null && c.tag != selectedCharacter.tag)
+          {
+            inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+            inRange.GetComponent<Renderer> ().material.color = Color.red;
+            inRange.transform.SetParent (c.transform);
 
-          targetInRange.Add (inRange);
+            targetInRange.Add (inRange);
+          }
+        }
+        else
+        {
+          if (c != null && c.tag == selectedCharacter.tag)
+          {
+            inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+            inRange.GetComponent<Renderer> ().material.color = Color.green;
+            inRange.transform.SetParent (c.transform);
+
+            targetInRange.Add (inRange);
+          }
         }
       }
     }
@@ -654,13 +820,67 @@ public class GameManager : MonoBehaviour
 
   public void RemoveDead()
   {
+    Result addResult = new Result ();
+
     for(int i = 0 ; i < character.Count ; i++) 
     {
-      if (character[i].currentHP <= 0 || character[i] == null) 
+      if (character[i].currentHP <= 0 && character[i].GetType() == typeof (AICharacter)) 
       {
+        addResult = GetDataFromSql.GetResult (character [i].characterStatus.basicStatus.ID);
+        Destroy (character [i].gameObject);
         character.Remove (character[i]);
         break;
       }
+    }
+      
+    for (int i = 0; i < addResult.droppedItem.Count; i++) 
+    {
+      TemporaryData.GetInstance ().result.droppedItem.Add (addResult.droppedItem [i]);
+    }
+    TemporaryData.GetInstance ().result.givenExp += addResult.givenExp;
+    TemporaryData.GetInstance ().result.givenGold += addResult.givenGold;
+
+    for(int i = 0 ; i < character.Count ; i++) 
+    {
+      character [i].ordering = i;
+    }
+  }
+
+  public void ShowResults()
+  {
+    results.SetActive (true);
+
+    results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
+    results.transform.GetChild (0).GetChild (2).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenGold.ToString();
+
+    List<CharacterStatus> party = TemporaryData.GetInstance ().playerData.characters.Where (x => x.isInParty).ToList ();
+
+    for (int i = 0; i < party.Count; i++) 
+    {
+      GameObject characterInParty = Instantiate (Resources.Load<GameObject> ("ResultCharacter"));
+      characterInParty.transform.SetParent (results.transform.GetChild (0).GetChild (3));
+      characterInParty.transform.localScale = new Vector3 (1, 1, 1);
+      party [i].experience += TemporaryData.GetInstance ().result.givenExp;
+    }
+
+    for (int i = 0; i < TemporaryData.GetInstance ().result.droppedItem.Count; i++) 
+    {
+      Item addedItem = new Item ();
+      addedItem.item = TemporaryData.GetInstance ().result.droppedItem [i];
+      addedItem.equiped = false;
+      addedItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count;
+      GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
+      itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4));
+      itemObj.transform.localScale = new Vector3 (1, 1, 1);
+      TemporaryData.GetInstance ().playerData.inventory.Add (addedItem);
+    }
+    TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;
+
+    TemporaryData.GetInstance ().result = new Result ();
+
+    if (Input.GetMouseButtonDown (0))
+    {
+      
     }
   }
 
@@ -675,15 +895,40 @@ public class GameManager : MonoBehaviour
     instance.SetText (value);
   }
 
+  public void CharacterInMapInfo(Character target)
+  {
+    Vector2 screenPosition = Camera.main.WorldToScreenPoint (target.transform.position);
+    GameObject hpText = Instantiate (Resources.Load<GameObject> ("GamePlay/HpText"));
+    allHpText.Add (hpText.GetComponent<Text> ());
+    hpText.transform.SetParent(GameObject.Find ("Canvas").transform,false);
+    hpText.transform.position = new Vector2(screenPosition.x - 9f,screenPosition.y - 15f);
+    hpText.GetComponent<UpdateCharacterInfo> ().UpdateInfo (target);
+  }
+
   public void Auto()
   {
-    if (character.Where (x => x.GetType () == typeof(PlayerCharacter) && x.isAI).Count () <= 0)
+    if(character.Where(x=>x.GetType() == typeof (PlayerCharacter) && x.isAI).Count() > 0) 
     {
       foreach (Character c in character)
       {
-        c.isAI = true;
-        ShowPlayerUI (false);
+        if(c.GetType() == typeof (PlayerCharacter))
+        {
+          c.isAI = false;
+        }
       }
+    }
+
+    else
+    {
+      foreach (Character c in character)
+      {
+        if(c.GetType() == typeof (PlayerCharacter))
+        {
+          c.isAI = true;
+          ShowPlayerUI (false);
+        }
+      }
+
       RemoveMapHighlight ();
 
       if (previousSelectedCharacter != null) 
@@ -691,36 +936,9 @@ public class GameManager : MonoBehaviour
         previousSelectedCharacter.transform.position = originPos;
         previousSelectedCharacter.gridPosition = originGrid;
       }
-
-      if (currentCharacterIndex + 1 < character.Where(x=> x.GetType() == typeof(PlayerCharacter)).Count())
-      {
-        if (!character [0].played) 
-        {
-          currentCharacterIndex = 0;
-        }
-        else
-        {
-          currentCharacterIndex ++;
-        } 
-      } 
-      else
-      {
-        foreach (Character c in character) 
-        {
-          c.played = false;
-        }
-        currentCharacterIndex = 0;
-      }
-
-      character [currentCharacterIndex].TurnUpdate ();
+        
+      character.Where(x=>x.GetType() == typeof (PlayerCharacter) && x.played == false).First().TurnUpdate ();
     }
-
-    else
-    {
-      foreach (Character c in character.Where(x=>x.GetType() == typeof(PlayerCharacter)).ToList())
-      {
-        c.isAI = false;
-      }
-    }
+    
   }
 }

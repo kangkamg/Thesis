@@ -75,7 +75,7 @@ public class TileHighLight : MonoBehaviour
         }
       }
     }
-    closed.Remove (originTile);
+    if (staticRange) closed.Remove (originTile);
     closed.Distinct ();
     return closed;
   }

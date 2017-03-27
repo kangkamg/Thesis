@@ -57,12 +57,14 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       GameObject skillObj = Instantiate(CharacterStatusSceneManager.GetInstance ().skillObj);
       skillObj.transform.SetParent (skill);
       skillObj.GetComponent<SkillStatusManager> ().ability = TemporaryData.GetInstance ().selectedCharacter.normalAttack;
+      skillObj.transform.localScale = new Vector3 (1, 1, 1);
     }
     if (TemporaryData.GetInstance ().selectedCharacter.specialAttack!=null)
     {
       GameObject skillObj = Instantiate(CharacterStatusSceneManager.GetInstance ().skillObj);
       skillObj.transform.SetParent (skill);
       skillObj.GetComponent<SkillStatusManager> ().ability = TemporaryData.GetInstance ().selectedCharacter.specialAttack;
+      skillObj.transform.localScale = new Vector3 (1, 1, 1);
     }
   }
 

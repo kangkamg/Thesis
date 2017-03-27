@@ -5,11 +5,6 @@ using System.Linq;
 
 public class PlayerCharacter : Character 
 {
-  public override void Awake()
-  {
-    base.Awake ();
-  }
-	
   public override void Update()
   {
     if (positionQueue.Count > 0)
@@ -26,9 +21,13 @@ public class PlayerCharacter : Character
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();
-              GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile,characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
+              if(GameManager.GetInstance().usingAbility.ability.abilityType == "Support")
+                GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().HealingTile, GameManager.GetInstance ().usingAbility.range, GameManager.GetInstance ().usingAbility.ability.rangeType);
+              else 
+                GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile,GameManager.GetInstance().usingAbility.range, GameManager.GetInstance().usingAbility.ability.rangeType);
 
               GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)target.gridPosition.x] [(int)target.gridPosition.z]);
+
               target = null;
             } 
             else 
@@ -37,8 +36,14 @@ public class PlayerCharacter : Character
               {
                 played = true;
                 GameManager.GetInstance ().NextTurn ();
+              } 
+              else 
+              {
+                if(GameManager.GetInstance().usingAbility.ability.abilityType == "Support")
+                  GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().HealingTile, GameManager.GetInstance ().usingAbility.range, GameManager.GetInstance ().usingAbility.ability.rangeType);
+                else 
+                  GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile,GameManager.GetInstance().usingAbility.range, GameManager.GetInstance().usingAbility.ability.rangeType);
               }
-              else GameManager.GetInstance().HighlightTileAt(gridPosition, PrefabHolder.GetInstance().AttackTile, characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
             }
           }
         }
@@ -128,19 +133,17 @@ public class PlayerCharacter : Character
         GameManager.GetInstance ().RemoveMapHighlight ();
         GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().MovementTile, characterStatus.movementPoint);
 
-        GameManager.GetInstance ().MoveCurrentCharacter (GameManager.GetInstance().CheckingMovementToAttackTarget(opponent.transform));
+        if (GameManager.GetInstance ().CheckingMovementToAttackTarget (opponent.transform).gridPosition != gridPosition)
+        {
+          GameManager.GetInstance ().MoveCurrentCharacter (GameManager.GetInstance ().CheckingMovementToAttackTarget (opponent.transform));
+        }
+        else 
+        {
+          GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
+          GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)opponent.gridPosition.x] [(int)opponent.gridPosition.z]);
+        }
 
         target = opponent;
-      } 
-      else if (attackTilesInRange.Where (x => GameManager.GetInstance().character.Where(z=> z.GetType() != typeof(PlayerCharacter) && z.currentHP > 0 && z != this && z.gridPosition == x.gridPosition).Count () > 0).Count () > 0)
-      {
-        var opponentsInRange = attackTilesInRange.Select (x => GameManager.GetInstance ().character.Where (z => z.GetType () != typeof(PlayerCharacter) && z.currentHP > 0 && z != this && z.gridPosition == x.gridPosition).Count () > 0 ? GameManager.GetInstance ().character.Where (z => z.gridPosition == x.gridPosition).First () : null).ToList ();
-        Character opponent = opponentsInRange.OrderBy (x => x != null ? -x.currentHP : 1000).First ();
-
-        GameManager.GetInstance ().RemoveMapHighlight ();
-        GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
-
-        GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)opponent.gridPosition.x] [(int)opponent.gridPosition.z]);
       }
       else if (movementTilesInRange.Where (x => GameManager.GetInstance ().character.Where (z => z.GetType () != typeof(PlayerCharacter) && z.currentHP > 0 && z.gridPosition == x.gridPosition).Count () > 0).Count () > 0) 
       {

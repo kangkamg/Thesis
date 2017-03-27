@@ -37,6 +37,7 @@ public class InventoryManager : MonoBehaviour
             if (slots [j].GetComponent<ItemData>().items.item.ID == TemporaryData.GetInstance().playerData.inventory[i].item.ID) 
             {
               items.Add (TemporaryData.GetInstance().playerData.inventory[i]);
+              items [items.Count - 1].ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
               ItemData data = slots [j].GetComponent<ItemData> ();
               data.amount++;
               data.transform.GetChild (2).GetComponent<Text> ().text = data.amount.ToString ();
@@ -56,9 +57,9 @@ public class InventoryManager : MonoBehaviour
           if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
           else sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[0].item.name);
 
+          itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
           slots.Add (itemObj);
-
           itemObj.GetComponent<ItemData> ().amount = 1;
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
         }

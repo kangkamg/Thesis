@@ -88,6 +88,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     CharacterStatusSceneManager.GetInstance ().mainPage.SetActive (false);
 
     CharacterStatusSceneManager.GetInstance ().equipmentPage.GetComponent<ChangeEquipmentManager>().ChangingItem (selectedItem);
+    CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).gameObject.SetActive (false);
   }
 
   private void GoToEquipmentPage(string itemtype1)
@@ -97,5 +98,6 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     CharacterStatusSceneManager.GetInstance ().mainPage.SetActive (false);
 
     CharacterStatusSceneManager.GetInstance ().equipmentPage.GetComponent<ChangeEquipmentManager>().ChangingItem (itemtype1);
+    CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).gameObject.SetActive (false);
   }
 }

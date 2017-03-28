@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
 
   private void Update()
   {
-    if (Input.GetMouseButtonDown(0) && !hitButton && isPlayerTurn/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+    if (/*Input.GetMouseButtonDown(0) && */!hitButton && isPlayerTurn && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     {
       Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition/*Input.GetTouch(0).position*/);
 
@@ -631,6 +631,14 @@ public class GameManager : MonoBehaviour
       i++;
       yield return 0;
     }
+    if (selectedCharacter.characterStatus.equipItem.Where (x => x.item.ID == usingAbility.ability.ID).Count() > 0)
+    {
+      Item removeItem = selectedCharacter.characterStatus.equipItem.Where (x => x.item.ID == usingAbility.ability.ID).First ();
+      selectedCharacter.characterStatus.equipItem.Remove (removeItem);
+      TemporaryData.GetInstance ().playerData.inventory.Remove (TemporaryData.GetInstance ().playerData.inventory.Where (x => x.ordering == removeItem.ordering).First());
+      TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == selectedCharacter.characterStatus.partyOrdering).First ().equipItem.Remove (removeItem);
+    }
+
     selectedCharacter.played = true;
     if (target.currentHP <= 0) 
     {

@@ -195,17 +195,3 @@ public class CharacterStatus
     private set{ }
   }
 }
-
-public class CharacterData
-{
-  public int id;
-
-  public CharacterStatus status;
-
-  private Vector2 originPos;
-  private Vector2 offset;
-  private Transform originParent;
-
-  public CanvasGroup canvasGroup;
-}
-

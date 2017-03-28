@@ -70,8 +70,8 @@ public class CharacterStatusSceneManager : MonoBehaviour
         otherCharacters.Add (TemporaryData.GetInstance ().playerData.characters [i]);
         GameObject otherObj = Instantiate (otherCharacter);
         otherObj.transform.SetParent (otherCharacterPanel.transform);
-        otherObj.GetComponentInChildren<OtherCharacterData> ().characterData.status = TemporaryData.GetInstance ().playerData.characters [i];
-        otherObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(otherObj.GetComponentInChildren<OtherCharacterData>().characterData.status));
+        otherObj.GetComponentInChildren<OtherCharacterData> ().characterStatus = TemporaryData.GetInstance ().playerData.characters [i];
+        otherObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(otherObj.GetComponentInChildren<OtherCharacterData>().characterStatus));
         otherObj.transform.localScale = new Vector3 (1, 1, 1);
 
         slotsOtherCharacter.Add (otherObj);
@@ -86,8 +86,8 @@ public class CharacterStatusSceneManager : MonoBehaviour
     {
       GameObject partyObj = Instantiate (partyCharacter);
       partyObj.transform.SetParent (partyPanel.transform);
-      partyObj.GetComponent<PartyCharacterData> ().characterData.status = party [i];
-      partyObj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(()=>LookStatus(partyObj.GetComponent<PartyCharacterData>().characterData.status));
+      partyObj.GetComponent<PartyCharacterData> ().characterStatus = party [i];
+      partyObj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(()=>LookStatus(partyObj.GetComponent<PartyCharacterData>().characterStatus));
       partyObj.transform.localScale = new Vector3 (1, 1, 1);
 
       slotsParty.Add (partyObj);

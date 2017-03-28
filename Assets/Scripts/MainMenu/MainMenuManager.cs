@@ -15,6 +15,15 @@ public class MainMenuManager : MonoBehaviour
   public Button showMenuBT;
   public bool menuOn = false;
 
+  public void Start()
+  {
+    playerMenu.SetActive (false);
+    dungeonMenu.SetActive (false);
+    townMenu.SetActive (false);
+    bgMenu.SetActive (false);
+    optionMenu.SetActive (false);
+    menuOn = false;
+  }
   public void ShowMenu()
   {
     if (menuOn) 

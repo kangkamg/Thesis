@@ -17,11 +17,44 @@ public class ChangeEquipmentManager : MonoBehaviour
   public void TryingItem(ItemData equipedItem)
   {
     itemPic.sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+
     equipmentStatus[0].text = equipedItem.items.item.name.ToString();
-    equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp + equipedItem.items.item.increaseHP).ToString();
-    equipmentStatus[2].text = (TemporaryData.GetInstance ().selectedCharacter.basicAttack + equipedItem.items.item.increaseAttack).ToString();
-    equipmentStatus[3].text = (TemporaryData.GetInstance ().selectedCharacter.basicDefense + equipedItem.items.item.increaseDefense).ToString();
-    equipmentStatus[4].text = (TemporaryData.GetInstance ().selectedCharacter.basicCriRate + equipedItem.items.item.increaseCriRate).ToString();
+
+    if (equipedItem.items.item.itemType1 != "Items")
+    {
+      if (equipedItem.items.item.increaseHP > 0)
+      {
+        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp + equipedItem.items.item.increaseHP).ToString ();
+      } 
+      else 
+      {
+        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseHP).ToString ();
+      }
+      if (equipedItem.items.item.increaseAttack > 0)
+      {
+        equipmentStatus [2].text = (TemporaryData.GetInstance ().selectedCharacter.basicAttack + equipedItem.items.item.increaseAttack).ToString ();
+      } 
+      else
+      {
+        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseAttack).ToString ();
+      }
+      if (equipedItem.items.item.increaseDefense > 0) 
+      {
+        equipmentStatus [3].text = (TemporaryData.GetInstance ().selectedCharacter.basicDefense + equipedItem.items.item.increaseDefense).ToString ();
+      } 
+      else 
+      {
+        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseDefense).ToString ();
+      }
+      if (equipedItem.items.item.increaseCriRate > 0) 
+      {
+        equipmentStatus [4].text = (TemporaryData.GetInstance ().selectedCharacter.basicCriRate + equipedItem.items.item.increaseCriRate).ToString ();
+      } 
+      else 
+      {
+        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseCriRate).ToString ();
+      }
+    }
 
     if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Count != 0)
     {
@@ -218,6 +251,8 @@ public class ChangeEquipmentManager : MonoBehaviour
           itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
           itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
+
+          itemObj.transform.localScale = new Vector3 (1, 1, 1);
         }
       }
     }

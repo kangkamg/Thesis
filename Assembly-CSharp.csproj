@@ -48,13 +48,6 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Ability\Ability.cs" />
      <Compile Include="Assets\Scripts\CameraManager.cs" />
-     <Compile Include="Assets\Scripts\Character\AICharacter.cs" />
-     <Compile Include="Assets\Scripts\Character\ChangeCharacterParty.cs" />
-     <Compile Include="Assets\Scripts\Character\Character.cs" />
-     <Compile Include="Assets\Scripts\Character\CharacterStatus.cs" />
-     <Compile Include="Assets\Scripts\Character\OtherCharacterData.cs" />
-     <Compile Include="Assets\Scripts\Character\PartyCharacterData.cs" />
-     <Compile Include="Assets\Scripts\Character\PlayerCharacter.cs" />
      <Compile Include="Assets\Scripts\Const.cs" />
      <Compile Include="Assets\Scripts\GamePlay\FloatingText.cs" />
      <Compile Include="Assets\Scripts\GamePlay\GameManager.cs" />
@@ -74,6 +67,13 @@
      <Compile Include="Assets\Scripts\MapCreator\TileTypes.cs" />
      <Compile Include="Assets\Scripts\Misc.cs" />
      <Compile Include="Assets\Scripts\Player\ChangeEquipmentManager.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\AICharacter.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\ChangeCharacterParty.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\Character.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\CharacterStatus.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\OtherCharacterData.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\PartyCharacterData.cs" />
+     <Compile Include="Assets\Scripts\Player\Character\PlayerCharacter.cs" />
      <Compile Include="Assets\Scripts\Player\CharacterStatusSceneManager.cs" />
      <Compile Include="Assets\Scripts\Player\EquipItem.cs" />
      <Compile Include="Assets\Scripts\Player\PartySceneManager.cs" />

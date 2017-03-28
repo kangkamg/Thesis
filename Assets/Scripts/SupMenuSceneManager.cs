@@ -9,7 +9,6 @@ public class SupMenuSceneManager : MonoBehaviour
   public GameObject allCharacterStatus;
   public GameObject changingEquip;
   public GameObject party;
-  public GameObject changingParty;
   public GameObject item;
   public GameObject quest;
 
@@ -21,7 +20,6 @@ public class SupMenuSceneManager : MonoBehaviour
       selectedCharacterStatus.SetActive (false);
       changingEquip.SetActive (false);
       party.SetActive (false);
-      changingParty.SetActive (false);
       item.SetActive (false);
       quest.SetActive (false);
     }
@@ -31,7 +29,6 @@ public class SupMenuSceneManager : MonoBehaviour
       selectedCharacterStatus.SetActive (false);
       changingEquip.SetActive (false);
       party.SetActive (true);
-      changingParty.SetActive (false);
       item.SetActive (false);
       quest.SetActive (false);
     }
@@ -41,7 +38,6 @@ public class SupMenuSceneManager : MonoBehaviour
       selectedCharacterStatus.SetActive (false);
       changingEquip.SetActive (false);
       party.SetActive (false);
-      changingParty.SetActive (false);
       item.SetActive (true);
       quest.SetActive (false);
     }
@@ -51,7 +47,6 @@ public class SupMenuSceneManager : MonoBehaviour
       selectedCharacterStatus.SetActive (false);
       changingEquip.SetActive (false);
       party.SetActive (false);
-      changingParty.SetActive (false);
       item.SetActive (false);
       quest.SetActive (true);
     }
@@ -85,15 +80,7 @@ public class SupMenuSceneManager : MonoBehaviour
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Party") 
     {
-      if (changingParty.activeSelf)
-      {
-        party.SetActive (true);
-        changingParty.SetActive (false);
-      }
-      else
-      {
-        SceneManager.LoadScene ("MainMenuScene");
-      }
+      SceneManager.LoadScene ("MainMenuScene");
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Item") 
     {
@@ -109,11 +96,5 @@ public class SupMenuSceneManager : MonoBehaviour
   {
     selectedCharacterStatus.SetActive (false);
     changingEquip.SetActive (true);
-  }
-    
-  public void ChangingParty()
-  {
-    party.SetActive (false);
-    changingParty.SetActive (true);
   }
 }

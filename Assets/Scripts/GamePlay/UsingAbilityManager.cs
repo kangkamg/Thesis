@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
 public class UsingAbilityManager : MonoBehaviour 
 
@@ -13,9 +14,9 @@ public class UsingAbilityManager : MonoBehaviour
     identity = int.Parse(this.name.Split (" " [0]) [1]);
     
     if (identity == 0)
-      SetSpecialAttack ();
+      this.GetComponent<Button>().onClick.AddListener(()=>SetSpecialAttack ());
     else
-      SetUsingItems ();
+      this.GetComponent<Button>().onClick.AddListener(()=>SetUsingItems ());
   }
   
   public void SetSpecialAttack ()

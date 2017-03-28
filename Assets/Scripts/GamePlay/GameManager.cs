@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour 
 {
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
   {
     if (Input.GetMouseButtonDown(0) && !hitButton && isPlayerTurn /*&& Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
-      Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition/*Input.GetTouch(0).position*/);
+      Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 
       RaycastHit hit;
       if (Physics.Raycast (ray, out hit, 1000f)) 
@@ -187,11 +188,6 @@ public class GameManager : MonoBehaviour
           }
         }
       }
-    }
-
-    if (character.Where (x => x.GetType () == typeof(AICharacter)).Count() <= 0 && !results.activeSelf) 
-    {
-      ShowResults ();
     }
   }
 
@@ -572,6 +568,7 @@ public class GameManager : MonoBehaviour
             int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
             if (amountOfDamage <= 0) amountOfDamage = 0;
             showingResultOfAttack.UpdateStatus (selectedCharacter, target, amountOfDamage);
+            if (usingAbility.ability.gaugeUse > 0) FinishingGaugeManager.GetInstance ().ChangeSliderValue (-usingAbility.ability.gaugeUse);
             StartCoroutine (WaitDamageFloating (target, -amountOfDamage));
           }
           else
@@ -825,10 +822,24 @@ public class GameManager : MonoBehaviour
     {
       character [i].ordering = i;
     }
+    
+    if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() <= 0) StartCoroutine (ShowResults ());
   }
 
-  public void ShowResults()
+  public IEnumerator ShowResults()
   {
+    while (true)
+    {
+      yield return new WaitForSeconds (2f);
+      break;
+    }
+    
+    foreach (Text t in allHpText)
+    {
+      Destroy (t.gameObject);
+    }
+    allHpText.Clear ();
+    
     results.SetActive (true);
 
     results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
@@ -840,6 +851,7 @@ public class GameManager : MonoBehaviour
     {
       GameObject characterInParty = Instantiate (Resources.Load<GameObject> ("ResultCharacter"));
       characterInParty.transform.SetParent (results.transform.GetChild (0).GetChild (3));
+      characterInParty.GetComponent<Image>().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + party[i].basicStatus.characterName);
       characterInParty.transform.localScale = new Vector3 (1, 1, 1);
       party [i].experience += TemporaryData.GetInstance ().result.givenExp;
     }
@@ -853,15 +865,21 @@ public class GameManager : MonoBehaviour
       GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
       itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4));
       itemObj.transform.localScale = new Vector3 (1, 1, 1);
+      itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
+      itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString();
       TemporaryData.GetInstance ().playerData.inventory.Add (addedItem);
     }
     TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;
 
     TemporaryData.GetInstance ().result = new Result ();
 
-    if (Input.GetMouseButtonDown (0))
+    while (true) 
     {
-      
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+      {
+        SceneManager.LoadScene ("MainMenuScene");
+        break;
+      }
     }
   }
 

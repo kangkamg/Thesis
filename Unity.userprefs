@@ -2,19 +2,20 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GamePlay\GameManager.cs">
     <Files>
-      <File FileName="Assets\Scripts\StartSceneManager.cs" Line="248" Column="11" />
-      <File FileName="Assets\Scripts\Item\InventoryManager.cs" Line="28" Column="62" />
-      <File FileName="Assets\Scripts\Item\ItemManager.cs" Line="54" Column="77" />
+      <File FileName="Assets\Scripts\StartSceneManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Item\InventoryManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Item\ItemManager.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Player\ChangeEquipmentManager.cs" Line="217" Column="44" />
-      <File FileName="Assets\Scripts\Player\EquipItem.cs" Line="20" Column="34" />
-      <File FileName="Assets\Scripts\Player\PartySceneManager.cs" Line="153" Column="5" />
+      <File FileName="Assets\Scripts\Player\EquipItem.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Player\PartySceneManager.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\Player\CharacterStatusSceneManager.cs" Line="72" Column="84" />
-      <File FileName="Assets\Scripts\Player\Character\AllCharacterData.cs" Line="6" Column="30" />
-      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="292" Column="47" />
-      <File FileName="Assets\Scripts\GamePlay\UsingAbilityManager.cs" Line="43" Column="31" />
-      <File FileName="Assets\Scripts\GamePlay\FinishingGaugeManager.cs" Line="31" Column="15" />
+      <File FileName="Assets\Scripts\Player\Character\AllCharacterData.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="860" Column="6" />
+      <File FileName="Assets\Scripts\GamePlay\UsingAbilityManager.cs" Line="19" Column="76" />
+      <File FileName="Assets\Scripts\GamePlay\FinishingGaugeManager.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\SaveAndGetData\GetDataFromSql.cs" Line="93" Column="54" />
       <File FileName="Assets\Scripts\GamePlay\UpdateCharacterInfo.cs" Line="27" Column="88" />
+      <File FileName="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs" Line="15" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

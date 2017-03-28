@@ -214,6 +214,7 @@ public class ChangeEquipmentManager : MonoBehaviour
     }
     slots.Clear ();
     items.Clear ();
+    Destroy(GameObject.Find("selectedArrow"));
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {

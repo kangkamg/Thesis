@@ -25,6 +25,7 @@ public class InventoryManager : MonoBehaviour
     }
     slots.Clear ();
     items.Clear ();
+    this.transform.GetChild (2).gameObject.SetActive (false);
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {
@@ -62,13 +63,15 @@ public class InventoryManager : MonoBehaviour
           slots.Add (itemObj);
           itemObj.GetComponent<ItemData> ().amount = 1;
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
+          itemObj.transform.localScale = Vector3.one;
+          itemObj.GetComponent<Button> ().onClick.AddListener (() => ShowingItemInformation (itemObj.GetComponent<ItemData> ().items));
         }
       }
     }
 
     if (slots.Count > 6)
     {
-      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (slots.Count - 1));
+      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 120 * (slots.Count - 1));
       slotPanel.transform.localPosition = slotPanel.GetComponent<RectTransform> ().sizeDelta / -(slots.Count - 2);
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
@@ -102,5 +105,13 @@ public class InventoryManager : MonoBehaviour
       }
     }
     return false;
+  }
+  
+  private void ShowingItemInformation(Item itemStatus)
+  {
+    this.transform.GetChild (2).gameObject.SetActive (true);
+    this.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Text> ().text = "HP : " + itemStatus.item.increaseHP.ToString () +
+      "\t\tATK : " + itemStatus.item.increaseAttack.ToString () + "\nDEF : " + itemStatus.item.increaseDefense.ToString ()
+      + "\t\tCRI.R : " + itemStatus.item.increaseCriRate.ToString ();
   }
 }

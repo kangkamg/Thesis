@@ -51,7 +51,7 @@ public class ItemManager : MonoBehaviour
 
     if (allItem.Count > 6)
     {
-      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (allItem.Count - 1));
+      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 120 * (allItem.Count - 1));
       showing.transform.localPosition = showing.GetComponent<RectTransform> ().sizeDelta / -(allItem.Count - 2);
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 

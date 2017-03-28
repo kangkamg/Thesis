@@ -15,15 +15,15 @@ public class UpdateCharacterInfo : MonoBehaviour
 
   public void Update()
   {
-    UpdateInfo ();
+    UpdateInfoPos ();
   }
 
-  public void UpdateInfo()
+  public void UpdateInfoPos()
   {
-    Vector2 screenPosition = Camera.main.WorldToScreenPoint (characterStatus.transform.position);
+      Vector2 screenPosition = Camera.main.WorldToScreenPoint (characterStatus.transform.position);
 
-    this.GetComponent<Text> ().text = characterStatus.currentHP.ToString();
+      this.GetComponent<Text> ().text = characterStatus.currentHP.ToString ();
 
-    transform.position = new Vector2 (screenPosition.x - 9f, screenPosition.y - 15f);
+      transform.position = new Vector2 (screenPosition.x - 9f, screenPosition.y - 15f);
   }
 }

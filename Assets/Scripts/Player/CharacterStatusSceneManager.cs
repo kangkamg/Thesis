@@ -5,10 +5,8 @@ using UnityEngine.UI;
 
 public class CharacterStatusSceneManager : MonoBehaviour
 {
-  public GameObject otherCharacterPanel;
-  public GameObject partyPanel;
-  public GameObject partyCharacter;
-  public GameObject otherCharacter;
+  public GameObject characterPanel;
+  public GameObject characterInTeams;
   public GameObject changingItemObj;
   public GameObject skillObj;
   public GameObject selectEquipmentArrow;
@@ -20,10 +18,8 @@ public class CharacterStatusSceneManager : MonoBehaviour
   public GameObject statusPage;
   public GameObject equipmentPage;
 
-  public List<CharacterStatus> party = new List<CharacterStatus> ();
-  public List<CharacterStatus> otherCharacters = new List<CharacterStatus> ();
-  public List<GameObject> slotsParty = new List<GameObject> ();
-  public List<GameObject> slotsOtherCharacter = new List<GameObject> ();
+  public List<CharacterStatus> allCharacters = new List<CharacterStatus> ();
+  public List<GameObject> allCharacterSlots = new List<GameObject> ();
 
   public int selectedCharacter;
 
@@ -46,62 +42,52 @@ public class CharacterStatusSceneManager : MonoBehaviour
 
   public void GenerateCharacter()
   {
-    foreach (GameObject a in slotsParty)
+    foreach (GameObject a in allCharacterSlots)
     {
       Destroy (a);
     }
-    foreach (GameObject a in slotsOtherCharacter)
-    {
-      Destroy (a);
-    }
-    slotsParty.Clear ();
-    slotsOtherCharacter.Clear ();
-    party.Clear ();
-    otherCharacters.Clear ();
+    allCharacters.Clear ();
+    allCharacterSlots.Clear ();
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.characters.Count; i++)
     {
-      if (TemporaryData.GetInstance ().playerData.characters [i].isInParty) 
-      {
-        party.Add (TemporaryData.GetInstance ().playerData.characters [i]);
-      }
-      else
-      {
-        otherCharacters.Add (TemporaryData.GetInstance ().playerData.characters [i]);
-        GameObject otherObj = Instantiate (otherCharacter);
-        otherObj.transform.SetParent (otherCharacterPanel.transform);
-        otherObj.GetComponentInChildren<OtherCharacterData> ().characterStatus = TemporaryData.GetInstance ().playerData.characters [i];
-        otherObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(otherObj.GetComponentInChildren<OtherCharacterData>().characterStatus));
-        otherObj.transform.localScale = new Vector3 (1, 1, 1);
+      allCharacters.Add (TemporaryData.GetInstance ().playerData.characters [i]);
+      GameObject characterObj = Instantiate (characterInTeams);
+      characterObj.transform.SetParent (characterPanel.transform);
+      characterObj.GetComponentInChildren<AllCharacterData> ().characterStatus = TemporaryData.GetInstance ().playerData.characters [i];
+      characterObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(characterObj.GetComponentInChildren<AllCharacterData>().characterStatus));
+      characterObj.transform.localScale = Vector3.one;
+      characterObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + characterObj.GetComponentInChildren<AllCharacterData> ().characterStatus.basicStatus.characterName);
 
-        slotsOtherCharacter.Add (otherObj);
-      }
-    }
-    party.Sort (delegate(CharacterStatus a, CharacterStatus b) 
-      {
-        return (a.partyOrdering.CompareTo(b.partyOrdering));
-      });
-    
-    for (int i = 0; i < party.Count; i++) 
-    {
-      GameObject partyObj = Instantiate (partyCharacter);
-      partyObj.transform.SetParent (partyPanel.transform);
-      partyObj.GetComponent<PartyCharacterData> ().characterStatus = party [i];
-      partyObj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(()=>LookStatus(partyObj.GetComponent<PartyCharacterData>().characterStatus));
-      partyObj.transform.localScale = new Vector3 (1, 1, 1);
-
-      slotsParty.Add (partyObj);
+      allCharacterSlots.Add (characterObj);
     }
   }
 
   public void LookStatus(CharacterStatus selectedStatus)
   {
-    TemporaryData.GetInstance ().selectedCharacter = selectedStatus;
+    if (selectedStatus != TemporaryData.GetInstance ().selectedCharacter)
+    {
+      TemporaryData.GetInstance ().selectedCharacter = selectedStatus;
+      this.transform.GetChild (0).gameObject.SetActive (true);
+      Transform selectedCharacterStatus = this.transform.GetChild (0).GetChild (0);
 
-    mainPage.SetActive (false);
-    equipmentPage.SetActive (false);
-    statusPage.SetActive (true);
+      selectedCharacterStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
+      selectedCharacterStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
+      selectedCharacterStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString ();
+      selectedCharacterStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString ();
+      selectedCharacterStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString ();
+      selectedCharacterStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString ();
+      selectedCharacterStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString ();
+    } 
+    else 
+    {
+      this.transform.GetChild (0).gameObject.SetActive (false);
+      
+      mainPage.SetActive (false);
+      equipmentPage.SetActive (false);
+      statusPage.SetActive (true);
 
-    statusPage.GetComponent<ShowingCharacterStatusManager> ().UpdateStatus ();
+      statusPage.GetComponent<ShowingCharacterStatusManager> ().UpdateStatus ();
+    }
   }
 }

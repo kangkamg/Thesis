@@ -226,7 +226,7 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-    if(/*Input.GetMouseButtonDown(0)*/ Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    if(Input.GetMouseButtonDown(0) /*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       if (!bookOpen) 
       {
@@ -234,18 +234,18 @@ public class StartSceneManager : MonoBehaviour
       } 
       else
       {
-        if (PlayerPrefs.GetInt (Const.NewGame, 1) == 1)
+        /*if (PlayerPrefs.GetInt (Const.NewGame, 1) == 1)
         {
           InitFirstData ();
           PlayerPrefs.SetInt (Const.MapNo, 1);
           SceneManager.LoadScene ("GamePlayScene");
-          //SceneManager.LoadScene ("StoryScene");
+          SceneManager.LoadScene ("StoryScene");
         }
-       /* else
-        {
+        else
+        {*/
           InitFirstData ();
           SceneManager.LoadScene ("MainMenuScene");
-        } */
+        //}
       }
     }
   }

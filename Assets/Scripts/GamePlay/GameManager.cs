@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
 
   public bool hitButton = false;
 
-  private int usingWhat = -1;
+  public int usingWhat = -1;
   public AbilityStatus usingAbility;
 
   private void Awake()
@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
 
   private void Update()
   {
-    if (/*Input.GetMouseButtonDown(0) && */!hitButton && isPlayerTurn && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    if (Input.GetMouseButtonDown(0) && !hitButton && isPlayerTurn /*&& Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition/*Input.GetTouch(0).position*/);
 
@@ -273,7 +273,6 @@ public class GameManager : MonoBehaviour
       player.gridPosition = startPlayer[i].gridPosition;
       character.Add (player);
       player.ordering = character.Count - 1;
-      CharacterInMapInfo (player);
     }
 
     foreach (Tile a in startEnemy) 
@@ -291,8 +290,9 @@ public class GameManager : MonoBehaviour
       aiPlayer.gridPosition = a.gridPosition;
       character.Add (aiPlayer);
       aiPlayer.ordering = character.Count - 1;
-      CharacterInMapInfo (aiPlayer);
     }
+    
+    GenerateHpTextInfo ();
   }
 
   public void SetUseAble()
@@ -308,65 +308,36 @@ public class GameManager : MonoBehaviour
     {
       for (int i = 0; i < 2; i++) 
       {
-        GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/Using"));
+        GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UseAbleAbility"));
         abilityObj.transform.SetParent (showing);
         abilityObj.transform.localScale = Vector3.one;
-        abilityObj.name = "useAble" + i;
-        abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/NoAttack");
+        abilityObj.name = "useAble " + i;
+        abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/NoAbilityTest");
         abilityObj.GetComponent<Button> ().interactable = false;
         useAble.Add (abilityObj.transform);
       }
 
       if (selectedCharacter.characterStatus.specialAttack.ability != null) 
       {
-        useAble [0].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/" + selectedCharacter.characterStatus.specialAttack.ability.abilityName);
-        useAble [0].GetComponent<Button> ().interactable = true;
-        useAble[0].GetComponent<Button>().onClick.AddListener(()=>SetUsing(0));
+        if(Resources.Load<Sprite> ("Ability/" + selectedCharacter.characterStatus.specialAttack.ability.abilityName) != null)
+          useAble [0].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + selectedCharacter.characterStatus.specialAttack.ability.abilityName);
+        else 
+          useAble [0].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/FinalAbilityTest");
+        if(FinishingGaugeManager.GetInstance().GetSliderValue() > selectedCharacter.characterStatus.specialAttack.ability.gaugeUse) useAble [0].GetComponent<Button> ().interactable = true;
+        else useAble [0].GetComponent<Button> ().interactable = false;
+        useAble [0].gameObject.AddComponent<UsingAbilityManager> ();
       }
 
       if (selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").Count()>0) 
       {
-        useAble [1].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("UseAble/" + selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").First().item.name);
+        if(Resources.Load<Sprite> ("Ability/" + selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").First().item.name) != null)
+          useAble [1].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + selectedCharacter.characterStatus.equipItem.Where(x=>x.item.itemType1 == "Items").First().item.name);
+        else 
+          useAble [1].GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/ItemTest");
         useAble [1].GetComponent<Button> ().interactable = true;
-        useAble[1].GetComponent<Button>().onClick.AddListener(()=>SetUsing(1));
+        useAble [1].gameObject.AddComponent<UsingAbilityManager> ();
       }
     }
-  }
-
-  public void SetUsing(int selected)
-  {
-    GameObject highlighted = new GameObject();
-    if (usingWhat != selected) 
-    {
-      usingWhat = selected;
-      if (usingWhat == 0) 
-      {
-        usingAbility = selectedCharacter.characterStatus.specialAttack;
-        highlighted = PrefabHolder.GetInstance ().AttackTile;
-      } 
-
-      else if (usingWhat == 1) 
-      {
-        ItemStatus usingItem = selectedCharacter.characterStatus.equipItem.Where (x => x.item.itemType1 == "Items").First ().item;
-        usingAbility = new AbilityStatus ();
-        usingAbility.ability = GetDataFromSql.itemAbilityStatus (usingItem.ID);
-        usingAbility.ability.power = usingItem.increaseHP;
-        usingAbility.level = 1;
-        usingAbility.ability.hitAmount = 1;
-        highlighted = PrefabHolder.GetInstance ().HealingTile;
-      }
-    }
-    else
-    {
-      usingWhat = -1;
-      usingAbility = selectedCharacter.characterStatus.normalAttack;
-      highlighted = PrefabHolder.GetInstance ().AttackTile;
-    }
-      
-    RemoveMapHighlight ();
-    HighlightTileAt (originGrid, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-    HighlightTileAt (selectedCharacter.gridPosition, highlighted, usingAbility.range, usingAbility.ability.rangeType);
-    HighlightTargetInRange (usingAbility);
   }
     
   public void HighlightTileAt(Vector3 originLocation, GameObject highlight, int distance)
@@ -596,10 +567,6 @@ public class GameManager : MonoBehaviour
         {
           RemoveMapHighlight ();
           selectedCharacter.GetComponent<Animator> ().Play ("Test");
-          foreach (Text text in allHpText) 
-          {
-            text.gameObject.SetActive (false);
-          }
           if (usingAbility.ability.abilityType != "Support")
           {
             int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
@@ -623,11 +590,18 @@ public class GameManager : MonoBehaviour
   {
     int i = 0;
     CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
+    foreach (Text t in allHpText) 
+    {
+      Destroy (t.gameObject);
+    }
+    allHpText.Clear ();
     while (i < usingAbility.hitAmount) 
     {
       target.currentHP += amountOfResults;
       if(amountOfResults <= 0) FloatingTextController (amountOfResults*-1, target.transform);
       else FloatingTextController (amountOfResults, target.transform);
+      if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
+      else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
       i++;
       yield return 0;
     }
@@ -643,6 +617,8 @@ public class GameManager : MonoBehaviour
     if (target.currentHP <= 0) 
     {
       RemoveDead ();
+      if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
+      else FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
     }
     NextTurn ();
   }
@@ -664,12 +640,9 @@ public class GameManager : MonoBehaviour
     }
       
     CameraManager.GetInstance ().ResetCamera ();
+    GenerateHpTextInfo ();
     GameManager.GetInstance ().playerUI.transform.GetChild (0).gameObject.SetActive (true);
     showingResultOfAttack.gameObject.SetActive (false);
-    foreach (Text text in allHpText) 
-    {
-      text.gameObject.SetActive (true);
-    }
 
     int playAbleAmount = 0;
     int playAbleCharacter = -1;
@@ -903,14 +876,23 @@ public class GameManager : MonoBehaviour
     instance.SetText (value);
   }
 
-  public void CharacterInMapInfo(Character target)
+  public void GenerateHpTextInfo()
   {
-    Vector2 screenPosition = Camera.main.WorldToScreenPoint (target.transform.position);
-    GameObject hpText = Instantiate (Resources.Load<GameObject> ("GamePlay/HpText"));
-    allHpText.Add (hpText.GetComponent<Text> ());
-    hpText.transform.SetParent(GameObject.Find ("Canvas").transform,false);
-    hpText.transform.position = new Vector2(screenPosition.x - 9f,screenPosition.y - 15f);
-    hpText.GetComponent<UpdateCharacterInfo> ().UpdateInfo (target);
+    foreach (Text t in allHpText)
+    {
+      Destroy (t.gameObject);
+    }
+    allHpText.Clear();
+    
+    for (int i = 0; i < character.Count; i++) 
+    {
+      Vector2 screenPosition = Camera.main.WorldToScreenPoint (character[i].transform.position);
+      GameObject hpText = Instantiate (Resources.Load<GameObject> ("GamePlay/HpText"));
+      allHpText.Add (hpText.GetComponent<Text> ());
+      hpText.transform.SetParent (GameObject.Find ("Canvas").transform, false);
+      hpText.transform.position = new Vector2 (screenPosition.x - 9f, screenPosition.y - 15f);
+      hpText.GetComponent<UpdateCharacterInfo> ().UpdateInfo (character[i]);
+    }
   }
 
   public void Auto()

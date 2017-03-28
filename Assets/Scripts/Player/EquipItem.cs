@@ -16,7 +16,7 @@ public class EquipItem : MonoBehaviour
       GameObject arrow = Instantiate (CharacterStatusSceneManager.GetInstance ().selectEquipmentArrow);
       CharacterStatusSceneManager.GetInstance ().selectingArrow = arrow.transform;
       arrow.transform.SetParent (this.transform.parent.parent.parent);
-      arrow.transform.localPosition = new Vector2 (-280, this.transform.localPosition.y);
+      arrow.transform.localPosition = new Vector2 (-300, this.transform.localPosition.y + 25);
       arrow.name = "selectedArrow";
       arrow.transform.localScale = Vector3.one;
 

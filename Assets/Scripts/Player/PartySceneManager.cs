@@ -8,9 +8,8 @@ using UnityEngine.EventSystems;
 public class PartySceneManager : MonoBehaviour
 {
   public GameObject changingPanel;
-  public GameObject changeAbleCharacter;
   public GameObject partyPanel;
-  public GameObject characterInParty;
+  public GameObject character;
   public GameObject selectedToChangeCharacter;
   public GameObject selectedToAdd;
 
@@ -81,19 +80,19 @@ public class PartySceneManager : MonoBehaviour
     
     for (int i = 0; i < party.Count; i++)
     {
-      GameObject partyObj = Instantiate (characterInParty);
+      GameObject partyObj = Instantiate (character);
       partyObj.transform.SetParent (slotsParty[i].transform);
       partyObj.transform.localScale = Vector3.one;
       partyObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + party [i].basicStatus.characterName);
-      partyObj.GetComponent<OtherCharacterData> ().characterStatus = party[i];
+      partyObj.GetComponent<AllCharacterData> ().characterStatus = party[i];
       partyObj.GetComponent<Button> ().onClick.AddListener (() => LookStatus (partyObj));
-      partyObj.GetComponent<Button> ().onClick.AddListener (() => CompareStatus (partyObj.GetComponent<OtherCharacterData> ().characterStatus,true));
+      partyObj.GetComponent<Button> ().onClick.AddListener (() => CompareStatus (partyObj.GetComponent<AllCharacterData> ().characterStatus,true));
     }
       
     partyPanel.transform.position = new Vector2 (partyPanel.transform.position.x, partyPanel.transform.position.y + 50);
     changingPanel.transform.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y + 50);
 
-    if (slotsOtherCharacter.Count > 2)
+    if (slotsOtherCharacter.Count > 12)
     {
       changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, (changingPanel.GetComponent<GridLayoutGroup>().cellSize.y * (slotsOtherCharacter.Count - 2))
         + changingPanel.GetComponent<GridLayoutGroup>().spacing.y);
@@ -111,25 +110,32 @@ public class PartySceneManager : MonoBehaviour
   public void GenerateOtherCharacter(CharacterStatus status)
   {
     otherCharacters.Add (status);
-    GameObject otherObj = Instantiate (changeAbleCharacter);
+    GameObject otherObj = Instantiate (character);
     otherObj.transform.SetParent (changingPanel.transform);
-    otherObj.GetComponent<OtherCharacterData> ().characterStatus = status;
+    otherObj.GetComponent<AllCharacterData> ().characterStatus = status;
     otherObj.transform.localScale = Vector3.one;
     otherObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + status.basicStatus.characterName);
     otherObj.GetComponent<Button> ().onClick.AddListener (() => LookStatus (otherObj));
-    otherObj.GetComponent<Button> ().onClick.AddListener (() => CompareStatus (otherObj.GetComponent<OtherCharacterData> ().characterStatus,false));
+    otherObj.GetComponent<Button> ().onClick.AddListener (() => CompareStatus (otherObj.GetComponent<AllCharacterData> ().characterStatus,false));
     slotsOtherCharacter.Add (otherObj);
   }
 
   public void LookStatus(GameObject status)
   {
-    if (status.GetComponent<OtherCharacterData>().characterStatus.isInParty) selectedToChangeCharacter = status;
-    if (!status.GetComponent<OtherCharacterData> ().characterStatus.isInParty) 
+    if (status.GetComponent<AllCharacterData>().characterStatus.isInParty) selectedToChangeCharacter = status;
+    if (!status.GetComponent<AllCharacterData> ().characterStatus.isInParty) 
     {
-      selectedToAdd = status;
-      if (CheckingPartySlots ())
+      if (status != selectedToAdd)
       {
-        this.transform.GetChild (4).gameObject.SetActive (true);
+        selectedToAdd = status;
+        if (CheckingPartySlots ()) 
+        {
+          this.transform.GetChild (4).gameObject.SetActive (true);
+        }
+      } 
+      else
+      {
+        ChangingCharacter ();
       }
     }
 
@@ -146,13 +152,13 @@ public class PartySceneManager : MonoBehaviour
     }
     Transform selectedCharacterStatus = this.transform.GetChild (1).GetChild (0);
 
-    selectedCharacterStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + status.GetComponent<OtherCharacterData>().characterStatus.basicStatus.characterName);
-    selectedCharacterStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.basicStatus.characterName.ToString ();
-    selectedCharacterStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.characterLevel.ToString ();
-    selectedCharacterStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.maxHp.ToString ();
-    selectedCharacterStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.attack.ToString ();
-    selectedCharacterStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.defense.ToString ();
-    selectedCharacterStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text = status.GetComponent<OtherCharacterData>().characterStatus.criRate.ToString ();
+    selectedCharacterStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + status.GetComponent<AllCharacterData>().characterStatus.basicStatus.characterName);
+    selectedCharacterStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.basicStatus.characterName.ToString ();
+    selectedCharacterStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.characterLevel.ToString ();
+    selectedCharacterStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.maxHp.ToString ();
+    selectedCharacterStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.attack.ToString ();
+    selectedCharacterStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.defense.ToString ();
+    selectedCharacterStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text = status.GetComponent<AllCharacterData>().characterStatus.criRate.ToString ();
   }
     
   public void CompareStatus(CharacterStatus status, bool isParty)
@@ -170,13 +176,13 @@ public class PartySceneManager : MonoBehaviour
         Transform firstCharacter = this.transform.GetChild (0).GetChild (1).GetChild (0);
         Transform secondCharacter = this.transform.GetChild (0).GetChild (2).GetChild (0);
 
-        firstCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.characterName);
-        firstCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.characterName.ToString ();
-        firstCharacter.GetChild (1).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.characterLevel.ToString ();
-        firstCharacter.GetChild (2).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.maxHp.ToString ();
-        firstCharacter.GetChild (3).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.attack.ToString ();
-        firstCharacter.GetChild (4).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.defense.ToString ();
-        firstCharacter.GetChild (5).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.criRate.ToString ();
+        firstCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.basicStatus.characterName);
+        firstCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.basicStatus.characterName.ToString ();
+        firstCharacter.GetChild (1).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.characterLevel.ToString ();
+        firstCharacter.GetChild (2).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.maxHp.ToString ();
+        firstCharacter.GetChild (3).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.attack.ToString ();
+        firstCharacter.GetChild (4).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.defense.ToString ();
+        firstCharacter.GetChild (5).GetChild (0).GetComponent<Text> ().text = selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.criRate.ToString ();
 
         secondCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + status.basicStatus.characterName);
         secondCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = status.basicStatus.characterName.ToString ();
@@ -200,13 +206,13 @@ public class PartySceneManager : MonoBehaviour
         Transform firstCharacter = this.transform.GetChild (0).GetChild (1).GetChild (0);
         Transform secondCharacter = this.transform.GetChild (0).GetChild (2).GetChild (0);
 
-        secondCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.characterName);
-        secondCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.characterName.ToString ();
-        secondCharacter.GetChild (1).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.characterLevel.ToString ();
-        secondCharacter.GetChild (2).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.maxHp.ToString ();
-        secondCharacter.GetChild (3).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.attack.ToString ();
-        secondCharacter.GetChild (4).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.defense.ToString ();
-        secondCharacter.GetChild (5).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.criRate.ToString ();
+        secondCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.characterName);
+        secondCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.characterName.ToString ();
+        secondCharacter.GetChild (1).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.characterLevel.ToString ();
+        secondCharacter.GetChild (2).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.maxHp.ToString ();
+        secondCharacter.GetChild (3).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.attack.ToString ();
+        secondCharacter.GetChild (4).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.defense.ToString ();
+        secondCharacter.GetChild (5).GetChild (0).GetComponent<Text> ().text = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.criRate.ToString ();
 
         firstCharacter.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + status.basicStatus.characterName);
         firstCharacter.GetChild (0).GetChild (0).GetComponent<Text> ().text = status.basicStatus.characterName.ToString ();
@@ -225,22 +231,22 @@ public class PartySceneManager : MonoBehaviour
     {
       if (CheckingPartySlots() && selectedToChangeCharacter == null)
       {
-        selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.isInParty = true;
-        selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.partyOrdering = party.Count;
-        TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = true;
-        TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = party.Count;
+        selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.isInParty = true;
+        selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.partyOrdering = party.Count;
+        TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = true;
+        TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = party.Count;
         selectedToAdd = null;
       } 
       else 
       {
         if (selectedToChangeCharacter != null) 
         {
-          selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.isInParty = true;
-          selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.partyOrdering = selectedToChangeCharacter.GetComponent<OtherCharacterData>().characterStatus.partyOrdering;
-          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = true;
-          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = selectedToAdd.GetComponent<OtherCharacterData> ().characterStatus.partyOrdering;
-          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = false;
-          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToChangeCharacter.GetComponent<OtherCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = -1;
+          selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.isInParty = true;
+          selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.partyOrdering = selectedToChangeCharacter.GetComponent<AllCharacterData>().characterStatus.partyOrdering;
+          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = true;
+          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = selectedToAdd.GetComponent<AllCharacterData> ().characterStatus.partyOrdering;
+          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().isInParty = false;
+          TemporaryData.GetInstance ().playerData.characters.Where (x => x.basicStatus.ID == selectedToChangeCharacter.GetComponent<AllCharacterData> ().characterStatus.basicStatus.ID).First ().partyOrdering = -1;
           selectedToAdd = null;
           selectedToChangeCharacter = null;
         }

@@ -25,6 +25,7 @@ public class StartSceneManager : MonoBehaviour
     {
       GetDataFromSql.OpenDB ("ThesisDatabase.db");
       TemporaryData.GetInstance ().firstTimeOpenGame = true;
+      TemporaryData.GetInstance ().allStory = GetDataFromSql.GetAllStoryDialogue ();
     }
   }
 
@@ -40,38 +41,54 @@ public class StartSceneManager : MonoBehaviour
 
     CharacterStatus adding = new CharacterStatus ();
     Item equipedItem = new Item ();
-    adding.basicStatus = GetDataFromSql.GetCharacter ("Kadkaew");
+    adding.basicStatus = GetDataFromSql.GetCharacter (1001);
     adding.characterLevel = 1;
     adding.isInParty = true;
-    adding.normalAttack.ability = adding.basicStatus.normalAttack;
-    adding.normalAttack.level = 1;
-    adding.specialAttack.ability = adding.basicStatus.specialAttack;
-    adding.specialAttack.level = 1;
+    for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
+    {
+      AbilityStatus equiped = new AbilityStatus ();
+      AbilityStatus learning = new AbilityStatus ();
+      string[] learnAbleAb = adding.basicStatus.learnAbleAbility [i].Split (" " [0]);
+      for(int j = 0; j < learnAbleAb.Length; j=j+2)
+      {
+        if(int.Parse(learnAbleAb[j+1]) == adding.characterLevel)
+        {
+          learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
+          learning.level = 1;
+          learning.exp = 0;
+          learning.ordering = -1;
+          adding.learnedAbility.Add (learning);
+          
+          equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
+          equiped.level = 1;
+          equiped.exp = 0;
+          if (equiped.ability.abilityType == 3 || equiped.ability.abilityType == -3) 
+          {
+            equiped.ordering = 2;
+          }
+          else equiped.ordering = i;
+          adding.equipedAbility.Add (equiped);
+        }
+      }
+    }
     adding.partyOrdering = 0;
     adding.experience = 0;
 
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortSword");
+    equipedItem.item = GetDataFromSql.GetItemFromID (1100);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
     equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
+    equipedItem.item = GetDataFromSql.GetItemFromID (2100);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
     equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("RedPotion");
+    equipedItem.item = GetDataFromSql.GetItemFromID (3100);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
@@ -80,145 +97,67 @@ public class StartSceneManager : MonoBehaviour
     data.characters.Add (adding);
 
     adding = new CharacterStatus ();
-    adding.basicStatus = GetDataFromSql.GetCharacter ("Maprang");
+    adding.basicStatus = GetDataFromSql.GetCharacter (1002);
     adding.characterLevel = 1;
     adding.isInParty = true;
-    adding.normalAttack.ability = adding.basicStatus.normalAttack;
-    adding.normalAttack.level = 1;
-    adding.specialAttack.ability = adding.basicStatus.specialAttack;
-    adding.specialAttack.level = 1;
+    for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
+    {
+      AbilityStatus equiped = new AbilityStatus ();
+      AbilityStatus learning = new AbilityStatus ();
+      string[] learnAbleAb = adding.basicStatus.learnAbleAbility [i].Split (" " [0]);
+      for(int j = 0; j < learnAbleAb.Length; j=j+2)
+      {
+        if(int.Parse(learnAbleAb[j+1]) == adding.characterLevel)
+        {
+          learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
+          learning.level = 1;
+          learning.exp = 0;
+          learning.ordering = -1;
+          adding.learnedAbility.Add (learning);
+
+          equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
+          equiped.level = 1;
+          equiped.exp = 0;
+          if (equiped.ability.abilityType == 3 || equiped.ability.abilityType == -3) 
+          {
+            equiped.ordering = 2;
+          }
+          else equiped.ordering = i;
+          adding.equipedAbility.Add (equiped);
+        }
+      }
+    }
     adding.partyOrdering = 1;
     adding.experience = 0;
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortBow");
+    equipedItem.item = GetDataFromSql.GetItemFromID (1200);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
     equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
+    equipedItem.item = GetDataFromSql.GetItemFromID (2100);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
     equipedItem.ordering = data.inventory.Count - 1;
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    data.characters.Add (adding);
-
-    adding = new CharacterStatus ();
-    adding.basicStatus = GetDataFromSql.GetCharacter ("N");
-    adding.characterLevel = 1;
-    adding.isInParty = false;
-    adding.normalAttack.ability = adding.basicStatus.normalAttack;
-    adding.normalAttack.level = 1;
-    adding.specialAttack.ability = adding.basicStatus.specialAttack;
-    adding.specialAttack.level = 1;
-    adding.partyOrdering = -1;
-    adding.experience = 0;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortBow");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
+    equipedItem.item = GetDataFromSql.GetItemFromID (3100);
     equipedItem.equiped = true;
     adding.equipItem.Add (equipedItem);
     data.inventory.Add (equipedItem);
     equipedItem.ordering = data.inventory.Count - 1;
 
     data.characters.Add (adding);
-
-    adding = new CharacterStatus ();
-    adding.basicStatus = GetDataFromSql.GetCharacter ("A");
-    adding.characterLevel = 1;
-    adding.isInParty = false;
-    adding.normalAttack.ability = adding.basicStatus.normalAttack;
-    adding.normalAttack.level = 1;
-    adding.specialAttack.ability = adding.basicStatus.specialAttack;
-    adding.specialAttack.level = 1;
-    adding.partyOrdering = -1;
-    adding.experience = 0;
-
+    
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortBow");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    data.characters.Add (adding);
-
-    adding = new CharacterStatus ();
-    adding.basicStatus = GetDataFromSql.GetCharacter ("B");
-    adding.characterLevel = 1;
-    adding.isInParty = false;
-    adding.normalAttack.ability = adding.basicStatus.normalAttack;
-    adding.normalAttack.level = 1;
-    adding.specialAttack.ability = adding.basicStatus.specialAttack;
-    adding.specialAttack.level = 1;
-    adding.partyOrdering = -1;
-    adding.experience = 0;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortBow");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodArmor");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("WoodRing");
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
-
-    data.characters.Add (adding);
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromName ("ShortSword");
+    equipedItem.item = GetDataFromSql.GetItemFromID (1100);
     equipedItem.equiped = false;
     data.inventory.Add (equipedItem);
+    equipedItem.ordering = data.inventory.Count - 1;
 
     TemporaryData.GetInstance ().playerData = data;
   }
@@ -238,14 +177,14 @@ public class StartSceneManager : MonoBehaviour
         {
           InitFirstData ();
           PlayerPrefs.SetInt (Const.MapNo, 1);
-          SceneManager.LoadScene ("GamePlayScene");
+          //SceneManager.LoadScene ("GamePlayScene");
           SceneManager.LoadScene ("StoryScene");
         }
         else
         {*/
           InitFirstData ();
           SceneManager.LoadScene ("MainMenuScene");
-        //}
+        //}  
       }
     }
   }

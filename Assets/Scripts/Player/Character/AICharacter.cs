@@ -3,8 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+[System.Serializable]
+public class AIInformation
+{
+  public List<string> droppedItem = new List<string>();
+  public int givenExp;
+  public int givenGold;
+  public int effectiveAttack;
+  public int element;
+}
+
 public class AICharacter : Character
 {
+  public AIInformation aiInfo;
+  
+  public override void SetStatus(int ID)
+  {
+    aiInfo = GetDataFromSql.GetAiInfomation (ID);
+    base.SetStatus (ID);
+  }
+  
   public override void Update()
   {
     if (positionQueue.Count > 0)
@@ -21,7 +39,7 @@ public class AICharacter : Character
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();
-              GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
+              GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType);
 
               GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)target.gridPosition.x] [(int)target.gridPosition.z]);
               target = null;
@@ -42,32 +60,32 @@ public class AICharacter : Character
   {
     if (currentHP > 0)
     {
-      GameManager.GetInstance ().usingAbility = characterStatus.normalAttack;
+      GameManager.GetInstance ().usingAbility = characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First();
       List<Tile> targetTilesInRange = new List<Tile> ();
 
       foreach (Tile t in TileHighLight.FindHighLight(GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],characterStatus.movementPoint, GameManager.GetInstance().character.Where (x => x.gridPosition != gridPosition).Select (x => x.gridPosition).ToArray ()))
       {
-        if (characterStatus.normalAttack.ability.rangeType == "both")
+        if (characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType == 2)
         {
-          foreach (Tile a in TileHighLight.FindHighLight (t, characterStatus.normalAttack.range, true, false))
+          foreach (Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
           {
             targetTilesInRange.Add (a);
           }
-          foreach (Tile b in TileHighLight.FindHighLight (t, characterStatus.normalAttack.range, true, true)) 
+          foreach (Tile b in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true)) 
           {
             targetTilesInRange.Add (b);
           }
         } 
-        else if (characterStatus.normalAttack.ability.rangeType == "plus")
+        else if (characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType == 0)
         {
-          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.normalAttack.range, true, false))
+          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
           {
             targetTilesInRange.Add (a);
           }
         }
         else
         {
-          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.normalAttack.range, true, true))
+          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true))
           {
             targetTilesInRange.Add (a);
           }
@@ -91,7 +109,7 @@ public class AICharacter : Character
         }
         else 
         {
-          GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.normalAttack.range, characterStatus.normalAttack.ability.rangeType);
+          GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType);
           GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)opponent.gridPosition.x] [(int)opponent.gridPosition.z]);
         }
         

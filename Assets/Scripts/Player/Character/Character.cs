@@ -12,12 +12,12 @@ public class Character : MonoBehaviour
 
   public Vector3 gridPosition = Vector3.zero;
 
+  public GameObject info;
+  
   public int currentHP;
   public int ordering;
 
   public bool played = false;
-
-  public bool isAI;
 
   public Character target;
 
@@ -25,17 +25,17 @@ public class Character : MonoBehaviour
 
   public virtual void Update()
   {
-
+    info.transform.GetChild (1).GetComponent<TextMesh> ().text = currentHP.ToString();
   }
 
   public virtual void TurnUpdate()
   {
    
   }
-
-  public virtual void SetStatus(string name)
+  
+  public virtual void SetStatus(int ID)
   {
-    characterStatus.basicStatus = GetDataFromSql.GetCharacter (name);
+    characterStatus.basicStatus = GetDataFromSql.GetCharacter (ID);
 
     currentHP = characterStatus.maxHp;
     this.name = characterStatus.basicStatus.characterName;

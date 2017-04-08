@@ -40,10 +40,10 @@ public class TemporaryData
 
   public CharacterStatus selectedCharacter = new CharacterStatus();
 
-  public int storyID = 0;
-
   public bool firstTimeOpenGame = false;
 
+  public List<StoryDialogue> allStory = new List<StoryDialogue>();
+  
   private static TemporaryData instance;
 
   public static TemporaryData GetInstance()

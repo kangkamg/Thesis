@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class Ability
 {
-  public int ID;
+  public int ID = 0;
   public string abilityName;
   public float power;
   public float powerGrowth;
@@ -14,9 +14,13 @@ public class Ability
   public int range;
   public int rangeGrowth;
   public bool usingAround = false;
-  public string rangeType;
-  public string abilityType;
+  public int rangeType;
+  public int abilityType;
+  public int abilityEff;
+  public int abilityElement;
   public int gaugeUse;
+  public int coolDown;
+  public string describe;
 }
 
 [System.Serializable]
@@ -25,6 +29,7 @@ public class AbilityStatus
   public Ability ability;
   public int level;
   public int exp;
+  public int ordering = 0;
 
   public float power
   {

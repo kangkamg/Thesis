@@ -8,7 +8,6 @@ public class CharacterStatusSceneManager : MonoBehaviour
   public GameObject characterPanel;
   public GameObject characterInTeams;
   public GameObject changingItemObj;
-  public GameObject skillObj;
   public GameObject selectEquipmentArrow;
 
   public Transform selectedItem;
@@ -17,6 +16,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
   public GameObject mainPage;
   public GameObject statusPage;
   public GameObject equipmentPage;
+  public GameObject abilityPage;
 
   public List<CharacterStatus> allCharacters = new List<CharacterStatus> ();
   public List<GameObject> allCharacterSlots = new List<GameObject> ();
@@ -48,6 +48,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
     }
     allCharacters.Clear ();
     allCharacterSlots.Clear ();
+    TemporaryData.GetInstance ().selectedCharacter = null;
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.characters.Count; i++)
     {
@@ -61,12 +62,18 @@ public class CharacterStatusSceneManager : MonoBehaviour
 
       allCharacterSlots.Add (characterObj);
     }
+    
+    characterPanel.transform.parent.position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y + 50);
   }
 
   public void LookStatus(CharacterStatus selectedStatus)
   {
     if (selectedStatus != TemporaryData.GetInstance ().selectedCharacter)
     {
+      if(!this.transform.GetChild(0).gameObject.activeSelf)
+      {
+        characterPanel.transform.parent.position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y - 50);
+      }
       TemporaryData.GetInstance ().selectedCharacter = selectedStatus;
       this.transform.GetChild (0).gameObject.SetActive (true);
       Transform selectedCharacterStatus = this.transform.GetChild (0).GetChild (0);

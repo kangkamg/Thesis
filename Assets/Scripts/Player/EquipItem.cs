@@ -16,15 +16,9 @@ public class EquipItem : MonoBehaviour
       GameObject arrow = Instantiate (CharacterStatusSceneManager.GetInstance ().selectEquipmentArrow);
       CharacterStatusSceneManager.GetInstance ().selectingArrow = arrow.transform;
       arrow.transform.SetParent (this.transform.parent.parent.parent);
-      arrow.transform.localPosition = new Vector2 (-300, this.transform.localPosition.y + 25);
+      arrow.transform.localPosition = new Vector2 (-300, this.transform.localPosition.y-90);
       arrow.name = "selectedArrow";
       arrow.transform.localScale = Vector3.one;
-
-      CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).gameObject.SetActive (true);
-
-      CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).GetChild(0).GetChild(0).GetComponent<Text> ().text = "HP : " + this.GetComponent<ItemData> ().items.item.increaseHP.ToString () +
-      "\t\t\tATK : " + this.GetComponent<ItemData> ().items.item.increaseAttack.ToString () + "\nDEF : " + this.GetComponent<ItemData> ().items.item.increaseDefense.ToString ()
-      + "\t\tCRI.R : " + this.GetComponent<ItemData> ().items.item.increaseCriRate.ToString ();
     } 
     else 
     {

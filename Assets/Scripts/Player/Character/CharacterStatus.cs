@@ -18,9 +18,7 @@ public class CharacterBasicStatus
   public int movementPoint;
   public string weaponEff;
   public string armorEff;
-  public string type;
-  public Ability normalAttack;
-  public Ability specialAttack;
+  public List<string> learnAbleAbility = new List<string>();
 }
 
 [System.Serializable]
@@ -29,8 +27,8 @@ public class CharacterStatus
   public CharacterBasicStatus basicStatus;
   public int characterLevel = 1;
   public int experience;
-  public AbilityStatus normalAttack = new AbilityStatus ();
-  public AbilityStatus specialAttack = new AbilityStatus ();
+  public List<AbilityStatus> learnedAbility = new List<AbilityStatus> ();
+  public List<AbilityStatus> equipedAbility = new List<AbilityStatus> ();
   public List<Item> equipItem = new List<Item>();
   public bool isInParty;
   public int partyOrdering;
@@ -109,7 +107,6 @@ public class CharacterStatus
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
-        if (equipItem [i].item.itemType1 == "Items") continue;
         ret += equipItem[i].item.increaseHP;
       }
 
@@ -129,7 +126,6 @@ public class CharacterStatus
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
-        if (equipItem [i].item.itemType1 == "Items") continue;
         ret += equipItem[i].item.increaseAttack;
       }
 
@@ -149,7 +145,6 @@ public class CharacterStatus
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
-        if (equipItem [i].item.itemType1 == "Items") continue;
         ret += equipItem[i].item.increaseDefense;
       }
 
@@ -169,7 +164,6 @@ public class CharacterStatus
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
-        if (equipItem [i].item.itemType1 == "Items") continue;
         ret += equipItem[i].item.increaseCriRate;
       }
 
@@ -186,7 +180,6 @@ public class CharacterStatus
 
       for (int i = 0; i < equipItem.Count; i++)
       {
-        if (equipItem [i].item.itemType1 == "Items") continue;
         ret += equipItem[i].item.increaseMovementPoint;
       }
 

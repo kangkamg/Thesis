@@ -8,6 +8,7 @@ public class SupMenuSceneManager : MonoBehaviour
   public GameObject selectedCharacterStatus;
   public GameObject allCharacterStatus;
   public GameObject changingEquip;
+  public GameObject changingAbility;
   public GameObject party;
   public GameObject item;
   public GameObject quest;
@@ -22,6 +23,7 @@ public class SupMenuSceneManager : MonoBehaviour
       party.SetActive (false);
       item.SetActive (false);
       quest.SetActive (false);
+      changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Party") 
     {
@@ -31,6 +33,7 @@ public class SupMenuSceneManager : MonoBehaviour
       party.SetActive (true);
       item.SetActive (false);
       quest.SetActive (false);
+      changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Item") 
     {
@@ -40,6 +43,7 @@ public class SupMenuSceneManager : MonoBehaviour
       party.SetActive (false);
       item.SetActive (true);
       quest.SetActive (false);
+      changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Quest") 
     {
@@ -49,6 +53,7 @@ public class SupMenuSceneManager : MonoBehaviour
       party.SetActive (false);
       item.SetActive (false);
       quest.SetActive (true);
+      changingAbility.SetActive (false);
     }
   }
 
@@ -66,13 +71,23 @@ public class SupMenuSceneManager : MonoBehaviour
       {
         selectedCharacterStatus.SetActive (true);
         changingEquip.SetActive (false);
+        changingAbility.SetActive (false);
         CharacterStatusSceneManager.GetInstance().statusPage.GetComponent<ShowingCharacterStatusManager> ().UpdateStatus ();
       }
       else if (selectedCharacterStatus.activeSelf)
       {
         allCharacterStatus.SetActive (true);
         selectedCharacterStatus.SetActive (false);
+        changingAbility.SetActive (false);
+        CharacterStatusSceneManager.GetInstance().GenerateCharacter ();
       }
+      else if (changingAbility.activeSelf)
+      {
+        selectedCharacterStatus.SetActive (true);
+        changingAbility.SetActive (false);
+        changingEquip.SetActive (false);
+        CharacterStatusSceneManager.GetInstance().statusPage.GetComponent<ShowingCharacterStatusManager> ().UpdateStatus ();
+      } 
       else if (allCharacterStatus.activeSelf)
       {
         SceneManager.LoadScene ("MainMenuScene");

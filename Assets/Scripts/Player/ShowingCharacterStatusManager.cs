@@ -2,33 +2,98 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class ShowingCharacterStatusManager : MonoBehaviour 
 
 {
   public Image chaImg;
   public Text characterName;
-  public Text[] status;
-  public Transform[] equipment;
+  public Transform status;
+  public Transform equipment;
+  public Transform attack;
   public Transform skill;
 
   public void UpdateStatus()
   {
-    foreach (Transform a in skill) 
-    {
-      Destroy (a.gameObject);
-    }
-
     chaImg.sprite = Resources.Load<Sprite> ("PlayerPrefab/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
     characterName.text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
 
-    status [0].text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString();
-    status [1].text = TemporaryData.GetInstance ().selectedCharacter.experience.ToString();
-    status [2].text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
-    status [3].text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
-    status [4].text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
-    status [5].text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString();
+    status.GetChild(0).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString();
+    status.GetChild(1).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.experience.ToString();
+    status.GetChild(2).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
+    status.GetChild(3).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
+    status.GetChild(4).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
+    status.GetChild(5).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString();
+    
+    SetUpAbility ();
+    SetUpEquipment ();
+  }
 
+  private void SetUpAbility()
+  {
+    foreach (Transform child in attack.GetChild(0).GetChild(0))
+    {
+      Destroy (child.gameObject);
+    }
+    foreach (Transform child in attack.GetChild(1).GetChild(0))
+    {
+      Destroy (child.gameObject);
+    }
+    foreach (Transform child in skill.GetChild(0).GetChild(0))
+    {
+      Destroy (child.gameObject);
+    }
+    
+    List<AbilityStatus> normalAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).ToList ();
+    List<AbilityStatus> specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
+    List<AbilityStatus> skills = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 2 || x.ability.abilityType == -2 || x.ability.abilityType == 0).ToList ();
+    
+    for (int i = 0; i < 2; i++)
+    {
+      GameObject normalAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
+      normalAtkObj.transform.SetParent (attack.GetChild (0).GetChild(0));
+      normalAtkObj.transform.localScale = Vector3.one;
+      normalAtkObj.GetComponent<AbilityInformation> ().ordering = i;
+      if (i <= normalAttacks.Count - 1) 
+      {
+        AbilityStatus equipedStatus = normalAttacks.Where (x => x.ordering == i).First ();
+        normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + equipedStatus.ability.ID);
+        normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (equipedStatus);
+      }
+      else
+      {
+        normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (1);
+      }
+    }
+    
+    GameObject specialAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
+    specialAtkObj.transform.SetParent (attack.GetChild (1).GetChild(0));
+    specialAtkObj.transform.localScale = Vector3.one;
+    specialAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + specialAttacks [0].ability.ID);
+    specialAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (specialAttacks [0]);
+    specialAtkObj.GetComponent<AbilityInformation> ().ordering = 3;
+    
+    for (int i = 0; i < 3; i++)
+    {
+      GameObject skillObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
+      skillObj.transform.SetParent (skill.GetChild (0).GetChild(0));
+      skillObj.transform.localScale = Vector3.one;
+      skillObj.GetComponent<AbilityInformation> ().ordering = i;
+      if(i <= skills.Count-1)
+      {
+        skillObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + skills.Where(x=>x.ordering == i).First().ability.ID);
+        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (skills.Where(x=>x.ordering == i).First());
+      }
+      else
+      {
+        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (2);
+      }
+    }
+  }
+  
+  private void SetUpEquipment()
+  {
     if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Count > 0) 
     {
       for (int i = 0; i < TemporaryData.GetInstance ().selectedCharacter.equipItem.Count; i++) 
@@ -38,45 +103,27 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     } 
     else
     {
-      equipment [0].GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Weapon"));
-      equipment [0].GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Weapon");
-      equipment [0].GetChild (1).GetComponent<Text> ().text = "Weapon";
-      equipment [1].GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Armor"));
-      equipment [1].GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Armor");
-      equipment [1].GetChild (1).GetComponent<Text> ().text = "Armor";
-      equipment [2].GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Accessory"));
-      equipment [2].GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Accessory");
-      equipment [2].GetChild (1).GetComponent<Text> ().text = "Accessory";
-      equipment [3].GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Items"));
-      equipment [3].GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Items");
-      equipment [3].GetChild (1).GetComponent<Text> ().text = "Items";
-    }
-
-    if (TemporaryData.GetInstance ().selectedCharacter.normalAttack!=null)
-    {
-      GameObject skillObj = Instantiate(CharacterStatusSceneManager.GetInstance ().skillObj);
-      skillObj.transform.SetParent (skill);
-      skillObj.GetComponent<SkillStatusManager> ().ability = TemporaryData.GetInstance ().selectedCharacter.normalAttack;
-      skillObj.transform.localScale = new Vector3 (1, 1, 1);
-    }
-    if (TemporaryData.GetInstance ().selectedCharacter.specialAttack!=null)
-    {
-      GameObject skillObj = Instantiate(CharacterStatusSceneManager.GetInstance ().skillObj);
-      skillObj.transform.SetParent (skill);
-      skillObj.GetComponent<SkillStatusManager> ().ability = TemporaryData.GetInstance ().selectedCharacter.specialAttack;
-      skillObj.transform.localScale = new Vector3 (1, 1, 1);
+      equipment.GetChild(0).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Weapon"));
+      equipment.GetChild(0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Weapon");
+      equipment.GetChild(0).GetChild (1).GetComponent<Text> ().text = "Weapon";
+      equipment.GetChild(1).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Armor"));
+      equipment.GetChild(1).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Armor");
+      equipment.GetChild(1).GetChild (1).GetComponent<Text> ().text = "Armor";
+      equipment.GetChild(2).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Accessory"));
+      equipment.GetChild(2).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Accessory");
+      equipment.GetChild(2).GetChild (1).GetComponent<Text> ().text = "Accessory";
     }
   }
-
+  
   private void CheckingEquipment(Item equipItem)
   {
-    for (int i = 0; i < equipment.Length; i++)
+    for (int i = 0; i < equipment.childCount; i++)
     {
-      if (equipItem.item.itemType1 == equipment [i].name) 
+      if (equipItem.item.itemType1 == equipment.GetChild(i).name) 
       {
-        equipment [i].GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipItem.item.name);
-        equipment [i].GetChild (1).GetComponent<Text> ().text = equipItem.item.name;
-        equipment [i].GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (equipItem));
+        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipItem.item.name);
+        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equipItem.item.name;
+        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (equipItem));
       } 
     }
   }
@@ -88,7 +135,6 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     CharacterStatusSceneManager.GetInstance ().mainPage.SetActive (false);
 
     CharacterStatusSceneManager.GetInstance ().equipmentPage.GetComponent<ChangeEquipmentManager>().ChangingItem (selectedItem);
-    CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).gameObject.SetActive (false);
   }
 
   private void GoToEquipmentPage(string itemtype1)
@@ -98,6 +144,11 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     CharacterStatusSceneManager.GetInstance ().mainPage.SetActive (false);
 
     CharacterStatusSceneManager.GetInstance ().equipmentPage.GetComponent<ChangeEquipmentManager>().ChangingItem (itemtype1);
-    CharacterStatusSceneManager.GetInstance ().equipmentPage.transform.GetChild (2).gameObject.SetActive (false);
+  }
+  
+  public void LevelUp()
+  {
+    TemporaryData.GetInstance().selectedCharacter.characterLevel = int.Parse(this.transform.GetChild (5).GetChild (0).GetChild (2).GetComponent<Text> ().text);
+    SystemManager.CheckingLevelUp (TemporaryData.GetInstance ().selectedCharacter);
   }
 }

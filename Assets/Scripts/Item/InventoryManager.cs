@@ -86,11 +86,11 @@ public class InventoryManager : MonoBehaviour
       });
   }
 
-  public void AddItem(string name)
+  public void AddItem(int ID)
   {
     Item itemToAdd = new Item();
 
-    itemToAdd.item = GetDataFromSql.GetItemFromName (name);
+    itemToAdd.item = GetDataFromSql.GetItemFromID (ID);
 
     items.Add(itemToAdd);
   }

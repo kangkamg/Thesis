@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class StoryDialogue
 {
   public int ID;
+  public int mapNo;
   public List<string> characterName = new List<string>();
   public List<string> allDialogue =  new List<string>();
-  public int sequence = 0;
 }
 
 public class DialogueManager : MonoBehaviour 
@@ -41,7 +42,7 @@ public class DialogueManager : MonoBehaviour
   {
     _textComponent.text = "";
 
-    storyDialogue = GetDataFromSql.GetStoryDialogue (TemporaryData.GetInstance().storyID);
+    storyDialogue = TemporaryData.GetInstance ().allStory.Where (x => x.ID == TemporaryData.GetInstance ().playerData.storyID && x.mapNo == PlayerPrefs.GetInt (Const.MapNo, 1)).First();
      
     for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
     {
@@ -75,10 +76,10 @@ public class DialogueManager : MonoBehaviour
 
     if(_isEndOfDialogue)
     {
-      TemporaryData.GetInstance ().storyID += 1;
-      if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+      if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
         {
           SceneManager.LoadScene("GamePlayScene");
+          TemporaryData.GetInstance ().playerData.storyID ++;
         }
     }
   }
@@ -105,7 +106,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
       {
         break;
       }
@@ -206,7 +207,7 @@ public class DialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (/*Input.GetMouseButton (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+        if (Input.GetMouseButton (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
         {
           yield return new WaitForSeconds (SecondBetweenCharacters * CharacterRateMultiplier);
         }
@@ -223,7 +224,7 @@ public class DialogueManager : MonoBehaviour
 
     while (true)
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
       {
         break;
       }

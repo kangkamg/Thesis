@@ -5,9 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 
 public class ChangeEquipmentManager : MonoBehaviour
-{
-  public Image itemPic;
-  public Text[] equipmentStatus;
+{ 
   public Transform changeAbleItem;
   public Transform weaponDetail;
 
@@ -16,149 +14,82 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   public void TryingItem(ItemData equipedItem)
   {
-    itemPic.sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
-
-    equipmentStatus[0].text = equipedItem.items.item.name.ToString();
-
-    if (equipedItem.items.item.itemType1 != "Items")
+    this.transform.GetChild (0).gameObject.SetActive (true);
+    this.transform.GetChild (1).gameObject.SetActive (false);
+    Transform equipedWeaponStatus = this.transform.GetChild (1);
+    Transform firstWeaponStatus = this.transform.GetChild (0).GetChild(0);
+    Transform secondWeaponStatus = this.transform.GetChild (0).GetChild(1);
+    Transform isChanging = this.transform.GetChild (0).GetChild (2);
+    
+    firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (0).GetComponent<Image> ().sprite;
+    firstWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text = equipedWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text;
+    
+    secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    secondWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = equipedItem.items.item.name;
+    secondWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
+    secondWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
+    secondWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseDefense.ToString ();
+    secondWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseCriRate.ToString ();
+    
+    if (int.Parse (firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseHP)
     {
-      if (equipedItem.items.item.increaseHP > 0)
-      {
-        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp + equipedItem.items.item.increaseHP).ToString ();
-      } 
-      else 
-      {
-        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseHP).ToString ();
-      }
-      if (equipedItem.items.item.increaseAttack > 0)
-      {
-        equipmentStatus [2].text = (TemporaryData.GetInstance ().selectedCharacter.basicAttack + equipedItem.items.item.increaseAttack).ToString ();
-      } 
-      else
-      {
-        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseAttack).ToString ();
-      }
-      if (equipedItem.items.item.increaseDefense > 0) 
-      {
-        equipmentStatus [3].text = (TemporaryData.GetInstance ().selectedCharacter.basicDefense + equipedItem.items.item.increaseDefense).ToString ();
-      } 
-      else 
-      {
-        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseDefense).ToString ();
-      }
-      if (equipedItem.items.item.increaseCriRate > 0) 
-      {
-        equipmentStatus [4].text = (TemporaryData.GetInstance ().selectedCharacter.basicCriRate + equipedItem.items.item.increaseCriRate).ToString ();
-      } 
-      else 
-      {
-        equipmentStatus [1].text = (TemporaryData.GetInstance ().selectedCharacter.basicMaxHp - equipedItem.items.item.increaseCriRate).ToString ();
-      }
+      isChanging.GetChild (0).GetComponent<Image> ().color = Color.green;
     }
-
-    if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Count != 0)
+    else if (int.Parse (firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseHP)
     {
-      for (int i = 0; i < TemporaryData.GetInstance ().selectedCharacter.equipItem.Count; i++)
-      {
-        if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.itemType1 == equipedItem.items.item.itemType1) 
-        {
-          if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseHP > equipedItem.items.item.increaseHP) 
-          {
-            equipmentStatus [1].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-          } 
-          else if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseHP < equipedItem.items.item.increaseHP)
-          {
-            equipmentStatus [1].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-          }
-
-          if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseAttack > equipedItem.items.item.increaseAttack)
-          {
-            equipmentStatus [2].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-          } 
-          else if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseAttack < equipedItem.items.item.increaseAttack)
-          {
-            equipmentStatus [2].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-          }
-
-          if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseDefense > equipedItem.items.item.increaseDefense)
-          {
-            equipmentStatus [3].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-          }
-          else if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseDefense < equipedItem.items.item.increaseDefense
-          ) {
-            equipmentStatus [3].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-          }
-
-          if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseCriRate > equipedItem.items.item.increaseCriRate) 
-          {
-            equipmentStatus [4].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-          } 
-          else if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.increaseCriRate < equipedItem.items.item.increaseCriRate) 
-          {
-            equipmentStatus [4].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-          }
-        } 
-      }
+      isChanging.GetChild (0).GetComponent<Image> ().color = Color.red;
     }
-    else
+      
+    if (int.Parse (firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseAttack)
     {
-      if (TemporaryData.GetInstance ().selectedCharacter.maxHp > TemporaryData.GetInstance ().selectedCharacter.maxHp + equipedItem.items.item.increaseHP) 
-      {
-        equipmentStatus [1].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-      } 
-      else if (TemporaryData.GetInstance ().selectedCharacter.maxHp < TemporaryData.GetInstance ().selectedCharacter.maxHp + equipedItem.items.item.increaseHP)
-      {
-        equipmentStatus [1].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-      }
-
-      if (TemporaryData.GetInstance ().selectedCharacter.attack > TemporaryData.GetInstance ().selectedCharacter.attack + equipedItem.items.item.increaseAttack)
-      {
-        equipmentStatus [2].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-      } 
-      else if (TemporaryData.GetInstance ().selectedCharacter.attack < TemporaryData.GetInstance ().selectedCharacter.attack + equipedItem.items.item.increaseAttack)
-      {
-        equipmentStatus [2].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-      }
-
-      if (TemporaryData.GetInstance ().selectedCharacter.defense > TemporaryData.GetInstance ().selectedCharacter.defense + equipedItem.items.item.increaseDefense)
-      {
-        equipmentStatus [3].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-      }
-      else if (TemporaryData.GetInstance ().selectedCharacter.defense < TemporaryData.GetInstance ().selectedCharacter.defense + equipedItem.items.item.increaseDefense)
-      {
-        equipmentStatus [3].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-      }
-
-      if (TemporaryData.GetInstance ().selectedCharacter.criRate > TemporaryData.GetInstance ().selectedCharacter.criRate + equipedItem.items.item.increaseCriRate)
-      {
-        equipmentStatus [4].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.red;
-      } 
-      else if (TemporaryData.GetInstance ().selectedCharacter.criRate < TemporaryData.GetInstance ().selectedCharacter.criRate + equipedItem.items.item.increaseCriRate)
-      {
-        equipmentStatus [4].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.green;
-      }
+      isChanging.GetChild (1).GetComponent<Image> ().color = Color.green;
+    }
+    else if (int.Parse (firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseAttack)
+    {
+      isChanging.GetChild (1).GetComponent<Image> ().color = Color.red;
+    }
+      
+    if (int.Parse (firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseDefense)
+    {
+      isChanging.GetChild (2).GetComponent<Image> ().color = Color.green;
+    }
+    else if (int.Parse (firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseDefense)
+    {
+      isChanging.GetChild (2).GetComponent<Image> ().color = Color.red;
+    }
+      
+    if (int.Parse (firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseCriRate)
+    {
+      isChanging.GetChild (3).GetComponent<Image> ().color = Color.green;
+    }
+    else if (int.Parse (firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseCriRate)
+    {
+      isChanging.GetChild (3).GetComponent<Image> ().color = Color.red;
     }
   }
 
   public void EquipedItem(ItemData equipedItem)
   {
-    equipmentStatus [1].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.white;
-    equipmentStatus [2].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.white;
-    equipmentStatus [3].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.white;
-    equipmentStatus [4].transform.parent.transform.GetChild (1).GetComponent<Image> ().color = Color.white;
-
     if (!CheckingIfEquipedThisItemType (equipedItem))
     {
       TemporaryData.GetInstance ().selectedCharacter.equipItem.Add (equipedItem.items);
     }
+    
+    this.transform.GetChild (0).gameObject.SetActive (false);
+    this.transform.GetChild (1).gameObject.SetActive (true);
+    Transform equipedWeaponStatus = this.transform.GetChild (1);
 
-    itemPic.sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
-    equipmentStatus[0].text = equipedItem.items.item.name.ToString();
-    equipmentStatus [1].text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
-    equipmentStatus[2].text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
-    equipmentStatus[3].text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
-    equipmentStatus[4].text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString();
-
+    equipedWeaponStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.name.ToString();
+    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
+    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseDefense.ToString ();
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseCriRate.ToString ();
+    
     GenerateInventoryItem (equipedItem.items);
   }
 
@@ -186,24 +117,32 @@ public class ChangeEquipmentManager : MonoBehaviour
   public void ChangingItem(Item selectedItem)
   {
     GenerateInventoryItem (selectedItem);
-
-    itemPic.sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
-    equipmentStatus[0].text = selectedItem.item.name.ToString();
-    equipmentStatus [1].text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
-    equipmentStatus[2].text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
-    equipmentStatus[3].text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
-    equipmentStatus[4].text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString();
+    
+    this.transform.GetChild (0).gameObject.SetActive (false);
+    this.transform.GetChild (1).gameObject.SetActive (true);
+    Transform equipedWeaponStatus = this.transform.GetChild (1);
+    
+    equipedWeaponStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
+    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = selectedItem.item.name.ToString();
+    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseHP.ToString ();
+    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseAttack.ToString ();
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseDefense.ToString ();
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseCriRate.ToString ();
   }
 
   public void ChangingItem(string itemtype1)
   {
     GenerateInventoryItem (itemtype1);
 
-    equipmentStatus[0].text = itemtype1.ToString();
-    equipmentStatus[1].text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
-    equipmentStatus[2].text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
-    equipmentStatus[3].text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
-    equipmentStatus[4].text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString();
+    this.transform.GetChild (0).gameObject.SetActive (false);
+    this.transform.GetChild (1).gameObject.SetActive (true);
+    Transform equipedWeaponStatus = this.transform.GetChild (1);
+    
+    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = itemtype1.ToString();
+    equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = "0";
+    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = "0";
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = "0";
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = "0";
   }
     
   public void GenerateInventoryItem(Item selectedItem)
@@ -215,6 +154,7 @@ public class ChangeEquipmentManager : MonoBehaviour
     slots.Clear ();
     items.Clear ();
     Destroy(GameObject.Find("selectedArrow"));
+    this.transform.GetChild (2).gameObject.SetActive (true);
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {
@@ -283,6 +223,7 @@ public class ChangeEquipmentManager : MonoBehaviour
     }
     slots.Clear ();
     items.Clear ();
+    this.transform.GetChild (2).gameObject.SetActive (true);
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {

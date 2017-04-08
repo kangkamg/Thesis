@@ -36,7 +36,7 @@ public class GetDataFromSql
     dbconn.Open ();
   }
 
-  public static Ability GetAbility(string name)
+  public static Ability GetAbility(int ID)
   {
     Ability n = new Ability ();
 
@@ -47,7 +47,7 @@ public class GetDataFromSql
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      if (reader.GetString (1) == name)
+      if (reader.GetInt32 (0) == ID)
       {
         n.ID = reader.GetInt32 (0);
         n.abilityName = reader.GetString (1);
@@ -58,9 +58,13 @@ public class GetDataFromSql
         n.range = (int)reader.GetFloat (6);
         n.rangeGrowth = (int)reader.GetFloat (7);
         n.usingAround = reader.GetBoolean (8);
-        n.rangeType = reader.GetString (9);
-        n.abilityType = reader.GetString (10);
-        n.gaugeUse = reader.GetInt32 (11);
+        n.rangeType = reader.GetInt32 (9);
+        n.abilityType = reader.GetInt32 (10);
+        n.abilityEff = reader.GetInt32 (11);
+        n.abilityElement = reader.GetInt32 (12);
+        n.gaugeUse = reader.GetInt32 (13);
+        n.coolDown = (int)reader.GetFloat (14);
+        n.describe = reader.GetString (15);
       }
     }
     reader.Close ();
@@ -71,10 +75,9 @@ public class GetDataFromSql
     return n;
   }
 
-  public static Result GetResult(int ID)
+  public static AIInformation GetAiInfomation (int ID)
   {
-    Result n = new Result ();
-    List<string> droppedItem = new List<string>();
+    AIInformation n = new AIInformation ();
 
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
@@ -89,18 +92,12 @@ public class GetDataFromSql
         string[] item = items.Split ("," [0]);
         for(int i = 0; i < item.Length; i++)
         {
-          droppedItem.Add (item[i].Split(" "[0])[0]);
-          droppedItem.Add (item[i].Split(" "[0])[1]);
-        }
-        for(int i = 0; i < droppedItem.Count; i+=2)
-        {
-          if (Random.Range (0, 101) <= int.Parse (droppedItem [i + 1]))
-          {
-            n.droppedItem.Add(GetItemFromName(droppedItem[i]));
-          }
+          n.droppedItem.Add (item[i]);
         }
         n.givenGold = reader.GetInt32 (2);
         n.givenExp = reader.GetInt32 (3);
+        n.effectiveAttack = reader.GetInt32 (4);
+        n.element = reader.GetInt32 (5);
       }
     }
     reader.Close ();
@@ -110,8 +107,8 @@ public class GetDataFromSql
 
     return n;
   }
-
-  public static CharacterBasicStatus GetCharacter(string name)
+  
+  public static CharacterBasicStatus GetCharacter(int ID)
   {
     CharacterBasicStatus n = new CharacterBasicStatus ();
 
@@ -122,7 +119,7 @@ public class GetDataFromSql
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      if (reader.GetString (1) == name)
+      if (reader.GetInt32 (0) == ID)
       {
         n.ID = reader.GetInt32 (0);
         n.characterName = reader.GetString (1);
@@ -135,14 +132,14 @@ public class GetDataFromSql
         n.criRate = (int)reader.GetFloat (8);
         n.criRateGrowth = (int)reader.GetFloat (9);
         n.movementPoint = (int)reader.GetFloat (10);
-        n.normalAttack = GetAbility (reader.GetString (11));
-        if (reader.GetString (12) != "None") 
+        string learnAbleAbility = reader.GetString (11);
+        string[] learnAbleAb = learnAbleAbility.Split ("," [0]);
+        for(int i = 0; i < learnAbleAb.Length; i++)
         {
-          n.specialAttack = GetAbility (reader.GetString (12));
+          n.learnAbleAbility.Add (learnAbleAb[i]);
         }
-        n.weaponEff = reader.GetString (13);
-        n.armorEff = reader.GetString (14);
-        n.type = reader.GetString (15);
+        n.weaponEff = reader.GetString (12);
+        n.armorEff = reader.GetString (13);
       }
     }
     reader.Close ();
@@ -153,7 +150,7 @@ public class GetDataFromSql
     return n;
   }
 
-  public static ItemStatus GetItemFromName(string name)
+  public static ItemStatus GetItemFromID(int ID)
   {
     ItemStatus n = new ItemStatus ();
 
@@ -164,7 +161,7 @@ public class GetDataFromSql
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      if (reader.GetString (1) == name)
+      if (reader.GetInt32 (0) == ID)
       {
         n.ID = reader.GetInt32 (0);
         n.name = reader.GetString (1);
@@ -241,9 +238,9 @@ public class GetDataFromSql
     return list;
   }
 
-  public static StoryDialogue GetStoryDialogue(int ID)
+  public static List<StoryDialogue> GetAllStoryDialogue()
   {
-    StoryDialogue dialogue = new StoryDialogue ();
+    List<StoryDialogue> allStoryDialogue = new List<StoryDialogue>();
 
     IDbCommand dbcmd = dbconn.CreateCommand ();
 
@@ -252,56 +249,28 @@ public class GetDataFromSql
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      if (reader.GetInt32(0) == ID)
+      StoryDialogue dialogue = new StoryDialogue ();
+      dialogue.ID = reader.GetInt32 (0);
+      dialogue.mapNo = reader.GetInt32 (1);
+      string allDialogue = reader.GetString (2);
+      string[] allDialogueSplit = allDialogue.Split ("," [0]);
+      for (int i = 0; i < allDialogueSplit.Length; i++)
       {
-        dialogue.ID = reader.GetInt32 (0); 
-        string allDialogue = reader.GetString (1);
-        string[] allDialogueSplit = allDialogue.Split ("," [0]);
-        for (int i = 0; i < allDialogueSplit.Length; i++)
-        {
-          dialogue.allDialogue.Add (allDialogueSplit [i]);
-        }
-        string characterName = reader.GetString (2);
-        string[] characterNameSplit = characterName.Split ("," [0]);
-        for (int i = 0; i < characterNameSplit.Length; i++)
-        {
-          dialogue.characterName.Add (characterNameSplit [i]);
-        }
-        break;
+        dialogue.allDialogue.Add (allDialogueSplit [i]);
       }
+      string characterName = reader.GetString (3);
+      string[] characterNameSplit = characterName.Split ("," [0]);
+      for (int i = 0; i < characterNameSplit.Length; i++)
+      {
+        dialogue.characterName.Add (characterNameSplit [i]);
+      }
+      allStoryDialogue.Add (dialogue);
     }
     reader.Close ();
     reader = null;
     dbcmd.Dispose ();
     dbcmd = null;
 
-    return dialogue;
-  }
-
-  public static Ability itemAbilityStatus(int ID)
-  {
-    Ability ab = new Ability ();
-
-    IDbCommand dbcmd = dbconn.CreateCommand ();
-
-    string sqlQuery = "SELECT *" + "FROM UsingItemAbility" ; 
-    dbcmd.CommandText = sqlQuery;
-    IDataReader reader = dbcmd.ExecuteReader ();
-    while (reader.Read ()) 
-    {
-      ab.ID = reader.GetInt32 (0);
-      ab.abilityName = "UsingItem";
-      ab.abilityType = "Support";
-      ab.usingAround = false;
-      ab.range = reader.GetInt32 (1);
-      ab.rangeType = reader.GetString (2);
-      ab.usingAround = reader.GetBoolean (3);
-    }
-    reader.Close ();
-    reader = null;
-    dbcmd.Dispose ();
-    dbcmd = null;
-
-    return ab;
+    return allStoryDialogue;
   }
 }

@@ -15,7 +15,7 @@ public class Quest
 [System.Serializable]
 public class PlayerData
 {
-  public string id;
+  public int id;
   public string name;
   public List<Quest> acceptedQuest = new List<Quest>();
   public List<CharacterStatus> characters = new List<CharacterStatus>();
@@ -23,6 +23,7 @@ public class PlayerData
   public List<Item> inventory = new List<Item>();
   public int chapter;
   public int storyID;
+  public float playedHrs;
 }
 
 public class Result

@@ -13,6 +13,9 @@ public class ShowingCharacterStatusManager : MonoBehaviour
   public Transform equipment;
   public Transform attack;
   public Transform skill;
+  
+  public List<AbilityInformation> abilityInSlots;
+  
 
   public void UpdateStatus()
   {
@@ -20,7 +23,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     characterName.text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
 
     status.GetChild(0).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString();
-    status.GetChild(1).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.experience.ToString();
+    status.GetChild(1).GetChild(0).GetComponent<Text>().text = (TemporaryData.GetInstance ().selectedCharacter.nextLevelExp - TemporaryData.GetInstance ().selectedCharacter.experience).ToString();
     status.GetChild(2).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();
     status.GetChild(3).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString();
     status.GetChild(4).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString();
@@ -29,7 +32,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     SetUpAbility ();
     SetUpEquipment ();
   }
-
+  
   private void SetUpAbility()
   {
     foreach (Transform child in attack.GetChild(0).GetChild(0))
@@ -44,6 +47,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     {
       Destroy (child.gameObject);
     }
+    abilityInSlots.Clear ();
     
     List<AbilityStatus> normalAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).ToList ();
     List<AbilityStatus> specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
@@ -57,9 +61,10 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       normalAtkObj.GetComponent<AbilityInformation> ().ordering = i;
       if (i <= normalAttacks.Count - 1) 
       {
-        AbilityStatus equipedStatus = normalAttacks.Where (x => x.ordering == i).First ();
+        AbilityStatus equipedStatus = normalAttacks [i];
         normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + equipedStatus.ability.ID);
         normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (equipedStatus);
+        abilityInSlots.Add (normalAtkObj.GetComponent<AbilityInformation> ());
       }
       else
       {
@@ -72,8 +77,8 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     specialAtkObj.transform.localScale = Vector3.one;
     specialAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + specialAttacks [0].ability.ID);
     specialAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (specialAttacks [0]);
-    specialAtkObj.GetComponent<AbilityInformation> ().ordering = 3;
-    
+    specialAtkObj.GetComponent<AbilityInformation> ().ordering = 2;
+    abilityInSlots.Add (specialAtkObj.GetComponent<AbilityInformation> ());
     for (int i = 0; i < 3; i++)
     {
       GameObject skillObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
@@ -82,14 +87,35 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       skillObj.GetComponent<AbilityInformation> ().ordering = i;
       if(i <= skills.Count-1)
       {
-        skillObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + skills.Where(x=>x.ordering == i).First().ability.ID);
-        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (skills.Where(x=>x.ordering == i).First());
+        skillObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + skills[i].ability.ID);
+        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (skills[i]);
+        abilityInSlots.Add (skillObj.GetComponent<AbilityInformation> ());
       }
       else
       {
         skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (2);
       }
     }
+    
+    SortingAbility ();
+  }
+  
+  private void SortingAbility()
+  {
+    TemporaryData.GetInstance().selectedCharacter.equipedAbility.Sort(delegate(AbilityStatus a, AbilityStatus b)
+      {
+        int ao = -1;
+        int bo = -1;
+        if(abilityInSlots.Where(x=>x.abilityStatus.ability.ID == a.ability.ID).Count()>0)
+        {
+          ao = abilityInSlots.Where(x=>x.abilityStatus.ability.ID == a.ability.ID).First().ordering;
+        }
+        if(abilityInSlots.Where(x=>x.abilityStatus.ability.ID == b.ability.ID).Count()>0)
+        {
+          bo = abilityInSlots.Where(x=>x.abilityStatus.ability.ID == b.ability.ID).First().ordering;
+        }
+        return (ao.CompareTo(bo));
+    });
   }
   
   private void SetUpEquipment()
@@ -144,11 +170,5 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     CharacterStatusSceneManager.GetInstance ().mainPage.SetActive (false);
 
     CharacterStatusSceneManager.GetInstance ().equipmentPage.GetComponent<ChangeEquipmentManager>().ChangingItem (itemtype1);
-  }
-  
-  public void LevelUp()
-  {
-    TemporaryData.GetInstance().selectedCharacter.characterLevel = int.Parse(this.transform.GetChild (5).GetChild (0).GetChild (2).GetComponent<Text> ().text);
-    SystemManager.CheckingLevelUp (TemporaryData.GetInstance ().selectedCharacter);
   }
 }

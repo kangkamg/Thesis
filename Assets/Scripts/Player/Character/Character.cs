@@ -16,6 +16,7 @@ public class Character : MonoBehaviour
   
   public int currentHP;
   public int ordering;
+  public int ID;
 
   public bool played = false;
 
@@ -47,5 +48,49 @@ public class Character : MonoBehaviour
 
     currentHP = characterStatus.maxHp;
     this.name = characterStatus.basicStatus.characterName;
+  }
+  
+  public virtual bool CheckingAbilityCanPerform(AbilityStatus checking, out List<Tile> returnTiles)
+  {
+    List<Tile> targetTilesInRange = new List<Tile> ();
+    
+    foreach (Tile t in TileHighLight.FindHighLight(GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],characterStatus.movementPoint, GameManager.GetInstance().character.Where (x => x.gridPosition != gridPosition).Select (x => x.gridPosition).ToArray ()))
+    {
+      if (checking.ability.abilityType == 2)
+      {
+        foreach (Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
+        {
+          targetTilesInRange.Add (a);
+        }
+        foreach (Tile b in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true)) 
+        {
+          targetTilesInRange.Add (b);
+        }
+      } 
+      else if (checking.ability.abilityType == 0)
+      {
+        foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
+        {
+          targetTilesInRange.Add (a);
+        }
+      }
+      else
+      {
+        foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true))
+        {
+          targetTilesInRange.Add (a);
+        }
+      }
+    }
+    if (targetTilesInRange.Count > 0)
+    {
+      returnTiles = targetTilesInRange;
+      return true;
+    } 
+    else 
+    {
+      returnTiles = null;
+      return false;
+    }
   }
 }

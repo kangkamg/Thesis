@@ -26,7 +26,18 @@ public class CharacterStatus
 {
   public CharacterBasicStatus basicStatus;
   public int characterLevel = 1;
-  public int experience;
+  public int experience = 0;
+  public int nextLevelExp 
+  {
+    get 
+    { 
+      return (Mathf.RoundToInt (Mathf.Pow (characterLevel+1, 4) - Mathf.Pow(characterLevel,4)));
+    }
+    private set
+    { 
+      
+    }
+  }
   public List<AbilityStatus> learnedAbility = new List<AbilityStatus> ();
   public List<AbilityStatus> equipedAbility = new List<AbilityStatus> ();
   public List<Item> equipItem = new List<Item>();

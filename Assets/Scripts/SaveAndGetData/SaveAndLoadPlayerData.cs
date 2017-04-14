@@ -7,7 +7,7 @@ using System.Data;
 
 public class SaveAndLoadPlayerData
 {
-  public static void SaveData(object data)
+  public static void SaveData(object data,int saveID)
   {
     List<int> DataID = new List<int>();
 
@@ -21,10 +21,10 @@ public class SaveAndLoadPlayerData
       DataID.Add (reader.GetInt32 (0));
     }
       
-    if (DataID.Contains(1)) 
+    if (DataID.Contains(saveID)) 
     {
       IDbCommand ucmd = GetDataFromSql.dbconn.CreateCommand ();
-      string updateData = "UPDATE SaveAndLoad SET Data = '" + EncodeAndDeCode.Encode (data) + "' where ID = 1;" + "SELECT * " + "FROM SaveAndLoad"; 
+      string updateData = "UPDATE SaveAndLoad SET Data = '" + EncodeAndDeCode.Encode (data) + "' where ID = " + saveID + "; SELECT * " + "FROM SaveAndLoad"; 
       ucmd.CommandText = updateData;
       IDataReader update = ucmd.ExecuteReader ();
 
@@ -34,7 +34,7 @@ public class SaveAndLoadPlayerData
     else 
     {
       IDbCommand icmd = GetDataFromSql.dbconn.CreateCommand ();
-      string insertQuery = "INSERT INTO SaveAndLoad(ID,Name,Data)" + "VALUES (" + "1 ,'" + "Geng" + "'" + ", '" + EncodeAndDeCode.Encode (data) + "' );"; 
+      string insertQuery = "INSERT INTO SaveAndLoad(ID,Name,Data)" + "VALUES (" + saveID + " ,'" + "Geng" + "'" + ", '" + EncodeAndDeCode.Encode (data) + "' );"; 
       icmd.CommandText = insertQuery;
       IDataReader insert = icmd.ExecuteReader ();
 
@@ -48,7 +48,7 @@ public class SaveAndLoadPlayerData
     dbcmd = null;
   }
 
-  public static object LoadData(string name)
+  public static object LoadData(int ID)
   {
     object data = new object();
 
@@ -59,7 +59,7 @@ public class SaveAndLoadPlayerData
     IDataReader reader = dbcmd.ExecuteReader ();
     while (reader.Read ()) 
     {
-      if (reader.GetString (1) == name)
+      if (reader.GetInt32 (0) == ID)
       {
         data = EncodeAndDeCode.Decode (reader.GetString (2));
       }
@@ -70,5 +70,30 @@ public class SaveAndLoadPlayerData
     dbcmd = null;
 
     return data;
+  }
+  
+  public static bool CheckingSave(int ID)
+  {
+    IDbCommand dbcmd =  GetDataFromSql.dbconn.CreateCommand ();
+
+    string sqlQuery = "SELECT *" + "FROM SaveAndLoad" ; 
+    dbcmd.CommandText = sqlQuery;
+    IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      if (reader.GetInt32 (0) == ID)
+      {
+        reader.Close ();
+        reader = null;
+        dbcmd.Dispose ();
+        dbcmd = null;
+        return true;
+      }
+    }
+    reader.Close ();
+    reader = null;
+    dbcmd.Dispose ();
+    dbcmd = null;
+    return false;
   }
 }

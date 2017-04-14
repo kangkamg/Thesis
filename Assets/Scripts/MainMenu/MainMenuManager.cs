@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class MainMenuManager : MonoBehaviour
     optionMenu.SetActive (false);
     menuOn = false;
   }
+
   public void ShowMenu()
   {
     if (menuOn) 
@@ -68,7 +70,14 @@ public class MainMenuManager : MonoBehaviour
 
   public void GoPlayScene()
   {
-    SceneManager.LoadScene ("GamePlayScene");
+    if (TemporaryData.GetInstance ().allStory.Where (x => x.ID == TemporaryData.GetInstance ().playerData.storyID && x.mapNo == PlayerPrefs.GetInt (Const.MapNo, 0)).Count() > 0)
+    {
+      SceneManager.LoadScene ("StoryScene");
+    } 
+    else 
+    {
+      SceneManager.LoadScene ("GamePlayScene");
+    }
   }
 
   public void GoInTownScene(int inTownSceneNumber)
@@ -99,5 +108,10 @@ public class MainMenuManager : MonoBehaviour
     dungeonMenu.SetActive (false);
     optionMenu.SetActive (false);
     bgMenu.SetActive (false);
+  }
+  
+  public void SaveGame()
+  {
+    SystemManager.SaveGameData ();
   }
 }

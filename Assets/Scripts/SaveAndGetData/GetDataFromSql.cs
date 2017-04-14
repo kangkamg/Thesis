@@ -213,6 +213,7 @@ public class GetDataFromSql
 
       if (s.Contains(mapNumber))
       {
+        n.ID = reader.GetInt32 (0);
         n.name = reader.GetString (1);
         n.price = reader.GetInt32 (2);
         n.increaseHP = (int)reader.GetFloat (3);

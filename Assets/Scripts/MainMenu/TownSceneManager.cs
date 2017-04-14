@@ -26,6 +26,10 @@ public class TownSceneManager : MonoBehaviour
       shopMain.SetActive (true);
       shopSup.SetActive (false);
       shopBg.SetActive (false);
+      library.SetActive (false);
+      libraryMain.SetActive (false);
+      libraryQuest.SetActive (false);
+      libraryQuestDetail.SetActive (false);
     } 
     else
     {
@@ -33,6 +37,10 @@ public class TownSceneManager : MonoBehaviour
       libraryMain.SetActive (true);
       libraryQuest.SetActive (false);
       libraryQuestDetail.SetActive (false);
+      shop.SetActive (false);
+      shopMain.SetActive (false);
+      shopSup.SetActive (false);
+      shopBg.SetActive (false);
     }
   }
 
@@ -47,6 +55,7 @@ public class TownSceneManager : MonoBehaviour
     }
     else 
     {
+      ItemManager.GetInstance ().GenerateInventoryItems ("Weapon");
     }
   }
 

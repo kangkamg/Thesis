@@ -16,6 +16,7 @@ public class AIInformation
 public class AICharacter : Character
 {
   public AIInformation aiInfo;
+  public int rageGuage;
   
   public override void SetStatus(int ID)
   {
@@ -39,7 +40,7 @@ public class AICharacter : Character
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();
-              GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType);
+              GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, GameManager.GetInstance ().usingAbility.range, GameManager.GetInstance ().usingAbility.ability.rangeType);
 
               GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)target.gridPosition.x] [(int)target.gridPosition.z]);
               target = null;
@@ -60,38 +61,26 @@ public class AICharacter : Character
   {
     if (currentHP > 0)
     {
-      GameManager.GetInstance ().usingAbility = characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First();
+      List<AbilityStatus> readyAbility = characterStatus.equipedAbility.Where (x => x.ability.gaugeUse <= rageGuage).ToList();
       List<Tile> targetTilesInRange = new List<Tile> ();
-
-      foreach (Tile t in TileHighLight.FindHighLight(GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],characterStatus.movementPoint, GameManager.GetInstance().character.Where (x => x.gridPosition != gridPosition).Select (x => x.gridPosition).ToArray ()))
+      
+      readyAbility.Sort (delegate(AbilityStatus a, AbilityStatus b)
       {
-        if (characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType == 2)
+          return a.power.CompareTo(b.power);
+      }
+      );
+      
+      readyAbility.Reverse ();
+      
+      foreach (AbilityStatus a in readyAbility)
+      {
+        if(CheckingAbilityCanPerform(a,out targetTilesInRange))
         {
-          foreach (Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
-          {
-            targetTilesInRange.Add (a);
-          }
-          foreach (Tile b in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true)) 
-          {
-            targetTilesInRange.Add (b);
-          }
-        } 
-        else if (characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType == 0)
-        {
-          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
-          {
-            targetTilesInRange.Add (a);
-          }
-        }
-        else
-        {
-          foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true))
-          {
-            targetTilesInRange.Add (a);
-          }
+          GameManager.GetInstance ().usingAbility = a;
+          break;
         }
       }
-
+      
       List<Tile> movementToAttackTilesInRange = TileHighLight.FindHighLight (GameManager.GetInstance ().map [(int)gridPosition.x] [(int)gridPosition.z], characterStatus.movementPoint, GameManager.GetInstance().character.Where (x => x.gridPosition != gridPosition).Select (x => x.gridPosition).ToArray ());
       List<Tile> movementTilesInRange = TileHighLight.FindHighLight (GameManager.GetInstance ().map [(int)gridPosition.x] [(int)gridPosition.z], characterStatus.movementPoint + 99999);
     
@@ -109,7 +98,7 @@ public class AICharacter : Character
         }
         else 
         {
-          GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().ability.rangeType);
+          GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, GameManager.GetInstance ().usingAbility.range, GameManager.GetInstance ().usingAbility.ability.rangeType);
           GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)opponent.gridPosition.x] [(int)opponent.gridPosition.z]);
         }
         

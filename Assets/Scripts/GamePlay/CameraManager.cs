@@ -22,11 +22,11 @@ public class CameraManager : MonoBehaviour
   private Vector3 _originPos;
   private float _orthographicSize;
   
-  private bool following;
-  private bool isLookWholeMap;
-  public bool isFocus;
+  private bool following = false;
+  private bool isLookWholeMap = false;
+  public bool isFocus = false;
   
-  Vector3 originTouch;
+  Vector2 originTouch;
 
   private void Awake()
   {
@@ -43,12 +43,18 @@ public class CameraManager : MonoBehaviour
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
     }
-    else if (!isFocus) 
+    
+    if (!isFocus && !isLookWholeMap) 
     {
       if (Input.touchCount == 2)
       {
         PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
       }
+      else if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
+      {
+        originTouch = Input.mousePosition;
+      }
+      
       if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved) 
       {
         MoveCameraWithTouch ();
@@ -130,17 +136,20 @@ public class CameraManager : MonoBehaviour
     
     float dealtaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
     
-    this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
+    if (this.GetComponent<Camera> ().orthographicSize < 10 || this.GetComponent<Camera> ().orthographicSize > 1)
+    {
+      this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
     
-    this.GetComponent<Camera> ().orthographicSize = Mathf.Max(this.GetComponent<Camera> ().orthographicSize, 0.1f);
+      this.GetComponent<Camera> ().orthographicSize = Mathf.Max (this.GetComponent<Camera> ().orthographicSize, 0.1f);
+    }
   }
   
   public void MoveCameraWithTouch()
   {
-    Vector3 targetCamPos = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+    Vector2 newTouchposition = Input.GetTouch(0).position;
     
-    targetCamPos.y = 0;
+    transform.position = Vector3.SmoothDamp (transform.position,-1*(Vector3)(originTouch - newTouchposition)*this.GetComponent<Camera> ().orthographicSize/this.GetComponent<Camera> ().pixelHeight*2f, ref velocity, smoothing * Time.deltaTime);
     
-    transform.position = Vector3.SmoothDamp (transform.position, -targetCamPos, ref velocity, smoothing * Time.deltaTime);
+    originTouch = newTouchposition;
   }
 }

@@ -87,7 +87,8 @@
      <Compile Include="Assets\Scripts\SaveAndGetData\EncodeAndDeCode.cs" />
      <Compile Include="Assets\Scripts\SaveAndGetData\GetDataFromSql.cs" />
      <Compile Include="Assets\Scripts\SaveAndGetData\SaveAndLoadPlayerData.cs" />
-     <Compile Include="Assets\Scripts\StartSceneManager.cs" />
+     <Compile Include="Assets\Scripts\StartScene\SaveData.cs" />
+     <Compile Include="Assets\Scripts\StartScene\StartSceneManager.cs" />
      <Compile Include="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs" />
      <Compile Include="Assets\Scripts\SupMenuSceneManager.cs" />
      <Compile Include="Assets\Scripts\SystemManager.cs" />

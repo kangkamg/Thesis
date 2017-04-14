@@ -76,7 +76,7 @@ public class DialogueManager : MonoBehaviour
 
     if(_isEndOfDialogue)
     {
-      if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+      if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
           SceneManager.LoadScene("GamePlayScene");
           TemporaryData.GetInstance ().playerData.storyID ++;
@@ -106,7 +106,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
       {
         break;
       }
@@ -207,7 +207,7 @@ public class DialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (Input.GetMouseButton (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
+        if (/*Input.GetMouseButton (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
         {
           yield return new WaitForSeconds (SecondBetweenCharacters * CharacterRateMultiplier);
         }
@@ -224,7 +224,7 @@ public class DialogueManager : MonoBehaviour
 
     while (true)
     {
-      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
       {
         break;
       }

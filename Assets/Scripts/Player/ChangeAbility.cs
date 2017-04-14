@@ -92,7 +92,6 @@ public class ChangeAbility : MonoBehaviour
     if (TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.ID == changingAbilityID).Count () > 0) 
       TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Remove (TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.ID == changingAbilityID).First ());
     
-    abilityStatus.ordering = changingAbilityOrdering;
     TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Add (abilityStatus);
     changingAbilityID = abilityStatus.ability.ID;
     GenerateAbility (abilityStatus);

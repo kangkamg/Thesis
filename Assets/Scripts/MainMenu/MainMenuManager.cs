@@ -32,13 +32,13 @@ public class MainMenuManager : MonoBehaviour
     {
       playerMenu.SetActive (false);
       menuOn = false;
-      showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+      showMenuBT.transform.localPosition = new Vector3 (0, -60, 0);
     } 
     else
     {
       playerMenu.SetActive(true);
       menuOn = true;
-      showMenuBT.transform.localPosition = new Vector3 (0, 88, 0);
+      showMenuBT.transform.localPosition = new Vector3 (0, 140, 0);
     }
   }
 
@@ -49,7 +49,7 @@ public class MainMenuManager : MonoBehaviour
     PlayerPrefs.SetInt (Const.TownSceneNo, townSceneNumber);
     playerMenu.SetActive (false);
     menuOn = false;
-    showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+    showMenuBT.transform.localPosition = new Vector3 (0, -60, 0);
   }
 
   public void ShowDungeonMenu(int mapNumber)
@@ -59,7 +59,7 @@ public class MainMenuManager : MonoBehaviour
     PlayerPrefs.SetInt (Const.MapNo, mapNumber);
     playerMenu.SetActive (false);
     menuOn = false;
-    showMenuBT.transform.localPosition = new Vector3 (0, -50, 0);
+    showMenuBT.transform.localPosition = new Vector3 (0, -60, 0);
   }
     
   public void ShowOptionMenu()

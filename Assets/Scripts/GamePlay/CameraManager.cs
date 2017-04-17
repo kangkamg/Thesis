@@ -43,6 +43,12 @@ public class CameraManager : MonoBehaviour
       targetCamPos.y = 0;
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
+
+      if (Vector3.Distance (targetCamPos, transform.position) < 0.1f)
+      {
+        transform.position = targetCamPos;
+        following = false;
+      }
     }
     
     if (!isFocus && !isLookWholeMap && !following) 

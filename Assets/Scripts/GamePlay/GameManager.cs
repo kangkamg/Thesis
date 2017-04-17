@@ -188,7 +188,10 @@ public class GameManager : MonoBehaviour
   public void FixedUpdate()
   {
     if (selectedCharacter.positionQueue.Count > 0)
+    {
+      CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
       selectedCharacter.MoveToDesTile ();
+    }
   }
   
   public void GenerateMap(int mapNumber)
@@ -338,7 +341,6 @@ public class GameManager : MonoBehaviour
         GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UsedAbility"));
         abilityObj.transform.SetParent (playerUI.transform.GetChild (0).GetChild (1).GetChild(0));
         abilityObj.transform.localScale = Vector3.one;
-        abilityObj.GetComponent<RectTransform>().anchoredPosition = new Vector3 (-180+(162*i), 0, 0); 
         if (i <= normalAttack.Count-1)
         {
           abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + normalAttack[i].ability.ID); 
@@ -365,7 +367,6 @@ public class GameManager : MonoBehaviour
       GameObject specialAbObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UsedAbility"));
       specialAbObj.transform.SetParent (playerUI.transform.GetChild (0).GetChild (1).GetChild(0));
       specialAbObj.transform.localScale = Vector3.one;
-      specialAbObj.GetComponent<RectTransform>().anchoredPosition = new Vector3 (145, 0, 0);
       specialAbObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + specialAttack.ability.ID); 
       specialAbObj.GetComponent<UsingAbilityManager> ().data = specialAttack;
       abilityObjs.Add (specialAbObj.GetComponent<UsingAbilityManager> ());
@@ -390,7 +391,6 @@ public class GameManager : MonoBehaviour
         GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UsedAbility"));
         abilityObj.transform.SetParent (playerUI.transform.GetChild (0).GetChild (1).GetChild(0));
         abilityObj.transform.localScale = Vector3.one;
-        abilityObj.GetComponent<RectTransform>().anchoredPosition = new Vector3 (-180+(120*i), 0, 0);
         if (i <= skill.Count-1)
         {
           abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + skill[i].ability.ID); 
@@ -631,8 +631,6 @@ public class GameManager : MonoBehaviour
 
   public void MoveCurrentCharacter(Tile desTile)
   {
-    CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
-    
     List<Vector3> occupied = character.Where (x => x.gridPosition != desTile.gridPosition && x.gridPosition != selectedCharacter.gridPosition).Select (x => x.gridPosition).ToList ();
 
     foreach (List<Tile> t in map)
@@ -763,7 +761,9 @@ public class GameManager : MonoBehaviour
 
   public void NextTurn()
   {
-    StartCoroutine(WaitEndTurn ());
+    if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() > 0 && character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() > 0 ) StartCoroutine(WaitEndTurn ());
+    else if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() <= 0) StartCoroutine (ShowResults (true));
+    else if(character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() <= 0) StartCoroutine (ShowResults (false));
   }
 
   private IEnumerator WaitEndTurn()
@@ -999,11 +999,9 @@ public class GameManager : MonoBehaviour
     {
       character [i].ordering = i;
     }
-    
-    if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() <= 0) StartCoroutine (ShowResults ());
   }
 
-  public IEnumerator ShowResults()
+  public IEnumerator ShowResults(bool isWin)
   {
     while (true)
     {
@@ -1021,6 +1019,10 @@ public class GameManager : MonoBehaviour
       break;
     }
 
+    if (isWin)
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Winner");
+    else
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Loser");
     results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
     results.transform.GetChild (0).GetChild (2).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenGold.ToString();
 
@@ -1107,6 +1109,6 @@ public class GameManager : MonoBehaviour
   {
     TemporaryData.GetInstance ().result.givenExp = 1000;
     
-    StartCoroutine (ShowResults ());
+    StartCoroutine (ShowResults (true));
   }
 }

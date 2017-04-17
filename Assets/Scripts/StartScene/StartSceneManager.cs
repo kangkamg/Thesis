@@ -42,23 +42,26 @@ public class StartSceneManager : MonoBehaviour
 
     CharacterStatus adding = new CharacterStatus ();
     Item equipedItem = new Item ();
+    AbilityStatus equiped = new AbilityStatus ();
+    AbilityStatus learning = new AbilityStatus ();
     adding.basicStatus = GetDataFromSql.GetCharacter (1001);
-    adding.characterLevel = 1;
+    adding.characterLevel = 5;
     adding.isInParty = true;
+
     for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
     {
-      AbilityStatus equiped = new AbilityStatus ();
-      AbilityStatus learning = new AbilityStatus ();
       string[] learnAbleAb = adding.basicStatus.learnAbleAbility [i].Split (" " [0]);
       for(int j = 0; j < learnAbleAb.Length; j=j+2)
       {
-        if(int.Parse(learnAbleAb[j+1]) == adding.characterLevel)
+        if(int.Parse(learnAbleAb[j+1]) <= adding.characterLevel)
         {
+          learning = new AbilityStatus ();
           learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
           learning.level = 1;
           learning.exp = 0;
           adding.learnedAbility.Add (learning);
-          
+
+          equiped = new AbilityStatus ();
           equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
           equiped.level = 1;
           equiped.exp = 0;
@@ -97,18 +100,18 @@ public class StartSceneManager : MonoBehaviour
     adding.isInParty = true;
     for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
     {
-      AbilityStatus equiped = new AbilityStatus ();
-      AbilityStatus learning = new AbilityStatus ();
       string[] learnAbleAb = adding.basicStatus.learnAbleAbility [i].Split (" " [0]);
       for(int j = 0; j < learnAbleAb.Length; j=j+2)
       {
         if(int.Parse(learnAbleAb[j+1]) == adding.characterLevel)
         {
+          learning = new AbilityStatus ();
           learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
           learning.level = 1;
           learning.exp = 0;
           adding.learnedAbility.Add (learning);
 
+          equiped = new AbilityStatus ();
           equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
           equiped.level = 1;
           equiped.exp = 0;
@@ -154,7 +157,7 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-    if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+    if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     {
       if (!bookOpen) 
       {
@@ -193,7 +196,7 @@ public class StartSceneManager : MonoBehaviour
     PlayerPrefs.SetInt (Const.NewGame, 1);
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Openbook");
     touchText.text = "Selected Save";
-    touchText.rectTransform.anchoredPosition = new Vector2 (0, 150);
+    touchText.rectTransform.anchoredPosition = new Vector2 (0, 270);
     bookOpen = true;
     openBook.SetActive (bookOpen);
     CreateSaveIndex ();

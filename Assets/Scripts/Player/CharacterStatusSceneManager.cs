@@ -38,6 +38,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
   private void Start()
   {
     GenerateCharacter ();
+    this.transform.GetChild (0).gameObject.SetActive (false);
   }
 
   public void GenerateCharacter()

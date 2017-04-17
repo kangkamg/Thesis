@@ -24,7 +24,7 @@ public class AICharacter : Character
     base.SetStatus (ID);
   }
   
-  public override void Update()
+  public override void MoveToDesTile()
   {
     if (positionQueue.Count > 0)
     {
@@ -54,7 +54,6 @@ public class AICharacter : Character
         }
       }
     }
-    base.Update ();
   }
 
   public override void TurnUpdate()

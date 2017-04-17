@@ -5,7 +5,7 @@ using System.Linq;
 
 public class PlayerCharacter : Character 
 {
-  public override void Update()
+  public override void MoveToDesTile()
   {
     if (positionQueue.Count > 0)
     {
@@ -49,14 +49,8 @@ public class PlayerCharacter : Character
         }
       }
     }
-    base.Update ();
   }
-
-  public void UpdateUI()
-  {
-    
-  }
-
+  
   public override void TurnUpdate()
   {
     if (GameManager.GetInstance().isAutoPlay && currentHP > 0) 

@@ -62,29 +62,31 @@ public class GameManager : MonoBehaviour
 
   private void Update()
   {
-    if (/*Input.GetMouseButtonDown(0) && */!hitButton && isPlayerTurn && isTouch && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    foreach (Touch toches in Input.touches) 
     {
-      Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch(0).position);
+      Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch (0).position);
 
       RaycastHit hit;
-      
-      if (Physics.Raycast (ray, out hit, 1000f)) {
-        //if (Input.GetTouch (0).phase == TouchPhase.Ended) {
-          if (hit.transform.tag == "Player") {
+      if (Physics.Raycast (ray, out hit, 1000f)) 
+      {
+        if (/*Input.GetMouseButtonDown(0) && */!hitButton && isPlayerTurn && isTouch && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended && !CameraManager.GetInstance().isMoving)
+        {
+          if (hit.transform.tag == "Player") 
+          {
             if (oldCharacterNo < 0) {
               SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
-            } else {
-              if (oldCharacterNo != hit.transform.GetComponent<PlayerCharacter> ().ordering) {
-                selectedCharacter.gridPosition = oldGridPosition;
-                selectedCharacter.transform.position = oldPosition;
-                SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
-                /*if (targetInRange.Count > 0) 
+            } 
+            else 
+            {
+              if (oldCharacterNo != hit.transform.GetComponent<PlayerCharacter> ().ordering) 
+              {
+                if (usingAbility.ability.abilityType < 0 && targetInRange.Count>0) 
                 {
-                  foreach (GameObject h in targetInRange)
+                  foreach (GameObject h in targetInRange) 
                   {
                     if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
                     {
-                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0)
+                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) 
                       {
                         Tile desTile = CheckingMovementToAttackTarget (hit.transform);
 
@@ -94,32 +96,49 @@ public class GameManager : MonoBehaviour
 
                         break;
                       } 
-                      else 
+                      else
                       {
                         AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
                         break;
                       }
                     }
                   }
-                }*/
+                } 
+                else 
+                {
+                  selectedCharacter.gridPosition = oldGridPosition;
+                  selectedCharacter.transform.position = oldPosition;
+                  SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
+                }
               }
             }
           }
 
-          if (!selectedCharacter.played) {
-            if (hit.transform.name.Contains ("Tile")) {
-              foreach (Character c in character) {
-                if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy") {
+          if (!selectedCharacter.played)
+          {
+            if (hit.transform.name.Contains ("Tile"))
+            {
+              foreach (Character c in character)
+              {
+                if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy")
+                {
                   AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
                   break;
-                } else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player") {
-                  if (usingAbility.ability.abilityType == -1 || usingAbility.ability.abilityType == -2 || usingAbility.ability.abilityType == -3) {  
+                } 
+                else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player") 
+                {
+                  if (usingAbility.ability.abilityType == -1 || usingAbility.ability.abilityType == -2 || usingAbility.ability.abilityType == -3) 
+                  {  
                     AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
                     break;
                   }
-                } else if (c.gridPosition != hit.transform.GetComponent<Tile> ().gridPosition) {
-                  foreach (GameObject m in highlightTileMovement) {
-                    if (m.transform.position.x == hit.transform.position.x && m.transform.position.z == hit.transform.position.z) {
+                } 
+                else if (c.gridPosition != hit.transform.GetComponent<Tile> ().gridPosition)
+                {
+                  foreach (GameObject m in highlightTileMovement) 
+                  {
+                    if (m.transform.position.x == hit.transform.position.x && m.transform.position.z == hit.transform.position.z) 
+                    {
                       MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
                       break;
                     }
@@ -128,12 +147,17 @@ public class GameManager : MonoBehaviour
                 }
               }
             }
-            if (hit.transform.tag == "Enemy") {
-              if (targetInRange.Count > 0) {
-                foreach (GameObject h in targetInRange) {
-                  if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) {
-                    if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) {
-                   
+            if (hit.transform.tag == "Enemy") 
+            {
+              if (targetInRange.Count > 0) 
+              {
+                foreach (GameObject h in targetInRange)
+                {
+                  if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+                  {
+                    if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0)
+                    {
+
                       Tile desTile = CheckingMovementToAttackTarget (hit.transform);
 
                       MoveCurrentCharacter (desTile);
@@ -141,22 +165,32 @@ public class GameManager : MonoBehaviour
                       selectedCharacter.target = hit.transform.GetComponent<Character> ();
 
                       break;
-                    } else {
+                    }
+                    else 
+                    {
                       AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
                       break;
                     }
                   }
                 }
-              } else {
-            
+              } 
+              else 
+              {
+
               }
             }
           }
-        //}
+        }
       }
     }
   }
-
+  
+  public void FixedUpdate()
+  {
+    if (selectedCharacter.positionQueue.Count > 0)
+      selectedCharacter.MoveToDesTile ();
+  }
+  
   public void GenerateMap(int mapNumber)
   {
     LoadMap(mapNumber);
@@ -597,6 +631,8 @@ public class GameManager : MonoBehaviour
 
   public void MoveCurrentCharacter(Tile desTile)
   {
+    CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+    
     List<Vector3> occupied = character.Where (x => x.gridPosition != desTile.gridPosition && x.gridPosition != selectedCharacter.gridPosition).Select (x => x.gridPosition).ToList ();
 
     foreach (List<Tile> t in map)
@@ -704,27 +740,22 @@ public class GameManager : MonoBehaviour
       selectedCharacter.transform.GetChild(0).GetComponent<Animator> ().Play ("Test");
       Animator anim = selectedCharacter.transform.GetChild(0).GetComponent<Animator> ();
       target.currentHP += amountOfResults;
+      target.GetComponent<Character>().info.transform.GetChild (1).GetComponent<TextMesh> ().text = target.currentHP.ToString();
       if(amountOfResults <= 0) FloatingTextController (amountOfResults*-1, target.transform);
       else FloatingTextController (amountOfResults, target.transform);
       if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
       else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
-      if (target.currentHP <= 0)
-      {
-        RemoveDead ();
-        if (target.GetType () == typeof(AICharacter))
-          FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
-        else
-          FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
-        yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo (0).length * anim.GetCurrentAnimatorStateInfo (0).speed);
-        break;
-      } 
-      else 
-      {
-        i++;
-        yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo (0).length * anim.GetCurrentAnimatorStateInfo (0).speed);
-      }
+      i++;
+      yield return new WaitForSeconds (anim.GetCurrentAnimatorStateInfo (0).length * anim.GetCurrentAnimatorStateInfo (0).speed);
     }
-    
+    if (target.currentHP <= 0) 
+    {
+      RemoveDead ();
+      if (target.GetType () == typeof(AICharacter))
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
+      else
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
+    }
     CameraManager.GetInstance ().ResetCamera ();
     selectedCharacter.played = true;
     NextTurn ();

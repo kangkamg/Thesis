@@ -24,11 +24,11 @@ public class Character : MonoBehaviour
 
   public CharacterStatus characterStatus = new CharacterStatus();
 
-  public virtual void Update()
+  public virtual void MoveToDesTile()
   {
-    info.transform.GetChild (1).GetComponent<TextMesh> ().text = currentHP.ToString();
-  }
 
+  }
+  
   public virtual void TurnUpdate()
   {
    

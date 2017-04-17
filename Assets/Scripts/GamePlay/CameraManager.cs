@@ -25,6 +25,7 @@ public class CameraManager : MonoBehaviour
   private bool following = false;
   private bool isLookWholeMap = false;
   public bool isFocus = false;
+  public bool isMoving = false;
   
   Vector2 originTouch;
 
@@ -35,7 +36,7 @@ public class CameraManager : MonoBehaviour
 
   private void LateUpdate () 
   {
-    if (following && !isFocus && !isLookWholeMap)
+    if (following)
     {
       Vector3 targetCamPos = follower.position;
 
@@ -44,21 +45,28 @@ public class CameraManager : MonoBehaviour
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
     }
     
-    if (!isFocus && !isLookWholeMap) 
+    if (!isFocus && !isLookWholeMap && !following) 
     {
       if (Input.touchCount == 2)
       {
         PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
       }
-      else if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
-      {
-        originTouch = Input.mousePosition;
-      }
       
+      if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
+      {
+        originTouch = Input.GetTouch(0).position;
+      }
+        
       if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved) 
       {
         MoveCameraWithTouch ();
       }
+        
+      if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Ended) 
+      {
+        isMoving = false;
+      }
+      
     }
 	}
     
@@ -89,6 +97,7 @@ public class CameraManager : MonoBehaviour
   public void FocusCamera(Vector3 _selectedCharacter, Vector3 _target)
   {
     isFocus = true;
+    following = false;
     
     this.GetComponent<Camera> ().orthographicSize = Mathf.RoundToInt(Vector3.Distance (_selectedCharacter, _target));
 
@@ -136,7 +145,7 @@ public class CameraManager : MonoBehaviour
     
     float dealtaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
     
-    if (this.GetComponent<Camera> ().orthographicSize < 10 || this.GetComponent<Camera> ().orthographicSize > 1)
+    if (this.GetComponent<Camera> ().orthographicSize > 3 && this.GetComponent<Camera> ().orthographicSize < 10)
     {
       this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
     
@@ -146,9 +155,12 @@ public class CameraManager : MonoBehaviour
   
   public void MoveCameraWithTouch()
   {
+    isMoving = true;
+    following = false;
+    
     Vector2 newTouchposition = Input.GetTouch(0).position;
     
-    transform.position = Vector3.SmoothDamp (transform.position,-1*(Vector3)(originTouch - newTouchposition)*this.GetComponent<Camera> ().orthographicSize/this.GetComponent<Camera> ().pixelHeight*2f, ref velocity, smoothing * Time.deltaTime);
+    transform.position += transform.TransformDirection ((Vector3)(originTouch - newTouchposition)*this.GetComponent<Camera> ().orthographicSize/this.GetComponent<Camera> ().pixelHeight*2f);
     
     originTouch = newTouchposition;
   }

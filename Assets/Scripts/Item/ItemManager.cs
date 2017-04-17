@@ -23,6 +23,7 @@ public class ItemManager : MonoBehaviour
   {
     instance = this;
     canBuy = GetDataFromSql.GetItemFromMap (PlayerPrefs.GetInt (Const.TownSceneNo, 1).ToString ());
+    goldText.text = TemporaryData.GetInstance ().playerData.gold.ToString ();
   }
 
   public void GenerateBuyingItems(string itemsType)

@@ -154,7 +154,7 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-    if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       if (!bookOpen) 
       {

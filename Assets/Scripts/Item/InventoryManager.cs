@@ -77,6 +77,7 @@ public class InventoryManager : MonoBehaviour
     } 
     else
     {
+      slotPanel.transform.localPosition = Vector3.zero;
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
 

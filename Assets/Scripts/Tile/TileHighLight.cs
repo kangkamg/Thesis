@@ -67,7 +67,7 @@ public class TileHighLight : MonoBehaviour
     }
     if (staticRange) 
     {
-      for(int i = closed.Count-1 ; i > 0;i--) 
+      for(int i = closed.Count-1 ; i >= 0;i--) 
       {
         if (closed [i].impassible) 
         {
@@ -112,7 +112,7 @@ public class TileHighLight : MonoBehaviour
         path.Add (newTilePath);
       }
     }
-    for(int i = closed.Count-1 ; i > 0;i--) 
+    for(int i = closed.Count-1 ; i >= 0;i--) 
     {
       if (closed [i].impassible) 
       {

@@ -78,10 +78,15 @@ public class DialogueManager : MonoBehaviour
     {
       if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-          SceneManager.LoadScene("GamePlayScene");
-          TemporaryData.GetInstance ().playerData.storyID ++;
+          EndingDialogue ();
         }
     }
+  }
+  
+  public void EndingDialogue()
+  {
+    SceneManager.LoadScene("GamePlayScene");
+    TemporaryData.GetInstance ().playerData.storyID ++;
   }
 
   private IEnumerator StartDialogue()

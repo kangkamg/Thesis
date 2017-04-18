@@ -10,6 +10,7 @@ public class MapCreatorManager : MonoBehaviour
 
   public int mapSize;
   public List<List<Tile>> map = new List<List<Tile>>();
+  public List<EnemyInMapData> enemies = new List<EnemyInMapData> ();
   public Transform mapTransform;
 
   public TileTypes palletSelection = TileTypes.Normal;
@@ -17,6 +18,7 @@ public class MapCreatorManager : MonoBehaviour
   private string editMapSize = "EditMapSize";
   private string editMapNumber = "EditMapNumber";
   private string loadMapNumber = "LoadMapNumber";
+  public string enemiesID = "2001";
 
   public static MapCreatorManager GetInstance()
   {
@@ -50,11 +52,14 @@ public class MapCreatorManager : MonoBehaviour
       }
       map.Add(row);
     }
+    
+    Camera.main.orthographicSize = mapSize * 2.5f;
+    Camera.main.transform.position = new Vector3 (mapSize / 2, Camera.main.transform.position.y, mapSize / 2);
   }
 
   private void SaveMap(int mapNumber)
   {
-    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map), mapNumber);
+    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map,enemies), mapNumber);
   }
 
   private void LoadMap(int mapNumber)
@@ -82,7 +87,9 @@ public class MapCreatorManager : MonoBehaviour
       }
       map.Add(row);
     }
+    enemies = container.enemies;
   }
+  
   private void OnGUI()
   {
     Rect rect = new Rect (10, Screen.height - 80, 100, 60);
@@ -97,6 +104,8 @@ public class MapCreatorManager : MonoBehaviour
       palletSelection = TileTypes.StartPlayer;
     }
 
+    rect = new Rect((10 + (100+10) * 2), Screen.height - 140, 100, 60);
+    enemiesID = GUI.TextField (rect, enemiesID, 25);
     rect = new Rect(10 + (100+10) * 2, Screen.height - 80, 100, 60);
     if (GUI.Button (rect, "StartEnemy")) 
     {

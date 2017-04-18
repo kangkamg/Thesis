@@ -135,6 +135,12 @@ public class Tile : MonoBehaviour
     if (SceneManager.GetActiveScene().name.Equals("MapCreator") && Input.GetMouseButton(0)) 
     {
       SetType (MapCreatorManager.GetInstance ().palletSelection);
+      
+      EnemyInMapData newEnemy = new EnemyInMapData ();
+      newEnemy.enemyID = int.Parse(MapCreatorManager.GetInstance ().enemiesID);
+      newEnemy.locX = (int)gridPosition.x;
+      newEnemy.locZ = (int)gridPosition.z;
+      MapCreatorManager.GetInstance ().enemies.Add (newEnemy);
     }
   }
 

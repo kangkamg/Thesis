@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
   public Transform mapTransform;
 
   public List<List<Tile>> map = new List<List<Tile>>();
+  public List<EnemyInMapData> enemies = new List<EnemyInMapData>();
   public List<Character> character = new List<Character> ();
   public List<int> playerCharacterID = new List<int> ();
 
@@ -236,6 +237,7 @@ public class GameManager : MonoBehaviour
     }
       
     mapTransform.gameObject.SetActive (true);
+    enemies = container.enemies;
     CameraManager.GetInstance ().SetUpStartCamera (new Vector3(_mapSize,0,0));
   }
 
@@ -286,7 +288,7 @@ public class GameManager : MonoBehaviour
       GameObject aiPlayerObj = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3 (a.transform.position.x, 1.5f, a.transform.position.z),Quaternion.identity);
       aiPlayerObj.transform.GetChild(0).rotation = Quaternion.Euler (0, 90, 0);
       AICharacter aiPlayer = aiPlayerObj.GetComponent<AICharacter> ();
-      aiPlayer.SetStatus (2001);
+      aiPlayer.SetStatus (enemies.Where(x=>x.locX == a.gridPosition.x && x.locZ == a.gridPosition.z).First().enemyID);
       for(int i= 0; i < aiPlayer.characterStatus.basicStatus.learnAbleAbility.Count;i++)
       {
         AbilityStatus equiped = new AbilityStatus ();
@@ -307,6 +309,10 @@ public class GameManager : MonoBehaviour
       character.Add (aiPlayer);
       aiPlayer.ordering = character.Count - 1;
       aiPlayer.ID = character.Count - 1;
+      foreach (AbilityStatus ability in aiPlayer.characterStatus.equipedAbility) 
+      {
+        GetUsedAbility.AddAbility (aiPlayer.ID, ability.ability);
+      }
     }
   }
 
@@ -701,7 +707,7 @@ public class GameManager : MonoBehaviour
         if (target != null)
         {
           RemoveMapHighlight ();
-          if (usingAbility.ability.abilityType != -1)
+          if (usingAbility.ability.abilityType != -1 && usingAbility.ability.abilityType != -2 && usingAbility.ability.abilityType != -3)
           {
             int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
             if (amountOfDamage <= 0) amountOfDamage = 0;
@@ -954,7 +960,8 @@ public class GameManager : MonoBehaviour
   public void RemoveDead()
   {
     Result addResult = new Result ();
-
+    DroppedItem itemGet = new DroppedItem ();
+    
     for(int i = 0 ; i < character.Count ; i++) 
     {
       if (character[i].currentHP <= 0 && character[i].GetType() == typeof (AICharacter)) 
@@ -966,7 +973,9 @@ public class GameManager : MonoBehaviour
           {
             if (UnityEngine.Random.Range (0, 101) <= int.Parse (droppedItem [k + 1]))
             {
-              addResult.droppedItem.Add (GetDataFromSql.GetItemFromID (int.Parse (droppedItem [k])));
+              itemGet.itemStatus = GetDataFromSql.GetItemFromID (int.Parse (droppedItem [k]));
+              itemGet.amount += 1;
+              addResult.droppedItem.Add (itemGet);
             }
           }
         }
@@ -1003,29 +1012,15 @@ public class GameManager : MonoBehaviour
 
   public IEnumerator ShowResults(bool isWin)
   {
-    while (true)
-    {
-      yield return new WaitForSeconds (1f);
-
-      break;
-    }
-    
-    results.SetActive (true);
+    TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;    
     
     while (true)
     {
-      yield return new WaitForSeconds (1f);
+      yield return new WaitForSeconds (0.5f);
 
       break;
     }
-
-    if (isWin)
-      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Winner");
-    else
-      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Loser");
-    results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
-    results.transform.GetChild (0).GetChild (2).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenGold.ToString();
-
+   
     List<CharacterStatus> party = TemporaryData.GetInstance ().playerData.characters.Where (x => x.isInParty).ToList ();
     List<Transform> showResultCharacters = new List<Transform> ();
     
@@ -1040,37 +1035,63 @@ public class GameManager : MonoBehaviour
         showResultCharacters.Add (characterInParty.transform);
       }
     }
+    AddingResultItem ();
+    results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
+    results.transform.GetChild (0).GetChild (2).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenGold.ToString();
     
     if(party.Count > 0 && playerCharacterID.Where(x=>x == party[0].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [0], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[0].GetChild(0)));
     if(party.Count > 1 && playerCharacterID.Where(x=>x == party[1].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [1], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[1].GetChild(0)));
     if(party.Count > 2 && playerCharacterID.Where(x=>x == party[2].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [2], TemporaryData.GetInstance ().result.givenExp,showResultCharacters[2].GetChild(0)));
     if(party.Count > 3 && playerCharacterID.Where(x=>x == party[3].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [3], TemporaryData.GetInstance ().result.givenExp,showResultCharacters[3].GetChild(0)));
 
-    for (int i = 0; i < TemporaryData.GetInstance ().result.droppedItem.Count; i++) 
+    while (true)
     {
-      Item addedItem = new Item ();
-      addedItem.item = TemporaryData.GetInstance ().result.droppedItem [i];
-      addedItem.equiped = false;
-      addedItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count;
-      GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
-      itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4));
-      itemObj.transform.localScale = new Vector3 (1, 1, 1);
-      itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
-      itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString();
-      TemporaryData.GetInstance ().playerData.inventory.Add (addedItem);
+      yield return new WaitForSeconds (1f);
+
+      break;
     }
-    TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;
 
-    TemporaryData.GetInstance ().result = new Result ();
+    if (isWin)
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Winner");
+    else
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Loser");
 
+    results.SetActive (true);
+    
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+      if (/*Input.GetMouseButtonDown (0) && */SystemManager.isFinishLevelUp && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
       {
         SceneManager.LoadScene ("MainMenuScene");
+        AddingResultItem ();
+        TemporaryData.GetInstance ().result = new Result ();
         break;
       }
-	  yield return 0;
+	    yield return 0;
+    }
+  }
+  
+  private void AddingResultItem()
+  {
+    for (int i = TemporaryData.GetInstance ().result.droppedItem.Count-1; i >= 0; i--) 
+    {
+      Item addedItem = new Item ();
+      for(int j = 0; j < TemporaryData.GetInstance ().result.droppedItem[0].amount;j++)
+      {
+        addedItem = new Item ();
+        addedItem.item = TemporaryData.GetInstance ().result.droppedItem [0].itemStatus;
+        addedItem.equiped = false;
+        addedItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count;
+        TemporaryData.GetInstance ().playerData.inventory.Add (addedItem);
+      }
+      
+      GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
+      itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild(0));
+      itemObj.transform.localScale = Vector3.one;
+      itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
+      itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString();
+      itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString();
+      TemporaryData.GetInstance ().result.droppedItem.RemoveAt (0);
     }
   }
 

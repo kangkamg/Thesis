@@ -6,50 +6,60 @@ using UnityEngine.UI;
 
 public class SystemManager 
 {  
+  public static bool isFinishLevelUp = false;
+  
   public static IEnumerator LevelUpSystem(CharacterStatus characterStatus, int exp, Transform showingSlider)
   {
     int getExp = exp;
     showingSlider.GetComponent<Slider> ().maxValue = 100;
     showingSlider.GetComponent<Slider> ().value = (characterStatus.experience*100)/characterStatus.nextLevelExp;
+    
     while (getExp > 0) 
     {
-      if (characterStatus.experience < characterStatus.nextLevelExp)
+      if (/*Input.GetMouseButton (0)*/Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began) 
       {
-        characterStatus.experience++;
-        getExp--;   
-        showingSlider.GetComponent<Slider> ().value = Mathf.Lerp(showingSlider.GetComponent<Slider> ().value,(characterStatus.experience*100)/characterStatus.nextLevelExp,
-          ((characterStatus.experience*100)/characterStatus.nextLevelExp - showingSlider.GetComponent<Slider> ().value) * 10 );
-     
-        yield return new WaitForEndOfFrame ();
+        if (characterStatus.experience < characterStatus.nextLevelExp) 
+        {
+          characterStatus.experience++;
+          getExp--;   
+          showingSlider.GetComponent<Slider> ().value = Mathf.Lerp (showingSlider.GetComponent<Slider> ().value, (characterStatus.experience * 100) / characterStatus.nextLevelExp,
+            ((characterStatus.experience * 100) / characterStatus.nextLevelExp - showingSlider.GetComponent<Slider> ().value) * 10);
         
-        if (characterStatus.experience == characterStatus.nextLevelExp)
-        {
-          characterStatus.characterLevel += 1;
-          characterStatus.experience = 0;
-          showingSlider.GetComponent<Slider> ().value = 0;
+          if (characterStatus.experience == characterStatus.nextLevelExp)
+          {
+            characterStatus.characterLevel += 1;
+            characterStatus.experience = 0;
+            showingSlider.GetComponent<Slider> ().value = 0;
+            AddingAbility (characterStatus);
+          }
+          isFinishLevelUp = true;
         }
       }
-    }
-    
-    while (getExp > 0) 
-    {
-      if (characterStatus.experience < characterStatus.nextLevelExp)
+      else
       {
-        characterStatus.experience ++;
-        getExp --;
-        showingSlider.GetComponent<Slider> ().value++;
-
-        if (characterStatus.experience == characterStatus.nextLevelExp)
+        if (characterStatus.experience < characterStatus.nextLevelExp) 
         {
-          characterStatus.characterLevel += 1;
-          characterStatus.experience = 0;
-          showingSlider.GetComponent<Slider> ().maxValue = characterStatus.nextLevelExp;
-          showingSlider.GetComponent<Slider> ().value = 0;
+          characterStatus.experience++;
+          getExp--;   
+          showingSlider.GetComponent<Slider> ().value = Mathf.Lerp (showingSlider.GetComponent<Slider> ().value, (characterStatus.experience * 100) / characterStatus.nextLevelExp,
+            ((characterStatus.experience * 100) / characterStatus.nextLevelExp - showingSlider.GetComponent<Slider> ().value) * 10);
+          
+          yield return new WaitForEndOfFrame ();
+
+          if (characterStatus.experience == characterStatus.nextLevelExp)
+          {
+            characterStatus.characterLevel += 1;
+            characterStatus.experience = 0;
+            showingSlider.GetComponent<Slider> ().value = 0;
+            AddingAbility (characterStatus);
+          }
+          
+          if(getExp <= 0) isFinishLevelUp = true;
+          else isFinishLevelUp = false;
         }
       }
     }
     
-    AddingAbility (characterStatus);
     yield return 0;
   }
   

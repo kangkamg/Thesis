@@ -21,6 +21,8 @@ public class StartSceneManager : MonoBehaviour
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Book");
     bookOpen = false;
     openBook.SetActive (bookOpen);
+    openBook.transform.GetChild (0).gameObject.SetActive (false);
+    openBook.transform.GetChild (1).gameObject.SetActive (false);
     
     if (!TemporaryData.GetInstance ().firstTimeOpenGame) 
     {
@@ -45,7 +47,7 @@ public class StartSceneManager : MonoBehaviour
     AbilityStatus equiped = new AbilityStatus ();
     AbilityStatus learning = new AbilityStatus ();
     adding.basicStatus = GetDataFromSql.GetCharacter (1001);
-    adding.characterLevel = 5;
+    adding.characterLevel = 1;
     adding.isInParty = true;
 
     for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
@@ -157,7 +159,7 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-    if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
     {
       if (!bookOpen) 
       {
@@ -179,6 +181,26 @@ public class StartSceneManager : MonoBehaviour
         //}  
       }*/
     }
+    
+    if (Input.GetKeyDown (KeyCode.Escape)) 
+    {
+      if (!bookOpen)
+      {
+        Application.Quit ();
+      } 
+      else 
+      {
+        if (openBook.transform.GetChild (1).gameObject.activeSelf)
+        {
+          openBook.transform.GetChild (0).gameObject.SetActive (true);
+          openBook.transform.GetChild (1).gameObject.SetActive (false);
+        }
+        else if (openBook.transform.GetChild (0).gameObject.activeSelf)
+        {
+          CloseTheBook ();
+        } 
+      }
+    }
   }
 
   private void BlinkText()
@@ -191,25 +213,53 @@ public class StartSceneManager : MonoBehaviour
     touchText.color = new Color (touchText.color.r, touchText.color.g, touchText.color.b, touchText.color.a + alphaColor);
   }
 
-  private void OpenTheBook()
+  private void CloseTheBook()
   {
-    PlayerPrefs.SetInt (Const.NewGame, 1);
-    Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Openbook");
-    touchText.text = "Selected Save";
-    touchText.rectTransform.anchoredPosition = new Vector2 (0, 270);
-    bookOpen = true;
+    Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Book");
+    touchText.gameObject.SetActive (true);
+    bookOpen = false;
     openBook.SetActive (bookOpen);
-    CreateSaveIndex ();
+    openBook.transform.GetChild (0).gameObject.SetActive (false);
+    openBook.transform.GetChild (1).gameObject.SetActive (false);
   }
   
-  private void CreateSaveIndex()
+  private void OpenTheBook()
   {
+    Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Openbook");
+    touchText.gameObject.SetActive (false);
+    bookOpen = true;
+    openBook.SetActive (bookOpen);
+    openBook.transform.GetChild (0).gameObject.SetActive (true);
+    openBook.transform.GetChild (1).gameObject.SetActive (false);
+  }
+  
+  private void CreateSaveIndex(int isNewGame)
+  {
+    foreach (Transform child in openBook.transform.GetChild (1).GetChild(1)) 
+    {
+      Destroy (child.gameObject);
+    }
+    
     for(int i = 0;i<4;i++)
     {
       GameObject save = Instantiate (Resources.Load<GameObject> ("StartSceneImage/SavePrefabs"));
-      save.transform.SetParent (openBook.transform.GetChild (1));
+      save.transform.SetParent (openBook.transform.GetChild (1).GetChild(1));
       save.transform.localScale = Vector3.one;
-      save.GetComponent<SaveData> ().SetSaveData (i);
+      save.GetComponent<SaveData> ().SetSaveData (i, isNewGame);
+    }
+  }
+  
+  public void SelectedStartGame(int isNewGame)
+  {
+    openBook.transform.GetChild (0).gameObject.SetActive (false);
+    openBook.transform.GetChild (1).gameObject.SetActive (true);
+    if (isNewGame == 0) 
+    {
+      CreateSaveIndex (0);
+    }
+    else 
+    {
+      CreateSaveIndex (1);
     }
   }
 }

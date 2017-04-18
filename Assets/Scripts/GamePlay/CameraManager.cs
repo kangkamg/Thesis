@@ -151,7 +151,7 @@ public class CameraManager : MonoBehaviour
     
     float dealtaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
     
-    if (this.GetComponent<Camera> ().orthographicSize > 3 && this.GetComponent<Camera> ().orthographicSize < 10)
+    if (this.GetComponent<Camera> ().orthographicSize > 4 && this.GetComponent<Camera> ().orthographicSize < 14)
     {
       this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
     

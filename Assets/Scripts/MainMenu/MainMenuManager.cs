@@ -15,6 +15,8 @@ public class MainMenuManager : MonoBehaviour
 
   public Button showMenuBT;
   public bool menuOn = false;
+  
+  private AsyncOperation async = null;
 
   public void Start()
   {
@@ -25,7 +27,7 @@ public class MainMenuManager : MonoBehaviour
     optionMenu.SetActive (false);
     menuOn = false;
   }
-
+  
   public void ShowMenu()
   {
     if (menuOn) 
@@ -76,7 +78,14 @@ public class MainMenuManager : MonoBehaviour
     } 
     else 
     {
-      SceneManager.LoadScene ("GamePlayScene");
+      if (MapSaveAndLoad.CheckingMap (PlayerPrefs.GetInt (Const.MapNo, 0))) 
+      {
+        SceneManager.LoadScene ("GamePlayScene");
+      } 
+      else
+      {
+        Debug.Log ("Invalid Map");
+      }
     }
   }
 

@@ -61,6 +61,15 @@ public class AICharacter : Character
     if (currentHP > 0)
     {
       List<AbilityStatus> readyAbility = characterStatus.equipedAbility.Where (x => x.ability.gaugeUse <= rageGuage).ToList();
+      
+      foreach (AbilityStatus ready in readyAbility) 
+      {
+        if (GetUsedAbility.GetCoolDown (ID, ready.ability.ID) != -99 && GetUsedAbility.GetCoolDown (ID, ready.ability.ID) != 0) 
+        {
+          readyAbility.Remove (ready);
+        }
+      }
+      
       List<Tile> targetTilesInRange = new List<Tile> ();
       
       readyAbility.Sort (delegate(AbilityStatus a, AbilityStatus b)

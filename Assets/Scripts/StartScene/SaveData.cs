@@ -8,35 +8,49 @@ using UnityEngine.SceneManagement;
 public class SaveData : MonoBehaviour
 
 {
-  public void SetSaveData(int i)
+  public void SetSaveData(int i, int isNewGame)
   {
-    if(SaveAndLoadPlayerData.CheckingSave(i))
+    if (isNewGame == 1)
     {
-      PlayerData playedData = (PlayerData)SaveAndLoadPlayerData.LoadData (i);
-      transform.GetChild (0).GetComponent<Text> ().text = "Continue This Save";
-      transform.GetChild (0).GetChild(0).GetComponent<Text> ().text = i.ToString();
-      transform.GetChild (0).GetChild(1).GetChild(0).GetComponent<Text> ().text = string.Format ("{0}:{1:00}:{2:00}", Mathf.RoundToInt(playedData.playedHrs / 3600), Mathf.RoundToInt((playedData.playedHrs/60)%60),  Mathf.RoundToInt((int)playedData.playedHrs % 60));
-      transform.GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = playedData.gold.ToString();
-      
-      int averageLevel = 0;
-      foreach (CharacterStatus a in playedData.characters.Where(x=>x.isInParty).ToList()) 
+      if (SaveAndLoadPlayerData.CheckingSave (i))
       {
-        averageLevel += a.characterLevel;
+        PlayerData playedData = (PlayerData)SaveAndLoadPlayerData.LoadData (i);
+        transform.GetChild (0).GetComponent<Text> ().text = "Continue This Save";
+        transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = i.ToString ();
+        transform.GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = string.Format ("{0}:{1:00}:{2:00}", Mathf.RoundToInt (playedData.playedHrs / 3600), Mathf.RoundToInt ((playedData.playedHrs / 60) % 60), Mathf.RoundToInt ((int)playedData.playedHrs % 60));
+        transform.GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = playedData.gold.ToString ();
+      
+        int averageLevel = 0;
+        foreach (CharacterStatus a in playedData.characters.Where(x=>x.isInParty).ToList())
+        {
+          averageLevel += a.characterLevel;
+        }
+      
+        transform.GetChild (0).GetChild (3).GetChild (0).GetComponent<Text> ().text = (averageLevel / playedData.characters.Where (x => x.isInParty).Count ()).ToString ();
+      
+        transform.GetComponent<Button> ().onClick.AddListener (() => SelectedThisSave (playedData));
+      } 
+      else 
+      {
+        transform.GetChild (0).GetComponent<Text> ().text = "No Data";
+        transform.GetChild (0).GetChild(0).GetComponent<Text> ().text = i.ToString();
+
+        transform.GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = "??:??:??";
+        transform.GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = "??";
+        transform.GetChild (0).GetChild (3).GetChild (0).GetComponent<Text> ().text = "??";
+        
+        transform.GetComponent<Button> ().interactable = false;
       }
-      
-      transform.GetChild (0).GetChild (3).GetChild (0).GetComponent<Text> ().text = (averageLevel / playedData.characters.Where (x => x.isInParty).Count ()).ToString ();
-      
-      transform.GetComponent<Button> ().onClick.AddListener (() => SelectedThisSave (playedData));
     }
     
     else
     {
-      transform.GetChild (0).GetComponent<Text> ().text = "Start NewSave";
+      transform.GetChild (0).GetComponent<Text> ().text = "StartNewGame";
       transform.GetChild (0).GetChild(0).GetComponent<Text> ().text = i.ToString();
       
-      transform.GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = "0";
-      transform.GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = "0";
-      transform.GetChild (0).GetChild (3).GetChild (0).GetComponent<Text> ().text = "0";
+      transform.GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = "??:??:??";
+      transform.GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = "??";
+      transform.GetChild (0).GetChild (3).GetChild (0).GetComponent<Text> ().text = "??";
       
       transform.GetComponent<Button> ().onClick.AddListener (() => StartThisSave(i));
     }

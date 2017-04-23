@@ -58,26 +58,29 @@ public class CameraManager : MonoBehaviour
         PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
       }
       
-      if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
+      if (GameManager.GetInstance ().isTouch) 
       {
-        originTouch = Input.GetTouch(0).position;
-      }
+        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began)
+        {
+          originTouch = Input.GetTouch (0).position;
+        }
         
-      if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved) 
-      {
-        MoveCameraWithTouch ();
-      }
+        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved)
+        {
+          MoveCameraWithTouch ();
+        }
         
-      if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Ended) 
-      {
-        isMoving = false;
+        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Ended) 
+        {
+          isMoving = false;
+        }
       }
-      
     }
 	}
     
   public void SetUpStartCamera(Vector3 _target)
   {
+    following = false;
     _orthographicSize = _target.x * 2.5f;
     this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
 
@@ -86,15 +89,14 @@ public class CameraManager : MonoBehaviour
 
     transform.position = _target;
     _originPos = transform.position;
-    following = false;
   }
   
-  public void MoveCameraToTarget(Transform followTarget)
+  public void MoveCameraToTarget(Transform followTarget, float mutiply = 10f)
   {
     follower = followTarget;
     if (!isLookWholeMap)
     {
-      this.GetComponent<Camera> ().orthographicSize = followTarget.localScale.x * 10f;
+      this.GetComponent<Camera> ().orthographicSize = followTarget.localScale.x * mutiply;
     
       following = true;
     }

@@ -27,10 +27,13 @@ public class GameManager : MonoBehaviour
 
   public GameObject playerUI;
   public GameObject results;
+  public GameObject menu;
+  public GameObject pauseMenu;
   public ShowingResultOfAttack showingResultOfAttack;
   public Transform playerController;
 
-  public List<GameObject> targetInRange = new List<GameObject> ();
+  List<Character> targetInRange = new List<Character> ();
+  List<GameObject> highlightedTileTargetInRange = new List<GameObject> ();
   List<GameObject> highlightTileMovement = new List<GameObject> ();
   List<GameObject> highlightTileAttack = new List<GameObject> ();
 
@@ -38,6 +41,7 @@ public class GameManager : MonoBehaviour
   public bool isPlayerTurn = true;
   public bool isAutoPlay = false;
   public bool isTouch = true;
+  public bool isPause = false;
   public int abilityPage;
 
   public bool hitButton = false;
@@ -53,6 +57,7 @@ public class GameManager : MonoBehaviour
     
     playerController.gameObject.SetActive (false);
     results.SetActive (false);
+    pauseMenu.SetActive (false);
     showingResultOfAttack.gameObject.SetActive (false);
   }
 
@@ -72,73 +77,71 @@ public class GameManager : MonoBehaviour
       {
         if (/*Input.GetMouseButtonDown(0) && */!hitButton && isPlayerTurn && isTouch && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended && !CameraManager.GetInstance().isMoving)
         {
-          if (hit.transform.tag == "Player") 
+          if (!selectedCharacter.played)
           {
-            if (oldCharacterNo < 0) {
-              SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
-            } 
-            else 
+            if (hit.transform.tag == "Player") 
             {
-              if (oldCharacterNo != hit.transform.GetComponent<PlayerCharacter> ().ordering) 
+              if (oldCharacterNo < 0) {
+                SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
+              } 
+              else 
               {
-                if (usingAbility.ability.abilityType < 0 && targetInRange.Count>0) 
+                if (oldCharacterNo != hit.transform.GetComponent<PlayerCharacter> ().ordering) 
                 {
-                  foreach (GameObject h in targetInRange) 
+                  if (usingAbility.ability.abilityType < 0 && highlightedTileTargetInRange.Count>0) 
                   {
-                    if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+                    foreach (GameObject h in highlightedTileTargetInRange) 
                     {
-                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) 
+                      if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
                       {
-                        Tile desTile = CheckingMovementToAttackTarget (hit.transform);
+                        if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) 
+                        {
+                          Tile desTile = CheckingMovementToAttackTarget (hit.transform);
 
-                        MoveCurrentCharacter (desTile);
+                          MoveCurrentCharacter (desTile);
 
-                        selectedCharacter.target = hit.transform.GetComponent<Character> ();
+                          selectedCharacter.target = hit.transform.GetComponent<Character> ();
 
-                        break;
-                      } 
-                      else
-                      {
-                        AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
-                        break;
+                          break;
+                        } 
+                        else
+                        {
+                          AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
+                          break;
+                        }
                       }
                     }
+                  } 
+                  else 
+                  {
+                    selectedCharacter.gridPosition = oldGridPosition;
+                    selectedCharacter.transform.position = oldPosition;
+                    SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
                   }
-                } 
-                else 
-                {
-                  selectedCharacter.gridPosition = oldGridPosition;
-                  selectedCharacter.transform.position = oldPosition;
-                  SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
                 }
               }
             }
-          }
-
-          if (!selectedCharacter.played)
-          {
             if (hit.transform.name.Contains ("Tile"))
             {
-              foreach (Character c in character)
-              {
-                if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy")
+              foreach (Character c in character) {
+                if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy") 
                 {
                   AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
                   break;
-                } 
-                else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player") 
+                }
+                else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player")
                 {
-                  if (usingAbility.ability.abilityType == -1 || usingAbility.ability.abilityType == -2 || usingAbility.ability.abilityType == -3) 
+                  if (usingAbility.ability.abilityType < 0)
                   {  
                     AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
                     break;
                   }
                 } 
-                else if (c.gridPosition != hit.transform.GetComponent<Tile> ().gridPosition)
+                else if (c.gridPosition != hit.transform.GetComponent<Tile> ().gridPosition) 
                 {
-                  foreach (GameObject m in highlightTileMovement) 
+                  foreach (GameObject m in highlightTileMovement)
                   {
-                    if (m.transform.position.x == hit.transform.position.x && m.transform.position.z == hit.transform.position.z) 
+                    if (m.transform.position.x == hit.transform.position.x && m.transform.position.z == hit.transform.position.z)
                     {
                       MoveCurrentCharacter (hit.transform.GetComponent<Tile> ());
                       break;
@@ -148,13 +151,13 @@ public class GameManager : MonoBehaviour
                 }
               }
             }
-            if (hit.transform.tag == "Enemy") 
+            if (hit.transform.tag == "Enemy")
             {
-              if (targetInRange.Count > 0) 
+              if (highlightedTileTargetInRange.Count > 0) 
               {
-                foreach (GameObject h in targetInRange)
+                foreach (GameObject h in highlightedTileTargetInRange) 
                 {
-                  if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+                  if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z)
                   {
                     if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0)
                     {
@@ -166,7 +169,7 @@ public class GameManager : MonoBehaviour
                       selectedCharacter.target = hit.transform.GetComponent<Character> ();
 
                       break;
-                    }
+                    } 
                     else 
                     {
                       AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
@@ -175,9 +178,25 @@ public class GameManager : MonoBehaviour
                   }
                 }
               } 
-              else 
+              else
               {
 
+              }
+            }
+          } 
+          else 
+          {
+            if (hit.transform.tag == "Player") 
+            {
+              if (oldCharacterNo < 0) 
+              {
+                SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
+              } 
+              else
+              {
+                 selectedCharacter.gridPosition = oldGridPosition;
+                 selectedCharacter.transform.position = oldPosition;
+                 SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
               }
             }
           }
@@ -190,7 +209,7 @@ public class GameManager : MonoBehaviour
   {
     if (selectedCharacter.positionQueue.Count > 0)
     {
-      CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+      if(isTouch) CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
       selectedCharacter.MoveToDesTile ();
     }
   }
@@ -433,7 +452,6 @@ public class GameManager : MonoBehaviour
       }
       if (abilityObjs.Where (x => x.GetComponent<Toggle> ().IsInteractable ()).Count () > 0 && !selectedCharacter.played) 
       {
-        abilityObjs.Where (x => x.GetComponent<Toggle> ().IsInteractable ()).FirstOrDefault ().SelectThisAbility ();
         abilityObjs.Where (x => x.GetComponent<Toggle> ().IsInteractable ()).FirstOrDefault ().GetComponent<Toggle> ().isOn = true;
       }
     }
@@ -579,12 +597,13 @@ public class GameManager : MonoBehaviour
     {
       Destroy (b);
     }
-    foreach (GameObject c in targetInRange) 
+    foreach (GameObject c in highlightedTileTargetInRange) 
     {
       Destroy (c);
     }
     highlightTileMovement.Clear ();
     highlightTileAttack.Clear ();
+    highlightedTileTargetInRange.Clear ();
     targetInRange.Clear ();
   }
 
@@ -594,11 +613,12 @@ public class GameManager : MonoBehaviour
     {
       Destroy (a);
     }
-    foreach (GameObject c in targetInRange) 
+    foreach (GameObject c in highlightedTileTargetInRange) 
     {
       Destroy (c);
     }
     highlightTileAttack.Clear ();
+    highlightedTileTargetInRange.Clear ();
     targetInRange.Clear ();
   }
   
@@ -620,14 +640,18 @@ public class GameManager : MonoBehaviour
     oldCharacterNo = selectedCharacter.ordering;
     CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
     HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-    if (!selectedCharacter.played) 
-    {
+    if (selectedCharacter.GetType () == typeof(AICharacter))
       SelectedAbility (selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).First ());
-      playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (true);
-    }
-    else
+    else 
     {
-      playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      if (!selectedCharacter.played)
+      {
+        playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (true);
+      } 
+      else 
+      {
+        playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      }
     }
     Destroy (chaSelector);
     chaSelector = null;
@@ -685,26 +709,46 @@ public class GameManager : MonoBehaviour
     {
       if (targetInRange.Count > 0)
       {
-        if(targetInRange.Where(x=>x.GetComponentInParent<AICharacter>().gridPosition == gridPosition).Count()>0)
+        if(targetInRange.Where(x=>x.gridPosition == gridPosition && x.GetType() == typeof(AICharacter)).Count()>0)
         {
-          if (highlightTileAttack.Where (x => x.transform.position.x == gridPosition.x && x.transform.position.z == gridPosition.z).Count () <= 0)
+          Character target =  targetInRange.Where (x => x.gridPosition == gridPosition).First ();
+          
+          if (highlightTileAttack.Where (x => x.transform.position.x == target.transform.position.x && x.transform.position.z == target.transform.position.z).Count () <= 0)
           {
             MoveCurrentCharacter (CheckingMovementToAttackTarget (map [(int)gridPosition.x] [(int)gridPosition.z].transform));
-
-            selectedCharacter.target = targetInRange.Where (x => x.GetComponentInParent<AICharacter> ().gridPosition == gridPosition).First ().GetComponentInParent<AICharacter> ();
+            
+            selectedCharacter.target = target;
           }
           else
           {
             AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
           }
         }
-        else if (character.Where (x => x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count () > 0)
+        else if (targetInRange.Where(x=>x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count()>0)
         {
-          SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
-        } 
-        else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0 && !selectedCharacter.played) 
+          Character target =  targetInRange.Where (x => x.gridPosition == gridPosition).First ();
+
+          if (highlightTileAttack.Where (x => x.transform.position.x == target.transform.position.x && x.transform.position.z == target.transform.position.z).Count () <= 0)
+          {
+            MoveCurrentCharacter (CheckingMovementToAttackTarget (map [(int)gridPosition.x] [(int)gridPosition.z].transform));
+
+            selectedCharacter.target = target;
+          }
+          else
+          {
+            AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+          }
+        }
+        else 
         {
-          MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+          if (character.Where (x => x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count () > 0)
+          {
+            SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
+          } 
+          else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0 && !selectedCharacter.played) 
+          {
+            MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+          }
         }
       }
       else 
@@ -713,7 +757,7 @@ public class GameManager : MonoBehaviour
         {
           SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
         } 
-        else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0) 
+        else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0 && !selectedCharacter.played) 
         {
           MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
         }
@@ -741,7 +785,7 @@ public class GameManager : MonoBehaviour
         if (target != null)
         {
           RemoveMapHighlight ();
-          if (usingAbility.ability.abilityType != -1 && usingAbility.ability.abilityType != -2 && usingAbility.ability.abilityType != -3)
+          if (usingAbility.ability.abilityType < 0)
           {
             int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
             if (amountOfDamage <= 0) amountOfDamage = 0;
@@ -880,6 +924,11 @@ public class GameManager : MonoBehaviour
       SelectedCharacter (character [currentCharacterIndex]);
       if (character [currentCharacterIndex].GetType() == typeof(AICharacter))
       {
+        menu.transform.GetChild (0).gameObject.SetActive (false);
+        menu.transform.GetChild (1).gameObject.SetActive (false);
+        menu.transform.GetChild (2).gameObject.SetActive (false);
+        playerController.gameObject.SetActive (false);
+        playerController.GetComponent<PlayerController> ().RemoveSelected ();
         character [currentCharacterIndex].TurnUpdate ();
       }
       else 
@@ -890,6 +939,9 @@ public class GameManager : MonoBehaviour
         }
         else 
         {
+          menu.transform.GetChild (0).gameObject.SetActive (true);
+          menu.transform.GetChild (1).gameObject.SetActive (true);
+          menu.transform.GetChild (2).gameObject.SetActive (true);
           if (!isTouch) 
           {
             playerController.gameObject.SetActive (true);
@@ -931,10 +983,11 @@ public class GameManager : MonoBehaviour
   {
     if (selectedCharacter.played) return;
 
-    foreach (GameObject obj in targetInRange) 
+    foreach (GameObject obj in highlightedTileTargetInRange) 
     {
       Destroy (obj);
     }
+    highlightedTileTargetInRange.Clear ();
     targetInRange.Clear ();
 
     List<Tile> highlighted = new List<Tile> ();
@@ -978,22 +1031,21 @@ public class GameManager : MonoBehaviour
         highlighted.Add(a.GetComponentInParent<Tile> ());
     }
       
-    if (usingAbility.ability.abilityType != -1 && usingAbility.ability.abilityType != -2 && usingAbility.ability.abilityType != -3) 
+    if (usingAbility.ability.abilityType>0) 
     {
       var cha = highlighted.Select (x => GameManager.GetInstance ().character.Where (z => z.currentHP > 0 && z.GetType() != selectedCharacter.GetType() && z.gridPosition == x.gridPosition).Count () > 0 ? GameManager.GetInstance ().character.Where (z => z.gridPosition == x.gridPosition).First () : null).ToList ();
       List<Character> inRangeCha = cha.Where(x=>x != null).ToList ();
-
-      Debug.Log (inRangeCha.Count);
+      
       foreach(Character c in inRangeCha)
       {
-        Debug.Log (c.name);
         if (c.tag !=selectedCharacter.tag)
         {
           GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
           inRange.GetComponent<Renderer> ().material.color = Color.red;
           inRange.transform.SetParent (c.transform);
 
-          targetInRange.Add (inRange);
+          highlightedTileTargetInRange.Add (inRange);
+          targetInRange.Add (c);
         }
       }
     }
@@ -1010,7 +1062,8 @@ public class GameManager : MonoBehaviour
           inRange.GetComponent<Renderer> ().material.color = Color.red;
           inRange.transform.SetParent (c.transform);
 
-          targetInRange.Add (inRange);
+          highlightedTileTargetInRange.Add (inRange);
+          targetInRange.Add (c);
         }
       }
     }
@@ -1121,9 +1174,9 @@ public class GameManager : MonoBehaviour
     {
       if (/*Input.GetMouseButtonDown (0) && */SystemManager.isFinishLevelUp && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
       {
-        SceneManager.LoadScene ("MainMenuScene");
         AddingResultItem ();
         TemporaryData.GetInstance ().result = new Result ();
+        SceneManager.LoadScene ("MainMenuScene");
         break;
       }
 	    yield return 0;
@@ -1190,5 +1243,32 @@ public class GameManager : MonoBehaviour
     TemporaryData.GetInstance ().result.givenExp = 1000;
     
     StartCoroutine (ShowResults (true));
+  }
+  
+  public void PauseGame()
+  {
+    isPause = !isPause;
+    if (isPause)
+    {
+      Time.timeScale = 0;
+      pauseMenu.SetActive (true);
+    } 
+    else 
+    {
+      Time.timeScale = 1;
+      pauseMenu.SetActive (false);
+    }
+  }
+  
+  public void RestartGame()
+  {
+    SceneManager.LoadScene ("GamePlayScene");
+    Time.timeScale = 1;
+  }
+  
+  public void Surrender()
+  {
+    SceneManager.LoadScene ("MainMenuScene");
+    Time.timeScale = 1;
   }
 }

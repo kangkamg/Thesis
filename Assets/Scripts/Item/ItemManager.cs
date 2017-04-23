@@ -15,6 +15,7 @@ public class ItemManager : MonoBehaviour
   public GameObject showing;
 
   public Text goldText;
+  public bool isBuying;
   
   private List<ItemStatus> canBuy = new List<ItemStatus>();
   public List<GameObject> allItem = new List<GameObject> ();
@@ -26,6 +27,14 @@ public class ItemManager : MonoBehaviour
     goldText.text = TemporaryData.GetInstance ().playerData.gold.ToString ();
   }
 
+  public void GenerateItem(string itemsType)
+  {
+    if (isBuying)   
+      GenerateBuyingItems (itemsType);
+    else
+      GenerateInventoryItems (itemsType);
+  }
+  
   public void GenerateBuyingItems(string itemsType)
   {
     foreach (GameObject a in allItem)

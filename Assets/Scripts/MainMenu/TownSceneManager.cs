@@ -52,10 +52,12 @@ public class TownSceneManager : MonoBehaviour
     if (option == "Buy") 
     {
       ItemManager.GetInstance ().GenerateBuyingItems ("Weapon");
+      ItemManager.GetInstance ().isBuying = true;
     }
     else 
     {
       ItemManager.GetInstance ().GenerateInventoryItems ("Weapon");
+      ItemManager.GetInstance ().isBuying = false;
     }
   }
 

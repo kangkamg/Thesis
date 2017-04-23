@@ -26,6 +26,7 @@ public class MainMenuManager : MonoBehaviour
     bgMenu.SetActive (false);
     optionMenu.SetActive (false);
     menuOn = false;
+    showMenuBT.transform.localPosition = new Vector3 (0, -60, 0);
   }
   
   public void ShowMenu()
@@ -40,7 +41,7 @@ public class MainMenuManager : MonoBehaviour
     {
       playerMenu.SetActive(true);
       menuOn = true;
-      showMenuBT.transform.localPosition = new Vector3 (0, 140, 0);
+      showMenuBT.transform.localPosition = new Vector3 (0, 85, 0);
     }
   }
 

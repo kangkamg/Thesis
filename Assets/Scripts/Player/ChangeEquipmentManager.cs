@@ -122,12 +122,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
     
-    equipedWeaponStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
-    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = selectedItem.item.name.ToString();
-    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseHP.ToString ();
-    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseAttack.ToString ();
-    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseDefense.ToString ();
-    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseCriRate.ToString ();
+    equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
+    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = selectedItem.item.name.ToString();
+    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseHP.ToString ();
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseAttack.ToString ();
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseDefense.ToString ();
+    equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseCriRate.ToString ();
   }
 
   public void ChangingItem(string itemtype1)

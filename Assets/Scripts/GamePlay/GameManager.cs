@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
   public ShowingResultOfAttack showingResultOfAttack;
   public Transform playerController;
 
-  List<GameObject> targetInRange = new List<GameObject> ();
+  public List<GameObject> targetInRange = new List<GameObject> ();
   List<GameObject> highlightTileMovement = new List<GameObject> ();
   List<GameObject> highlightTileAttack = new List<GameObject> ();
 
@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour
     }
   }
   
-  public void FixedUpdate()
+  public void LateUpdate()
   {
     if (selectedCharacter.positionQueue.Count > 0)
     {
@@ -579,8 +579,13 @@ public class GameManager : MonoBehaviour
     {
       Destroy (b);
     }
+    foreach (GameObject c in targetInRange) 
+    {
+      Destroy (c);
+    }
     highlightTileMovement.Clear ();
     highlightTileAttack.Clear ();
+    targetInRange.Clear ();
   }
 
   public void RemoveAttackHighLightOnly()
@@ -589,7 +594,12 @@ public class GameManager : MonoBehaviour
     {
       Destroy (a);
     }
+    foreach (GameObject c in targetInRange) 
+    {
+      Destroy (c);
+    }
     highlightTileAttack.Clear ();
+    targetInRange.Clear ();
   }
   
   public void SelectedAbility(AbilityStatus selectedAbility)
@@ -610,7 +620,15 @@ public class GameManager : MonoBehaviour
     oldCharacterNo = selectedCharacter.ordering;
     CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
     HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
-    SelectedAbility (selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).First ());
+    if (!selectedCharacter.played) 
+    {
+      SelectedAbility (selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).First ());
+      playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (true);
+    }
+    else
+    {
+      playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (false);
+    }
     Destroy (chaSelector);
     chaSelector = null;
     chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
@@ -619,7 +637,7 @@ public class GameManager : MonoBehaviour
     if (selectedCharacter.GetType () == typeof(PlayerCharacter))
     {
       playerUI.transform.GetChild (0).gameObject.SetActive (true);
-      playerUI.transform.GetChild (0).GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + selectedCharacter.name);
+      playerUI.transform.GetChild (0).GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/"  + selectedCharacter.name);
       playerUI.transform.GetChild (0).GetChild (0).GetChild (0).GetChild (0).GetComponent<Text> ().text = selectedCharacter.name.ToString ();
       playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = selectedCharacter.characterStatus.characterLevel.ToString ();
       playerUI.transform.GetChild (0).GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = selectedCharacter.currentHP.ToString ();
@@ -631,7 +649,6 @@ public class GameManager : MonoBehaviour
     else 
     {
       playerUI.transform.GetChild (0).gameObject.SetActive (false);
-      playerController.gameObject.SetActive (false);
     }
   }
 
@@ -666,23 +683,40 @@ public class GameManager : MonoBehaviour
   {
     if (gridPosition.z >= 0 && gridPosition.x >= 0 && gridPosition.z < map [(int)gridPosition.x].Count && gridPosition.x < map.Count) 
     {
-      if (character.Where (x => x.gridPosition == gridPosition).Count () > 0)
+      if (targetInRange.Count > 0)
       {
-        SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
-      }
-      else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0)
-      {
-        MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
-      }
-      else if (highlightTileAttack.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0) 
-      {
-        AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
-      } 
-      else if (targetInRange.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0) 
-      {
-        MoveCurrentCharacter (CheckingMovementToAttackTarget(map [(int)gridPosition.x] [(int)gridPosition.z].transform));
+        if(targetInRange.Where(x=>x.GetComponentInParent<AICharacter>().gridPosition == gridPosition).Count()>0)
+        {
+          if (highlightTileAttack.Where (x => x.transform.position.x == gridPosition.x && x.transform.position.z == gridPosition.z).Count () <= 0)
+          {
+            MoveCurrentCharacter (CheckingMovementToAttackTarget (map [(int)gridPosition.x] [(int)gridPosition.z].transform));
 
-        selectedCharacter.target = targetInRange.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).First ().GetComponentInParent<Character> ();
+            selectedCharacter.target = targetInRange.Where (x => x.GetComponentInParent<AICharacter> ().gridPosition == gridPosition).First ().GetComponentInParent<AICharacter> ();
+          }
+          else
+          {
+            AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+          }
+        }
+        else if (character.Where (x => x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count () > 0)
+        {
+          SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
+        } 
+        else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0 && !selectedCharacter.played) 
+        {
+          MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+        }
+      }
+      else 
+      {
+        if (character.Where (x => x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count () > 0)
+        {
+          SelectedCharacter (character.Where (x => x.gridPosition == gridPosition).First ());
+        } 
+        else if (highlightTileMovement.Where (x => x.transform.parent.GetComponent<Tile> ().gridPosition == gridPosition).Count () > 0) 
+        {
+          MoveCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+        }
       }
     }
     else
@@ -850,7 +884,23 @@ public class GameManager : MonoBehaviour
       }
       else 
       {
-        if(isAutoPlay) character [currentCharacterIndex].TurnUpdate ();
+        if (isAutoPlay)
+        {
+          character [currentCharacterIndex].TurnUpdate ();
+        }
+        else 
+        {
+          if (!isTouch) 
+          {
+            playerController.gameObject.SetActive (true);
+            playerController.GetComponent<PlayerController> ().SetUpSelectedPosition ();
+          }
+          else
+          {
+            playerController.gameObject.SetActive (false);
+            playerController.GetComponent<PlayerController> ().RemoveSelected ();
+          }
+        }
       }
     } 
     else
@@ -895,63 +945,72 @@ public class GameManager : MonoBehaviour
       {
         foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true))
         {
-          highlighted.Add (a);
+          if(!highlighted.Contains(a))
+            highlighted.Add (a);
         }
         foreach (Tile b in TileHighLight.FindHighLight (t, usingAbility.range, true, true)) 
         {
-          highlighted.Add (b);
+          if(!highlighted.Contains(b))
+            highlighted.Add (b);
         }
       } 
       else if (usingAbility.ability.rangeType == 0)
       {
         foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true))
         {
-          highlighted.Add (a);
+          if(!highlighted.Contains(a))
+            highlighted.Add (a);
         }
       }
       else
       {
         foreach (Tile a in TileHighLight.FindHighLight (t, usingAbility.range, true, true))
         {
-          highlighted.Add (a);
+          if(!highlighted.Contains(a))
+            highlighted.Add (a);
         }
       }
     }
 
     foreach (GameObject a in highlightTileAttack) 
     {
-      highlighted.Add(a.GetComponentInParent<Tile> ());
+      if(!highlighted.Contains(a.GetComponentInParent<Tile> ()))
+        highlighted.Add(a.GetComponentInParent<Tile> ());
     }
       
-    foreach (Tile t in highlighted) 
+    if (usingAbility.ability.abilityType != -1 && usingAbility.ability.abilityType != -2 && usingAbility.ability.abilityType != -3) 
     {
-      GameObject inRange;
+      var cha = highlighted.Select (x => GameManager.GetInstance ().character.Where (z => z.currentHP > 0 && z.GetType() != selectedCharacter.GetType() && z.gridPosition == x.gridPosition).Count () > 0 ? GameManager.GetInstance ().character.Where (z => z.gridPosition == x.gridPosition).First () : null).ToList ();
+      List<Character> inRangeCha = cha.Where(x=>x != null).ToList ();
 
-      Character[] cha = character.Where (x => x.gridPosition == t.gridPosition && x.gridPosition != selectedCharacter.gridPosition).Select(x=>x).ToArray();
-
-      foreach (Character c in cha) 
+      Debug.Log (inRangeCha.Count);
+      foreach(Character c in inRangeCha)
       {
-        if (usingAbility.ability.abilityType != -1) 
+        Debug.Log (c.name);
+        if (c.tag !=selectedCharacter.tag)
         {
-          if (c != null && c.tag != selectedCharacter.tag)
-          {
-            inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
-            inRange.GetComponent<Renderer> ().material.color = Color.red;
-            inRange.transform.SetParent (c.transform);
+          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+          inRange.GetComponent<Renderer> ().material.color = Color.red;
+          inRange.transform.SetParent (c.transform);
 
-            targetInRange.Add (inRange);
-          }
+          targetInRange.Add (inRange);
         }
-        else
-        {
-          if (c != null && c.tag == selectedCharacter.tag)
-          {
-            inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
-            inRange.GetComponent<Renderer> ().material.color = Color.green;
-            inRange.transform.SetParent (c.transform);
+      }
+    }
+    else
+    {
+      var cha = highlighted.Select (x => GameManager.GetInstance ().character.Where (z => z.currentHP > 0 && z.GetType() == selectedCharacter.GetType() && z.gridPosition == x.gridPosition).Count () > 0 ? GameManager.GetInstance ().character.Where (z => z.gridPosition == x.gridPosition).First () : null).ToList ();
+      List<Character> inRangeCha = cha.Where(x=>x != null).ToList ();
 
-            targetInRange.Add (inRange);
-          }
+      foreach(Character c in inRangeCha)
+      {
+        if (c.tag ==selectedCharacter.tag)
+        {
+          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+          inRange.GetComponent<Renderer> ().material.color = Color.red;
+          inRange.transform.SetParent (c.transform);
+
+          targetInRange.Add (inRange);
         }
       }
     }
@@ -1030,7 +1089,7 @@ public class GameManager : MonoBehaviour
       {
         GameObject characterInParty = Instantiate (Resources.Load<GameObject> ("ResultCharacter"));
         characterInParty.transform.SetParent (results.transform.GetChild (0).GetChild (3));
-        characterInParty.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + party [i].basicStatus.characterName);
+        characterInParty.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + party [i].basicStatus.characterName);
         characterInParty.transform.localScale = new Vector3 (1, 1, 1);
         showResultCharacters.Add (characterInParty.transform);
       }

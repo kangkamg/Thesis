@@ -11,8 +11,10 @@ public class PlayerController : MonoBehaviour
   
   public void SetUpSelectedPosition()
   {
+    RemoveSelected ();
     selectedPosition = GameManager.GetInstance ().selectedCharacter.gridPosition;
     selectedTile = Instantiate (selectedSlots, Vector3.zero, Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
+    selectedTile.name = "selectedTileController";
     selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.51f * Vector3.up);
   }
   
@@ -32,16 +34,20 @@ public class PlayerController : MonoBehaviour
     switch (Direction)
     {
       case 0:
-      selectedPosition.x -= 1;
+      if(selectedPosition.x-1>=0)
+        selectedPosition.x -= 1;
       break;
       case 1:
-      selectedPosition.z += 1;
+      if(selectedPosition.z+1<GameManager.GetInstance ().map [(int)selectedPosition.x].Count)
+        selectedPosition.z += 1;
       break;
       case 2:
-      selectedPosition.z -= 1;
+      if(selectedPosition.z-1>=0)
+        selectedPosition.z -= 1;
       break;
       case 3:
-      selectedPosition.x += 1;
+      if(selectedPosition.x+1<GameManager.GetInstance ().map.Count)
+        selectedPosition.x += 1;
       break;
     }
     if (selectedPosition.z >= 0 && selectedPosition.x >= 0 && selectedPosition.z < GameManager.GetInstance ().map [(int)selectedPosition.x].Count && selectedPosition.x < GameManager.GetInstance ().map.Count)

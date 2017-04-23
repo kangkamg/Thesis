@@ -59,7 +59,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
       characterObj.GetComponentInChildren<AllCharacterData> ().characterStatus = TemporaryData.GetInstance ().playerData.characters [i];
       characterObj.GetComponentInChildren<Button>().onClick.AddListener(()=>LookStatus(characterObj.GetComponentInChildren<AllCharacterData>().characterStatus));
       characterObj.transform.localScale = Vector3.one;
-      characterObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + characterObj.GetComponentInChildren<AllCharacterData> ().characterStatus.basicStatus.characterName);
+      characterObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + characterObj.GetComponentInChildren<AllCharacterData> ().characterStatus.basicStatus.characterName);
 
       allCharacterSlots.Add (characterObj);
     }
@@ -79,7 +79,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
       this.transform.GetChild (0).gameObject.SetActive (true);
       Transform selectedCharacterStatus = this.transform.GetChild (0).GetChild (0);
 
-      selectedCharacterStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
+      selectedCharacterStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
       selectedCharacterStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
       selectedCharacterStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString ();
       selectedCharacterStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString ();

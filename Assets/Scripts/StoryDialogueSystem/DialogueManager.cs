@@ -252,7 +252,7 @@ public class DialogueManager : MonoBehaviour
     {
       LeftCharacter.SetActive (true);
       RightCharacter.SetActive (showRight);
-      LeftCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + character1);
+      LeftCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character1);
     } 
     else
     {
@@ -263,7 +263,7 @@ public class DialogueManager : MonoBehaviour
     {
       RightCharacter.SetActive (true);
       LeftCharacter.SetActive (showLeft);
-      RightCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("PlayerPrefab/" + character2);
+      RightCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character2);
     } 
     else
     {

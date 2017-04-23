@@ -19,7 +19,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
 
   public void UpdateStatus()
   {
-    chaImg.sprite = Resources.Load<Sprite> ("PlayerPrefab/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
+    chaImg.sprite = Resources.Load<Sprite> ("Image/Character/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
     characterName.text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
 
     status.GetChild(0).GetChild(0).GetComponent<Text>().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString();

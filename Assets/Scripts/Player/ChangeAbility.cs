@@ -19,12 +19,12 @@ public class ChangeAbility : MonoBehaviour
     HideAbility ();
     changingAbilityID = abilityStatus.ability.ID;
     changingDetails.gameObject.SetActive (true); 
-    changingDetails.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + abilityStatus.ability.ID);
-    changingDetails.GetChild (0).GetChild (0).GetComponent<Text> ().text = abilityStatus.ability.abilityName.ToString ();
-    changingDetails.GetChild (1).GetComponent<Text> ().text = abilityStatus.ability.describe.ToString ();
-    changingDetails.GetChild (2).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.power.ToString ();
-    changingDetails.GetChild (3).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.hitAmount.ToString ();
-    changingDetails.GetChild (4).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.abilityEff.ToString ();
+    changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + abilityStatus.ability.ID);
+    changingDetails.GetChild (1).GetChild (0).GetComponent<Text> ().text = abilityStatus.ability.abilityName.ToString ();
+    changingDetails.GetChild (2).GetComponent<Text> ().text = abilityStatus.ability.describe.ToString ();
+    changingDetails.GetChild (3).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.power.ToString ();
+    changingDetails.GetChild (4).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.hitAmount.ToString ();
+    changingDetails.GetChild (5).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.abilityEff.ToString ();
   }
   
   public void HideAbility()

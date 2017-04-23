@@ -10,7 +10,7 @@ public class ChangeCharacterParty : MonoBehaviour
 
   public void UpdateStatus()
   {
-    characterImage.sprite = Resources.Load<Sprite> ("PlayerPrefab/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
+    characterImage.sprite = Resources.Load<Sprite> ("Image/Character/" + TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName);
     statusText [0].text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString();
     statusText[1].text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString();
     statusText[2].text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString();

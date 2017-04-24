@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Const 
 {
+  public static string PreviousScene = "PREVIOUSSCENE";
   public static string MapNo = "MAPNO";
   public static string InTownScene = "INTOWNSCENE";
   public static string TownSceneNo = "TOWNSCENENO";

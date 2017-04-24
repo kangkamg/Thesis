@@ -7,20 +7,21 @@ using System.Linq;
 
 public class StoryDialogue
 {
-  public int ID;
-  public int mapNo;
   public List<string> characterName = new List<string>();
   public List<string> allDialogue =  new List<string>();
+  public List<string> bgName = new List<string>();
 }
 
 public class DialogueManager : MonoBehaviour 
 {
   public Text _textComponent;
   public GameObject dialogue;
+  public Image BG;
 
   public StoryDialogue storyDialogue;
   public List<string> dialogueWord;
-  public List<string>  dialogueSpeaker;
+  public List<string> dialogueSpeaker;
+  public List<string> dialogueBG;
 
   public float SecondBetweenCharacters = 0.01f;
   public float CharacterRateMultiplier = 0.05f;
@@ -40,10 +41,12 @@ public class DialogueManager : MonoBehaviour
 
   private void Start()
   {
+    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
+    
     _textComponent.text = "";
-
-    storyDialogue = TemporaryData.GetInstance ().allStory.Where (x => x.ID == TemporaryData.GetInstance ().playerData.storyID && x.mapNo == PlayerPrefs.GetInt (Const.MapNo, 1)).First();
      
+    storyDialogue = GetTextAssetFile.GetInstance().LoadText(Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance().playerData.storyID +"M" + PlayerPrefs.GetInt(Const.MapNo,0)  +".txt");
+      
     for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
     {
       foreach (string speaker in storyDialogue.characterName) 
@@ -55,7 +58,17 @@ public class DialogueManager : MonoBehaviour
           break;
         }
       }
-
+      
+      foreach (string bg in storyDialogue.bgName)
+      {
+        if (storyDialogue.allDialogue [i] == bg)
+        {
+          dialogueBG.Add (storyDialogue.allDialogue [i]);
+          _isName = true;
+          break;
+        }
+      }
+      
       if (_isName) 
       {
         _isName = false;
@@ -76,7 +89,7 @@ public class DialogueManager : MonoBehaviour
 
     if(_isEndOfDialogue)
     {
-      if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+      if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
         {
           EndingDialogue ();
         }
@@ -85,7 +98,7 @@ public class DialogueManager : MonoBehaviour
   
   public void EndingDialogue()
   {
-    SceneManager.LoadScene("GamePlayScene");
+    SceneManager.LoadScene("LoadScene");
     TemporaryData.GetInstance ().playerData.storyID ++;
   }
 
@@ -111,7 +124,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
       {
         break;
       }
@@ -132,75 +145,93 @@ public class DialogueManager : MonoBehaviour
    
     if (currentDialogueIndex == 0) 
     {
-      ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
+      if(dialogueBG[currentDialogueIndex] != "None")
+      {
+        BG.sprite = Resources.Load<Sprite> ("Image/StorySceneBG/" + dialogueBG[currentDialogueIndex]);
+      }
+      
+      if(!string.IsNullOrEmpty(dialogueSpeaker [currentDialogueIndex]))
+      {
+        ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
+        talkingCharacter.SetActive (true);
+        talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+      }
+      else
+      {
+        ShowCha (false, false, null, null);
+        talkingCharacter.SetActive (false);
+      }
       oldLeft = dialogueSpeaker [currentDialogueIndex];
-      talkingCharacter.SetActive (true);
-      talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
     }
       
-    if (dialogueSpeaker[currentDialogueIndex] == oldLeft || dialogueSpeaker[currentDialogueIndex] == oldRight) 
+    else
     {
-      if (dialogueSpeaker [currentDialogueIndex] == oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight)
+      if(dialogueBG[currentDialogueIndex] != "None")
       {
-        if (!string.IsNullOrEmpty(oldRight)) 
-        {
-          ShowCha (true, true, oldLeft, oldRight);
-          talkingCharacter.SetActive (true);
-          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-        }
-        else
-        {
-          ShowCha (true, false, oldLeft, null);
-          talkingCharacter.SetActive (true);
-          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-        }
-      } 
-      else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight)
+        BG.sprite = Resources.Load<Sprite> ("Image/StorySceneBG/" + dialogueBG[currentDialogueIndex]);
+      }
+      
+      if (dialogueSpeaker [currentDialogueIndex] == oldLeft || dialogueSpeaker [currentDialogueIndex] == oldRight) 
       {
-        if (!string.IsNullOrEmpty(oldLeft)) 
+        if (dialogueSpeaker [currentDialogueIndex] == oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight)
         {
-          ShowCha (true, true, oldLeft, oldRight);
-          talkingCharacter.SetActive (true);
-          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-        }
-        else
-        {
-          ShowCha (false, true, null, oldRight);
-          talkingCharacter.SetActive (true);
-          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-        }
-      } 
-    }
-    else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight)
-    {
-      if (!string.IsNullOrEmpty(oldLeft)) 
-      {
-        if (!string.IsNullOrEmpty(oldRight)) 
-        {
-          ShowCha (false, false, null, null);
-          oldLeft = null;
-          oldRight = null;
-          talkingCharacter.SetActive (false);
-        }
-        else
-        {
-          if (Resources.Load<Sprite>("PlayerPrefab/"+dialogueSpeaker[currentDialogueIndex]) != null)
+          if (!string.IsNullOrEmpty (oldRight)) 
           {
-            ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
-            oldRight = dialogueSpeaker [currentDialogueIndex];
+            ShowCha (true, true, oldLeft, oldRight);
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          }
+          else 
+          {
+            ShowCha (true, false, oldLeft, null);
             talkingCharacter.SetActive (true);
             talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
           }
         }
-      }
-      else
-      {
-        if (Resources.Load<Sprite>("PlayerPrefab/"+dialogueSpeaker[currentDialogueIndex]) != null)
+        else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight)
         {
-          ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
-          oldLeft = dialogueSpeaker [currentDialogueIndex];
-          talkingCharacter.SetActive (true);
-          talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          if (!string.IsNullOrEmpty (oldLeft)) {
+            ShowCha (true, true, oldLeft, oldRight);
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          } 
+          else
+          {
+            ShowCha (false, true, null, oldRight);
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          }
+        } 
+      } 
+      else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) 
+      {
+        if (!string.IsNullOrEmpty (oldLeft))
+        {
+          if (!string.IsNullOrEmpty (oldRight)) 
+          {
+            ShowCha (false, false, null, null);
+            oldLeft = null;
+            oldRight = null;
+            talkingCharacter.SetActive (false);
+          } 
+          else 
+          {
+            if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) {
+              ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
+              oldRight = dialogueSpeaker [currentDialogueIndex];
+              talkingCharacter.SetActive (true);
+              talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+            }
+          }
+        } 
+        else 
+        {
+          if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) {
+            ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
+            oldLeft = dialogueSpeaker [currentDialogueIndex];
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+          }
         }
       }
     }
@@ -212,7 +243,7 @@ public class DialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (/*Input.GetMouseButton (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+        if (Input.GetMouseButton (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
         {
           yield return new WaitForSeconds (SecondBetweenCharacters * CharacterRateMultiplier);
         }
@@ -229,7 +260,7 @@ public class DialogueManager : MonoBehaviour
 
     while (true)
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
       {
         break;
       }

@@ -48,8 +48,6 @@ public class TemporaryData
   public CharacterStatus selectedCharacter = new CharacterStatus();
 
   public bool firstTimeOpenGame = false;
-
-  public List<StoryDialogue> allStory = new List<StoryDialogue>();
   
   private static TemporaryData instance;
 

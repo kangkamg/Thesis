@@ -238,40 +238,4 @@ public class GetDataFromSql
 
     return list;
   }
-
-  public static List<StoryDialogue> GetAllStoryDialogue()
-  {
-    List<StoryDialogue> allStoryDialogue = new List<StoryDialogue>();
-
-    IDbCommand dbcmd = dbconn.CreateCommand ();
-
-    string sqlQuery = "SELECT *" + "FROM StoryData" ; 
-    dbcmd.CommandText = sqlQuery;
-    IDataReader reader = dbcmd.ExecuteReader ();
-    while (reader.Read ()) 
-    {
-      StoryDialogue dialogue = new StoryDialogue ();
-      dialogue.ID = reader.GetInt32 (0);
-      dialogue.mapNo = reader.GetInt32 (1);
-      string allDialogue = reader.GetString (2);
-      string[] allDialogueSplit = allDialogue.Split ("," [0]);
-      for (int i = 0; i < allDialogueSplit.Length; i++)
-      {
-        dialogue.allDialogue.Add (allDialogueSplit [i]);
-      }
-      string characterName = reader.GetString (3);
-      string[] characterNameSplit = characterName.Split ("," [0]);
-      for (int i = 0; i < characterNameSplit.Length; i++)
-      {
-        dialogue.characterName.Add (characterNameSplit [i]);
-      }
-      allStoryDialogue.Add (dialogue);
-    }
-    reader.Close ();
-    reader = null;
-    dbcmd.Dispose ();
-    dbcmd = null;
-
-    return allStoryDialogue;
-  }
 }

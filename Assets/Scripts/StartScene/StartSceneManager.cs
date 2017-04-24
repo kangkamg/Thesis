@@ -17,6 +17,7 @@ public class StartSceneManager : MonoBehaviour
 
   private void Awake()
   {
+    PlayerPrefs.DeleteAll ();
     touchText.text = "Touch To Start";
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Book");
     bookOpen = false;
@@ -28,7 +29,6 @@ public class StartSceneManager : MonoBehaviour
     {
       GetDataFromSql.OpenDB ("ThesisDatabase.db");
       TemporaryData.GetInstance ().firstTimeOpenGame = true;
-      TemporaryData.GetInstance ().allStory = GetDataFromSql.GetAllStoryDialogue ();
     }
   }
 

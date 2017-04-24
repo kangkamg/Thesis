@@ -25,6 +25,7 @@ public class MainMenuManager : MonoBehaviour
     optionMenu.SetActive (false);
     menuOn = false;
     showMenuBT.transform.localPosition = new Vector3 (0, -60, 0);
+    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
   }
   
   public void ShowMenu()

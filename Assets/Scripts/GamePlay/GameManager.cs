@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviour
     results.SetActive (false);
     pauseMenu.SetActive (false);
     showingResultOfAttack.gameObject.SetActive (false);
+    
+    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
   }
 
   private void Start()
@@ -1217,7 +1219,8 @@ public class GameManager : MonoBehaviour
       {
         AddingResultItem ();
         TemporaryData.GetInstance ().result = new Result ();
-        SceneManager.LoadScene ("MainMenuScene");
+        SceneManager.LoadScene ("LoadScene");
+        SystemManager.isFinishLevelUp = false;
         break;
       }
 	    yield return 0;

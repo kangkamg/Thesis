@@ -23,14 +23,36 @@ public class LoadingSceneManager : MonoBehaviour
 
     _textComponent.text = "Loading";
     
-    if (TemporaryData.GetInstance ().allStory.Where (x => x.ID == TemporaryData.GetInstance ().playerData.storyID && x.mapNo == PlayerPrefs.GetInt (Const.MapNo, 0)).Count() > 0)
+    if (PlayerPrefs.GetString (Const.PreviousScene) == "MainMenuScene") 
     {
-      async = SceneManager.LoadSceneAsync ("StoryScene");
+      if (GetTextAssetFile.GetInstance ().Load (Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0) + ".txt")) 
+      {
+        async = SceneManager.LoadSceneAsync ("StoryScene");
+      } 
+      else 
+      {
+        async = SceneManager.LoadSceneAsync ("GamePlayScene");
+      }
     } 
-    else 
+    else if (PlayerPrefs.GetString (Const.PreviousScene) == "StoryScene")
     {
+      if (PlayerPrefs.GetInt(Const.MapNo,0) == 0)
+      {
+        PlayerPrefs.SetInt (Const.MapNo, 1);
+      }
       async = SceneManager.LoadSceneAsync ("GamePlayScene");
-    }
+    } 
+    else if (PlayerPrefs.GetString (Const.PreviousScene) == "GamePlayScene")
+    {
+      if (GetTextAssetFile.GetInstance ().Load (Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0) + ".txt")) 
+      {
+        async = SceneManager.LoadSceneAsync ("StoryScene");
+      }
+      else
+      {
+        async = SceneManager.LoadSceneAsync ("MainMenuScene");
+      }
+    } 
 
     while (!async.isDone) 
     {

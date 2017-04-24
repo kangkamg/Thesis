@@ -66,6 +66,6 @@ public class SaveData : MonoBehaviour
   {
     StartSceneManager.InitFirstData ();
     TemporaryData.GetInstance ().playerData.id = saveID;
-    SceneManager.LoadScene ("MainMenuScene");
+    SceneManager.LoadScene ("StoryScene");
   }
 }

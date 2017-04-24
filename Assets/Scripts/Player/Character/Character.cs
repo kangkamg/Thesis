@@ -8,7 +8,7 @@ public class Character : MonoBehaviour
 {
   public List<Vector3>positionQueue = new List<Vector3>();
  
-  public float moveSpeed = 10;
+  public float moveSpeed = 0.25f;
 
   public Vector3 gridPosition = Vector3.zero;
 
@@ -56,32 +56,37 @@ public class Character : MonoBehaviour
     
     foreach (Tile t in TileHighLight.FindHighLight(GameManager.GetInstance().map[(int)gridPosition.x][(int)gridPosition.z],characterStatus.movementPoint, GameManager.GetInstance().character.Where (x => x.gridPosition != gridPosition).Select (x => x.gridPosition).ToArray ()))
     {
-      if (checking.ability.abilityType == 2)
+      if (checking.ability.rangeType == 2)
       {
         foreach (Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
         {
-          targetTilesInRange.Add (a);
+          if(!targetTilesInRange.Contains(a))
+            targetTilesInRange.Add (a);
         }
         foreach (Tile b in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true)) 
         {
-          targetTilesInRange.Add (b);
+          if(!targetTilesInRange.Contains(b))
+            targetTilesInRange.Add (b);
         }
       } 
-      else if (checking.ability.abilityType == 0)
+      else if (checking.ability.rangeType == 0)
       {
         foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, false))
         {
-          targetTilesInRange.Add (a);
+          if(!targetTilesInRange.Contains(a))
+            targetTilesInRange.Add (a);
         }
       }
       else
       {
         foreach(Tile a in TileHighLight.FindHighLight (t, characterStatus.equipedAbility.Where(x=>x.ability.abilityType == 1).First().range, true, true))
         {
-          targetTilesInRange.Add (a);
+          if(!targetTilesInRange.Contains(a))
+            targetTilesInRange.Add (a);
         }
       }
     }
+    
     if (targetTilesInRange.Count > 0)
     {
       returnTiles = targetTilesInRange;

@@ -16,8 +16,6 @@ public class MainMenuManager : MonoBehaviour
   public Button showMenuBT;
   public bool menuOn = false;
   
-  private AsyncOperation async = null;
-
   public void Start()
   {
     playerMenu.SetActive (false);
@@ -73,20 +71,13 @@ public class MainMenuManager : MonoBehaviour
 
   public void GoPlayScene()
   {
-    if (TemporaryData.GetInstance ().allStory.Where (x => x.ID == TemporaryData.GetInstance ().playerData.storyID && x.mapNo == PlayerPrefs.GetInt (Const.MapNo, 0)).Count() > 0)
+    if (MapSaveAndLoad.CheckingMap (PlayerPrefs.GetInt (Const.MapNo, 0))) 
     {
-      SceneManager.LoadScene ("StoryScene");
+      SceneManager.LoadScene ("LoadScene");
     } 
-    else 
+    else
     {
-      if (MapSaveAndLoad.CheckingMap (PlayerPrefs.GetInt (Const.MapNo, 0))) 
-      {
-        SceneManager.LoadScene ("GamePlayScene");
-      } 
-      else
-      {
-        Debug.Log ("Invalid Map");
-      }
+      Debug.Log ("Invalid Map");
     }
   }
 

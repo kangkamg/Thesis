@@ -107,8 +107,7 @@ public class Tile : MonoBehaviour
       case TileTypes.StartEnemy:
       movementCost = 1;
       impassible = false;
-      if (SceneManager.GetActiveScene ().name == "MapCreator") _Prefab = PrefabHolder.GetInstance ().StartEnemy_TilePrefab;
-      else _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
+      _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
       break;
     }
 
@@ -129,19 +128,4 @@ public class Tile : MonoBehaviour
 
     visual = newVisual;
   }
-
-  void OnMouseEnter()
-  {
-    if (SceneManager.GetActiveScene().name.Equals("MapCreator") && Input.GetMouseButton(0)) 
-    {
-      SetType (MapCreatorManager.GetInstance ().palletSelection);
-      
-      EnemyInMapData newEnemy = new EnemyInMapData ();
-      newEnemy.enemyID = int.Parse(MapCreatorManager.GetInstance ().enemiesID);
-      newEnemy.locX = (int)gridPosition.x;
-      newEnemy.locZ = (int)gridPosition.z;
-      MapCreatorManager.GetInstance ().enemies.Add (newEnemy);
-    }
-  }
-
 }

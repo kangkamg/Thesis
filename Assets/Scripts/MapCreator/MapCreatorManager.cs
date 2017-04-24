@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MapCreatorManager : MonoBehaviour
 {
@@ -15,10 +17,9 @@ public class MapCreatorManager : MonoBehaviour
 
   public TileTypes palletSelection = TileTypes.Normal;
 
-  private string editMapSize = "EditMapSize";
-  private string editMapNumber = "EditMapNumber";
-  private string loadMapNumber = "LoadMapNumber";
   public string enemiesID = "2001";
+  
+  public Text mapID;
 
   public static MapCreatorManager GetInstance()
   {
@@ -28,16 +29,49 @@ public class MapCreatorManager : MonoBehaviour
   void Awake()
   {
     instance = GetComponent<MapCreatorManager>();
+    GetDataFromSql.OpenDB ("ThesisDatabase.db");
   }
 
+  private void Update()
+  {
+    if (Input.GetMouseButton(0)) 
+    {
+      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+      RaycastHit hit;
+      if (Physics.Raycast (ray, out hit, 1000f))
+      {
+        if (hit.transform.name.Contains ("Tile")) 
+        {
+          hit.transform.GetComponent<Tile> ().SetType (palletSelection);
+          if (palletSelection == TileTypes.StartEnemy)
+          {
+            if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+            {
+              MapCreatorManager.GetInstance ().RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+            }
+            CreateEnemy (hit.transform, int.Parse (enemiesID));
+          } 
+          else
+          {
+            if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+            {
+              MapCreatorManager.GetInstance ().RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+            }
+          }
+        }
+      }
+    }
+  }
   private void GenerateBlankMap(int mapSize)
   {
     for (int i = 0; i < mapTransform.childCount; i++) 
     {
       Destroy (mapTransform.GetChild (i).gameObject);
     }
-
+    
+    enemies = new List<EnemyInMapData> ();
     map = new List<List<Tile>> ();
+    
     for (int x = 0; x < mapSize; x++)
     {
       List<Tile> row = new List<Tile> ();
@@ -53,8 +87,8 @@ public class MapCreatorManager : MonoBehaviour
       map.Add(row);
     }
     
-    Camera.main.orthographicSize = mapSize * 2.5f;
-    Camera.main.transform.position = new Vector3 (mapSize / 2, Camera.main.transform.position.y, mapSize / 2);
+    Camera.main.orthographicSize = mapSize * 2f;
+    Camera.main.transform.position = new Vector3 ((mapSize / 2f)-0.5f, Camera.main.transform.position.y, mapSize / 2f);
   }
 
   private void SaveMap(int mapNumber)
@@ -67,6 +101,7 @@ public class MapCreatorManager : MonoBehaviour
     MapDatabaseContainner container = MapSaveAndLoad.Load (mapNumber);
 
     mapSize = container.size;
+    enemies = container.enemies;
 
     for (int i = 0; i < mapTransform.childCount; i++)
     {
@@ -84,67 +119,81 @@ public class MapCreatorManager : MonoBehaviour
         tile.SetType ((TileTypes)container.tiles.Where(a=>a.locX == x && a.locZ ==z).First().type);
         tile.transform.SetParent (mapTransform);
         row.Add (tile);
+        if(enemies.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
+        {
+          CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID);
+        }
       }
       map.Add(row);
     }
-    enemies = container.enemies;
+    
+    Camera.main.orthographicSize = mapSize * 2f;
+    Camera.main.transform.position = new Vector3 ((mapSize / 2f)-0.5f, Camera.main.transform.position.y, mapSize / 2f);
   }
   
-  private void OnGUI()
+  public void ChangePallet(int t)
   {
-    Rect rect = new Rect (10, Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "Normal"))
+    palletSelection = (TileTypes)t;
+  }
+  
+  public void AddEnemy()
+  {
+    palletSelection = TileTypes.StartEnemy;
+    enemiesID = EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text;
+  }
+  
+  public void RemoveEnemy(Vector3 gridPosition)
+  {
+    enemies.Remove(enemies.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.GetChild (1).gameObject);
+  }
+  
+  public void CreateEnemy(Transform tilePos, int ID)
+  {
+    GameObject enemyObj = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/AIPlayer"));
+    if (Resources.Load ("PlayerPrefab/" + ID) != null) 
     {
-      palletSelection = TileTypes.Normal;
+      GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/" + ID));
+      renderer.transform.SetParent (enemyObj.transform);
+      renderer.transform.SetAsFirstSibling ();
+      renderer.transform.localScale = Vector3.one*2;
+      renderer.transform.localPosition = Vector3.zero - Vector3.up;
+    } 
+    else 
+    {
+      GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+      renderer.transform.SetParent (enemyObj.transform);
+      renderer.transform.SetAsFirstSibling ();
+      renderer.transform.localScale = Vector3.one*2;
+      renderer.transform.localPosition = Vector3.zero - Vector3.up;
     }
-
-    rect = new Rect(10 + (100+10), Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "StartPlayer")) 
+    enemyObj.transform.SetParent (tilePos);
+    enemyObj.transform.localScale = Vector3.one + Vector3.up;
+    enemyObj.transform.position = tilePos.position + ((Vector3.up * enemyObj.transform.localScale.y) + (Vector3.up/2));
+    
+    EnemyInMapData newEnemy = new EnemyInMapData ();
+    newEnemy.enemyID = ID;
+    newEnemy.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
+    newEnemy.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
+    enemies.Add (newEnemy);
+  }
+  
+  public void SaveAndLoad(bool isSaving)
+  {
+    if (isSaving) 
     {
-      palletSelection = TileTypes.StartPlayer;
-    }
-
-    rect = new Rect((10 + (100+10) * 2), Screen.height - 140, 100, 60);
-    enemiesID = GUI.TextField (rect, enemiesID, 25);
-    rect = new Rect(10 + (100+10) * 2, Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "StartEnemy")) 
+      SaveMap (int.Parse (mapID.text));
+    } 
+    else 
     {
-      palletSelection = TileTypes.StartEnemy;
-    }
-
-
-    rect = new Rect(10 + (100+10) * 3, Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "Impassible")) 
-    {
-      palletSelection = TileTypes.Impassible;
-    }
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 3), Screen.height - 160, 100, 60);
-    editMapSize = GUI.TextField (rect, editMapSize, 25);
-
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 3), Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "CreateNewMap")) 
-    {
-      GenerateBlankMap (int.Parse(editMapSize));
-    }
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 2), Screen.height - 160, 100, 60);
-    editMapNumber = GUI.TextField (rect, editMapNumber, 25);
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 2), Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "SaveMap")) 
-    {
-      SaveMap (int.Parse(editMapNumber));
-    }
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 1), Screen.height - 160, 100, 60);
-    loadMapNumber = GUI.TextField (rect, loadMapNumber, 25);
-
-    rect = new Rect(Screen.width - (10 + (100+10) * 1), Screen.height - 80, 100, 60);
-    if (GUI.Button (rect, "LoadMap")) 
-    {
-      LoadMap (int.Parse(loadMapNumber));
+      LoadMap (int.Parse (mapID.text));
     }
   }
+  
+  public void GenerateBlankMap()
+  {
+    GenerateBlankMap(int.Parse(EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text));
+  }
+  
+  
 }

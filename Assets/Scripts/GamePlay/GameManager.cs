@@ -288,6 +288,7 @@ public class GameManager : MonoBehaviour
       }
 
       GameObject playerObj = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3 (startPlayer [i].transform.position.x, 1.5f, startPlayer [i].transform.position.z),Quaternion.identity);
+      
       playerObj.transform.GetChild(0).rotation = Quaternion.Euler (0, 90, 0);
       PlayerCharacter player = playerObj.GetComponent<PlayerCharacter> ();
       player.SetStatus(TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == i).First());
@@ -296,6 +297,21 @@ public class GameManager : MonoBehaviour
       player.ordering = character.Count - 1;
       player.ID = character.Count - 1;
       playerCharacterID.Add (player.characterStatus.basicStatus.ID);
+      GameObject renderer = null;
+      if (Resources.Load<GameObject> ("PlayerPrefab/" + player.characterStatus.basicStatus.ID) != null)
+      {
+        renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/" + player.characterStatus.basicStatus.ID));
+      }
+      else
+      {
+        renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+      }
+      renderer.transform.SetParent (playerObj.transform);
+      renderer.transform.SetAsFirstSibling ();
+      renderer.transform.localScale = Vector3.one*2;
+      renderer.transform.localPosition = Vector3.zero - Vector3.up;
+      renderer.GetComponent<Animator> ().Play ("Standing");
+        
       foreach (AbilityStatus a in player.characterStatus.equipedAbility) 
       {
         GetUsedAbility.AddAbility (player.ID, a.ability);
@@ -328,6 +344,35 @@ public class GameManager : MonoBehaviour
       character.Add (aiPlayer);
       aiPlayer.ordering = character.Count - 1;
       aiPlayer.ID = character.Count - 1;
+      GameObject renderer = null;
+      
+      if (Resources.Load<GameObject> ("PlayerPrefab/" + aiPlayer.characterStatus.basicStatus.ID) != null)
+      {
+        renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/" + aiPlayer.characterStatus.basicStatus.ID));
+      }
+      else
+      {
+        renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+      }
+      renderer.transform.SetParent (aiPlayerObj.transform);
+      renderer.transform.SetAsFirstSibling ();
+      renderer.transform.localScale = Vector3.one*2;
+      renderer.transform.localPosition = Vector3.zero - Vector3.up;
+      
+      Vector3 heading = character [0].transform.position - aiPlayerObj.transform.position;
+      float distance = heading.magnitude;
+      
+      Vector3 direction = heading / distance;
+      
+      if(direction.x < 0 && direction.z < 0)
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.left+Vector3.back, 360f, 0.0f));
+      else if(direction.x < 0 && direction.z == 0)
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.left, 360f, 0.0f));
+      else if(direction.x > 0 && direction.z == 0)
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.right, 360f, 0.0f));
+      else if(direction.x > 0 && direction.z > 0)
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.right+Vector3.forward, 360f, 0.0f));
+      
       foreach (AbilityStatus ability in aiPlayer.characterStatus.equipedAbility) 
       {
         GetUsedAbility.AddAbility (aiPlayer.ID, ability.ability);
@@ -510,10 +555,13 @@ public class GameManager : MonoBehaviour
 
       foreach (Tile t in highlightedTiles) 
       {
-        GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
-        h.transform.SetParent (t.transform);
-        h.name = "highlightAttack";
-        highlightTileAttack.Add (h);
+        if (highlightTileMovement.Where (x => x.GetComponentInParent<Tile> ().gridPosition == t.gridPosition).Count () <= 0) 
+        {
+          GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler (new Vector3 (90, 0, 0)))as GameObject;
+          h.transform.SetParent (t.transform);
+          h.name = "highlightAttack";
+          highlightTileAttack.Add (h);
+        }
       }
     }
   }
@@ -597,14 +645,8 @@ public class GameManager : MonoBehaviour
     {
       Destroy (b);
     }
-    foreach (GameObject c in highlightedTileTargetInRange) 
-    {
-      Destroy (c);
-    }
     highlightTileMovement.Clear ();
     highlightTileAttack.Clear ();
-    highlightedTileTargetInRange.Clear ();
-    targetInRange.Clear ();
   }
 
   public void RemoveAttackHighLightOnly()
@@ -613,11 +655,15 @@ public class GameManager : MonoBehaviour
     {
       Destroy (a);
     }
+    highlightTileAttack.Clear ();
+  }
+  
+  public void RemoveTargetInRangeHighlight()
+  {
     foreach (GameObject c in highlightedTileTargetInRange) 
     {
       Destroy (c);
     }
-    highlightTileAttack.Clear ();
     highlightedTileTargetInRange.Clear ();
     targetInRange.Clear ();
   }
@@ -816,11 +862,10 @@ public class GameManager : MonoBehaviour
     CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
     if(target.GetType() == typeof (AICharacter))
       target.GetComponent<AICharacter> ().rageGuage += 1;
-    
+    Animator anim = selectedCharacter.transform.GetChild(0).GetComponent<Animator> ();
     while (i < usingAbility.hitAmount) 
     {
-      selectedCharacter.transform.GetChild(0).GetComponent<Animator> ().Play ("Test");
-      Animator anim = selectedCharacter.transform.GetChild(0).GetComponent<Animator> ();
+      anim.Play ("Damaged");
       target.currentHP += amountOfResults;
       target.GetComponent<Character>().info.transform.GetChild (1).GetComponent<TextMesh> ().text = target.currentHP.ToString();
       if(amountOfResults <= 0) FloatingTextController (amountOfResults*-1, target.transform);
@@ -840,6 +885,7 @@ public class GameManager : MonoBehaviour
     }
     CameraManager.GetInstance ().ResetCamera ();
     selectedCharacter.played = true;
+    anim.Play ("Standing");
     NextTurn ();
   }
 
@@ -983,12 +1029,7 @@ public class GameManager : MonoBehaviour
   {
     if (selectedCharacter.played) return;
 
-    foreach (GameObject obj in highlightedTileTargetInRange) 
-    {
-      Destroy (obj);
-    }
-    highlightedTileTargetInRange.Clear ();
-    targetInRange.Clear ();
+    RemoveTargetInRangeHighlight ();
 
     List<Tile> highlighted = new List<Tile> ();
 
@@ -1040,7 +1081,7 @@ public class GameManager : MonoBehaviour
       {
         if (c.tag !=selectedCharacter.tag)
         {
-          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.52f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
           inRange.GetComponent<Renderer> ().material.color = Color.red;
           inRange.transform.SetParent (c.transform);
 
@@ -1058,7 +1099,7 @@ public class GameManager : MonoBehaviour
       {
         if (c.tag ==selectedCharacter.tag)
         {
-          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.51f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
+          GameObject inRange = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (c.transform.position.x, 0.52f, c.transform.position.z), Quaternion.Euler (90, 0, 0));
           inRange.GetComponent<Renderer> ().material.color = Color.red;
           inRange.transform.SetParent (c.transform);
 

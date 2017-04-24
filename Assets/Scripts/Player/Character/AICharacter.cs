@@ -28,15 +28,18 @@ public class AICharacter : Character
   {
     if (positionQueue.Count > 0)
     {
+      transform.GetChild(0).GetComponent<Animator> ().Play ("Walking");
       if (Vector3.Distance (positionQueue [0], transform.position) > 0.1f)
       {
         transform.position = Vector3.MoveTowards (transform.position, positionQueue [0], moveSpeed*Time.deltaTime);
+        transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (transform.GetChild(0).forward, positionQueue [0] - transform.position, 360f, 0.0f));
         if (Vector3.Distance (positionQueue [0], transform.position) < 0.1f) 
         {
           transform.position = positionQueue [0];
           positionQueue.RemoveAt (0);
           if (positionQueue.Count == 0)
           {
+            transform.GetChild(0).GetComponent<Animator> ().Play ("Standing");
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();

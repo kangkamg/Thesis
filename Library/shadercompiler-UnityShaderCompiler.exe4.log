@@ -1,2 +1,59 @@
 Base path: C:/Program Files/Unity/Editor/Data
 Cmd: initializeCompiler
+Cmd: disassembleShader
+  api=18 insize=3557 outsize=35850 ok=1
+Cmd: disassembleShader
+  api=18 insize=5484 outsize=56252 ok=1
+Cmd: disassembleShader
+  api=18 insize=4421 outsize=43735 ok=1
+Cmd: disassembleShader
+  api=9 insize=7651 outsize=7651 ok=1
+Cmd: disassembleShader
+  api=18 insize=0 outsize=1 ok=1
+Cmd: disassembleShader
+  api=18 insize=0 outsize=1 ok=1
+Cmd: disassembleShader
+  api=18 insize=2967 outsize=29696 ok=1
+Cmd: disassembleShader
+  api=9 insize=2454 outsize=2454 ok=1
+Cmd: disassembleShader
+  api=9 insize=3702 outsize=3702 ok=1
+Cmd: disassembleShader
+  api=9 insize=3433 outsize=3433 ok=1
+Cmd: disassembleShader
+  api=5 insize=2459 outsize=2459 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=18 insize=0 outsize=1 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=9 insize=1716 outsize=1716 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=5 insize=3270 outsize=3270 ok=1
+Cmd: disassembleShader
+  api=5 insize=3314 outsize=3314 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=18 insize=0 outsize=1 ok=1
+Cmd: disassembleShader
+  api=9 insize=4024 outsize=4024 ok=1
+Cmd: disassembleShader
+  api=9 insize=3953 outsize=3953 ok=1
+Cmd: disassembleShader
+  api=9 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=5 insize=0 outsize=57 ok=1
+Cmd: disassembleShader
+  api=18 insize=0 outsize=1 ok=1
+Unhandled exception: Protocol error - failed to read correct magic number
+
+Quitting shader compiler process

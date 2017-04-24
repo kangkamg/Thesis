@@ -69,7 +69,6 @@ public class MapSaveAndLoad
   public static void SaveData(MapDatabaseContainner data, int mapNumber)
   {
     List<int> MapNumber = new List<int> ();
-    GetDataFromSql.OpenDB ("ThesisDatabase.db");
 
     IDbCommand dbcmd = GetDataFromSql.dbconn.CreateCommand ();
 
@@ -123,7 +122,6 @@ public class MapSaveAndLoad
     List<TileData> data = new List<TileData> ();
     List<EnemyInMapData> enemy = new List<EnemyInMapData> ();
     int size = 0;
-    GetDataFromSql.OpenDB ("ThesisDatabase.db");
     
     IDbCommand dbcmd = GetDataFromSql.dbconn.CreateCommand ();
 

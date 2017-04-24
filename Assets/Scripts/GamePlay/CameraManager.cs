@@ -21,6 +21,7 @@ public class CameraManager : MonoBehaviour
 
   private Vector3 _originPos;
   private float _orthographicSize;
+  float previousmultiply;
   
   private bool following = false;
   private bool isLookWholeMap = false;
@@ -38,9 +39,11 @@ public class CameraManager : MonoBehaviour
   {
     if (following)
     {
-      Vector3 targetCamPos = follower.position;
+      Vector3 targetCamPos = follower.position ;
 
-      targetCamPos.y = 0;
+      targetCamPos.x += Mathf.Abs(follower.position.x);
+      targetCamPos.y = Mathf.Abs(follower.position.x);
+      targetCamPos.z -=  Mathf.Abs(follower.position.x);
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
 
@@ -81,6 +84,7 @@ public class CameraManager : MonoBehaviour
   public void SetUpStartCamera(Vector3 _target)
   {
     following = false;
+    isLookWholeMap = false;
     _orthographicSize = _target.x * 2.5f;
     this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
 
@@ -94,6 +98,7 @@ public class CameraManager : MonoBehaviour
   public void MoveCameraToTarget(Transform followTarget, float mutiply = 10f)
   {
     follower = followTarget;
+    previousmultiply = mutiply;
     if (!isLookWholeMap)
     {
       this.GetComponent<Camera> ().orthographicSize = followTarget.localScale.x * mutiply;
@@ -117,7 +122,7 @@ public class CameraManager : MonoBehaviour
     if (!isLookWholeMap) 
     {
       transform.position = follower.position;
-      this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 10f;
+      this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * previousmultiply;
     }
     else 
     {

@@ -44,16 +44,6 @@ public class PrefabHolder
     private set {} 
   }
 
-  public GameObject StartEnemy_TilePrefab 
-  { 
-    get 
-    { 
-      GameObject tile = Resources.Load<GameObject> ("TilePrefab/StartEnemy"); 
-      return tile;
-    } 
-    private set {} 
-  }
-
   public GameObject Selected_TilePrefab 
   { 
     get 

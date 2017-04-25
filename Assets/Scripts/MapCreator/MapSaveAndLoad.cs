@@ -24,19 +24,36 @@ public class EnemyInMapData
   public int locZ;
 }
 
+[System.Serializable]
+public class PlayerInMapData
+{
+  public int locX;
+  public int locZ;
+}
+
+[System.Serializable]
+public class ObstacleInMap
+{
+  public int objs;
+  public int locX;
+  public int locZ;
+}
+
 
 public class MapDatabaseContainner
 {
   public int size;
   public List<TileData> tiles = new List<TileData>();
   public List<EnemyInMapData> enemies = new List<EnemyInMapData> ();
+  public List<PlayerInMapData> players = new List<PlayerInMapData> ();
+  public List<ObstacleInMap> objs = new List<ObstacleInMap> ();
 }
 
 public class MapSaveAndLoad 
 {
   public static ArrayList list = new ArrayList();
 
-  public static MapDatabaseContainner CreateMapContainer(List<List<Tile>> map, List<EnemyInMapData> enemy)
+  public static MapDatabaseContainner CreateMapContainer(List<List<Tile>> map, List<EnemyInMapData> enemy, List<PlayerInMapData> player, List<ObstacleInMap> obj)
   {
     List<TileData> tiles = new List<TileData> ();
 
@@ -52,7 +69,9 @@ public class MapSaveAndLoad
     {
       size = map.Count,
       tiles = tiles,
-      enemies = enemy
+      enemies = enemy,
+      players = player,
+      objs = obj
     };
   }
 
@@ -86,6 +105,8 @@ public class MapSaveAndLoad
       string updateMapSize = "UPDATE MapData SET mapsize = " + data.size + " where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData"; 
       string updateMapData = "UPDATE MapData SET mapdata = '" + EncodeAndDeCode.Encode (data.tiles) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
       string updateEnemyInMap = "UPDATE MapData SET enemyInMap = '" + EncodeAndDeCode.Encode (data.enemies) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
+      string updatePlayerInMap = "UPDATE MapData SET playerInMap = '" + EncodeAndDeCode.Encode (data.players) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
+      string updateObstacleInMap = "UPDATE MapData SET obstacleInMap = '" + EncodeAndDeCode.Encode (data.objs) + "' where mapno = " + mapNumber + ";" + "SELECT * " + "FROM MapData";
       ucmd.CommandText = updateMapSize;
       IDataReader update = ucmd.ExecuteReader ();
       update.Close ();
@@ -98,12 +119,20 @@ public class MapSaveAndLoad
       update = ucmd.ExecuteReader ();
       update.Close ();
       
+      ucmd.CommandText = updatePlayerInMap;
+      update = ucmd.ExecuteReader ();
+      update.Close ();
+      
+      ucmd.CommandText = updateObstacleInMap;
+      update = ucmd.ExecuteReader ();
+      update.Close ();
+      
       ucmd.Dispose ();
     }
     else 
     {
       IDbCommand icmd = GetDataFromSql.dbconn.CreateCommand ();
-      string insertQuery = "INSERT INTO MapData(mapno,mapsize,mapdata,enemyInMap)" + "VALUES (" + mapNumber + "," + data.size + ", '" + EncodeAndDeCode.Encode (data.tiles) + "', '" + EncodeAndDeCode.Encode(data.enemies) + "');"; 
+      string insertQuery = "INSERT INTO MapData(mapno,mapsize,mapdata,enemyInMap,playerInMap,obstacleInMap)" + "VALUES (" + mapNumber + "," + data.size + ", '" + EncodeAndDeCode.Encode (data.tiles) + "', '" + EncodeAndDeCode.Encode(data.enemies) + "', '" + EncodeAndDeCode.Encode(data.players) + "', '" + EncodeAndDeCode.Encode(data.objs) + "');"; 
       icmd.CommandText = insertQuery;
       IDataReader insert = icmd.ExecuteReader ();
      
@@ -121,6 +150,8 @@ public class MapSaveAndLoad
   {
     List<TileData> data = new List<TileData> ();
     List<EnemyInMapData> enemy = new List<EnemyInMapData> ();
+    List<PlayerInMapData> player = new List<PlayerInMapData> ();
+    List<ObstacleInMap> obj = new List<ObstacleInMap> ();
     int size = 0;
     
     IDbCommand dbcmd = GetDataFromSql.dbconn.CreateCommand ();
@@ -134,8 +165,14 @@ public class MapSaveAndLoad
       if (reader.GetInt32 (0) == mapNumber)
       {
         size = reader.GetInt32 (1);
-        data = EncodeAndDeCode.Decode (reader.GetString (2)) as List<TileData>;
-        enemy = EncodeAndDeCode.Decode (reader.GetString (3)) as List<EnemyInMapData>;
+        if(!string.IsNullOrEmpty(reader.GetString(2)))
+          data = EncodeAndDeCode.Decode (reader.GetString (2)) as List<TileData>;
+        if(!string.IsNullOrEmpty(reader.GetString(3)))
+          enemy = EncodeAndDeCode.Decode (reader.GetString (3)) as List<EnemyInMapData>;
+        if(!string.IsNullOrEmpty(reader.GetString(4)))
+          player = EncodeAndDeCode.Decode (reader.GetString (4)) as List<PlayerInMapData>;
+        if(!string.IsNullOrEmpty(reader.GetString(5)))
+          obj = EncodeAndDeCode.Decode (reader.GetString (5)) as List<ObstacleInMap>;
       }
     }
     reader.Close ();
@@ -147,7 +184,9 @@ public class MapSaveAndLoad
     {
       size = size,
       tiles = data,
-      enemies = enemy
+      enemies = enemy,
+      players = player,
+      objs = obj
     };
   }
   

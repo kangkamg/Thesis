@@ -63,6 +63,18 @@ public class ChangeAbility : MonoBehaviour
         abilityObj.GetComponent<ChangingAbilityInformation> ().abilityStatus = changeAbleAbility [i];
       }
     }
+    
+    if (changeAbleAbility.Count > 5)
+    {
+      changeAbleAbilitySlots.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleAbilitySlots.GetComponent<RectTransform> ().sizeDelta.x , 255f * (changeAbleAbility.Count));
+      changeAbleAbilitySlots.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+    } 
+    else
+    {
+      changeAbleAbilitySlots.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+    }
+
+    changeAbleAbilitySlots.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleAbilitySlots.GetComponent<RectTransform> ().offsetMax.x, 1f);
   }
   
   public bool CheckingEquipedAbility(int ID,int type)

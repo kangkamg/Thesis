@@ -69,18 +69,17 @@ public class InventoryManager : MonoBehaviour
       }
     }
 
-    if (slots.Count > 6)
+    if (slots.Count > 8)
     {
-      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 120 * (slots.Count - 1));
-      slotPanel.transform.localPosition = slotPanel.GetComponent<RectTransform> ().sizeDelta / -(slots.Count - 2);
+      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (slotPanel.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
-      slotPanel.transform.localPosition = Vector3.zero;
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
-
+    slotPanel.GetComponent<RectTransform> ().offsetMax = new Vector2 (slotPanel.GetComponent<RectTransform> ().offsetMax.x, 1f);
+    
     items.Sort (delegate(Item a, Item b) 
       {
         return (a.item.ID.CompareTo (b.item.ID));

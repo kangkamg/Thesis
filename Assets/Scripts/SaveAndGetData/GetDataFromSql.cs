@@ -33,7 +33,7 @@ public class GetDataFromSql
     string conn = "URI=file:" + dbPath;
 
     dbconn = new SqliteConnection (conn) as IDbConnection;
-    dbconn.Open ();
+    if (dbconn.State != ConnectionState.Open) dbconn.Open ();
   }
 
   public static Ability GetAbility(int ID)

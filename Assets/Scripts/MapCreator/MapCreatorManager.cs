@@ -13,11 +13,16 @@ public class MapCreatorManager : MonoBehaviour
   public int mapSize;
   public List<List<Tile>> map = new List<List<Tile>>();
   public List<EnemyInMapData> enemies = new List<EnemyInMapData> ();
+  public List<PlayerInMapData> players = new List<PlayerInMapData> ();
+  public List<ObstacleInMap> objs = new List<ObstacleInMap> ();
   public Transform mapTransform;
 
   public TileTypes palletSelection = TileTypes.Normal;
 
   public string enemiesID = "2001";
+  
+  public int tileTypes;
+  public int obstacle;
   
   public Text mapID;
 
@@ -34,7 +39,7 @@ public class MapCreatorManager : MonoBehaviour
 
   private void Update()
   {
-    if (Input.GetMouseButton(0)) 
+    if (Input.GetMouseButtonDown(0)) 
     {
       Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
       RaycastHit hit;
@@ -42,34 +47,76 @@ public class MapCreatorManager : MonoBehaviour
       {
         if (hit.transform.name.Contains ("Tile")) 
         {
-          hit.transform.GetComponent<Tile> ().SetType (palletSelection);
-          if (palletSelection == TileTypes.StartEnemy)
+          if (obstacle == -1)
           {
-            if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+            if (tileTypes == 2)
             {
-              MapCreatorManager.GetInstance ().RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              CreateEnemy (hit.transform, int.Parse (enemiesID));
+            } 
+            else if (tileTypes == 1)
+            {
+              if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              CreatePlayerPos (hit.transform);
             }
-            CreateEnemy (hit.transform, int.Parse (enemiesID));
-          } 
+            else 
+            {
+              if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              hit.transform.GetComponent<Tile> ().SetType (palletSelection);
+            }
+          }
           else
           {
-            if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+            if(obstacle!=0)
+              CreateObstacle (hit.transform, obstacle);
+            else
             {
-              MapCreatorManager.GetInstance ().RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
             }
           }
         }
       }
     }
   }
+  
   private void GenerateBlankMap(int mapSize)
   {
     for (int i = 0; i < mapTransform.childCount; i++) 
     {
       Destroy (mapTransform.GetChild (i).gameObject);
     }
-    
-    enemies = new List<EnemyInMapData> ();
     map = new List<List<Tile>> ();
     
     for (int x = 0; x < mapSize; x++)
@@ -93,7 +140,7 @@ public class MapCreatorManager : MonoBehaviour
 
   private void SaveMap(int mapNumber)
   {
-    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map,enemies), mapNumber);
+    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map,enemies, players, objs), mapNumber);
   }
 
   private void LoadMap(int mapNumber)
@@ -102,6 +149,8 @@ public class MapCreatorManager : MonoBehaviour
 
     mapSize = container.size;
     enemies = container.enemies;
+    players = container.players;
+    objs = container.objs;
 
     for (int i = 0; i < mapTransform.childCount; i++)
     {
@@ -123,6 +172,14 @@ public class MapCreatorManager : MonoBehaviour
         {
           CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID);
         }
+        if(players.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
+        {
+          CreatePlayerPos (tile.transform);
+        }
+        if(objs.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
+        {
+          CreateObstacle (tile.transform,objs.Where(i=>i.locX == x && i.locZ ==z).First().objs);
+        }
       }
       map.Add(row);
     }
@@ -133,19 +190,79 @@ public class MapCreatorManager : MonoBehaviour
   
   public void ChangePallet(int t)
   {
+    tileTypes = 0;
+    obstacle = -1;
     palletSelection = (TileTypes)t;
   }
   
   public void AddEnemy()
   {
-    palletSelection = TileTypes.StartEnemy;
+    tileTypes = 2;
+    obstacle = -1;
     enemiesID = EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text;
+  }
+  
+  public void AddPlayer()
+  {
+    tileTypes = 1;
+    obstacle = -1;
+  }
+  
+  public void AddObstacle(int obstacleID)
+  {
+    obstacle = obstacleID;
+  }
+  
+  public void CreateObstacle(Transform tilePos, int obstacleID)
+  {
+    GameObject obstacleObj = Instantiate (Resources.Load<GameObject> ("TilePrefab/Obstacle/"  + obstacleID));
+    obstacleObj.name = "obstacle";
+    obstacleObj.transform.SetParent (tilePos);
+    
+    obstacleObj.transform.position = tilePos.position + (Vector3.up * ((obstacleObj.transform.localScale.y/2)+0.5f) );
+    
+    ObstacleInMap obstacleInMap = new ObstacleInMap ();
+    obstacleInMap.objs = obstacleID;
+    obstacleInMap.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
+    obstacleInMap.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
+    objs.Add (obstacleInMap);
   }
   
   public void RemoveEnemy(Vector3 gridPosition)
   {
     enemies.Remove(enemies.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
     Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.GetChild (1).gameObject);
+  }
+  
+  public void RemovePlayer(Vector3 gridPosition)
+  {
+    players.Remove(players.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.GetChild (1).gameObject);
+  }
+  
+  public void RemoveObstacle(Vector3 gridPosition)
+  {
+    objs.Remove(objs.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("obstacle"));
+  }
+  
+  public void CreatePlayerPos(Transform tilePos)
+  {
+    GameObject playerObj = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/PlayerA"));
+    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+    renderer.transform.SetParent (playerObj.transform);
+    renderer.transform.SetAsFirstSibling ();
+    renderer.transform.localScale = Vector3.one*2;
+    renderer.transform.localPosition = Vector3.zero - Vector3.up;
+    
+    playerObj.transform.SetParent (tilePos);
+    playerObj.transform.localScale = Vector3.one + Vector3.up;
+    playerObj.transform.position = tilePos.position + ((Vector3.up * playerObj.transform.localScale.y) + (Vector3.up/2));
+
+    PlayerInMapData newPlayerPos = new PlayerInMapData ();
+    newPlayerPos.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
+    newPlayerPos.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
+    players.Add (newPlayerPos);
   }
   
   public void CreateEnemy(Transform tilePos, int ID)

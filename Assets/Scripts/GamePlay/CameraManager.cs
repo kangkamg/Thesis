@@ -95,7 +95,7 @@ public class CameraManager : MonoBehaviour
     _originPos = transform.position;
   }
   
-  public void MoveCameraToTarget(Transform followTarget, float mutiply = 10f)
+  public void MoveCameraToTarget(Transform followTarget, float mutiply = 7.5f)
   {
     follower = followTarget;
     previousmultiply = mutiply;

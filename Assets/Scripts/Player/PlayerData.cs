@@ -50,6 +50,8 @@ public class TemporaryData
   public bool firstTimeOpenGame = false;
   
   private static TemporaryData instance;
+  
+  public Animator attackingTargetAnim = new Animator();
 
   public static TemporaryData GetInstance()
   {

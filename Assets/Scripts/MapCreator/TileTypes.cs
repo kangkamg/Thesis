@@ -4,8 +4,9 @@ using UnityEngine;
 
 public enum TileTypes
 {
-  Normal,
-  Impassible,
-  StartPlayer,
-  StartEnemy
+  Grass,
+  Water,
+  Ground,
+  Rock,
+  Normal
 }

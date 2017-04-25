@@ -92,19 +92,17 @@ public class PartySceneManager : MonoBehaviour
     partyPanel.transform.position = new Vector2 (partyPanel.transform.position.x, partyPanel.transform.position.y + 50);
     changingPanel.transform.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y + 50);
 
-    if (slotsOtherCharacter.Count > 12)
+    if (slotsOtherCharacter.Count > 8)
     {
-      changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, (changingPanel.GetComponent<GridLayoutGroup>().cellSize.y * (slotsOtherCharacter.Count - 2))
-        + changingPanel.GetComponent<GridLayoutGroup>().spacing.y);
-      changingPanel.transform.localPosition = changingPanel.GetComponent<RectTransform> ().sizeDelta / -(slotsOtherCharacter.Count - 1);
+      changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changingPanel.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slotsOtherCharacter.Count));
       changingPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
-      changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 0);
-      changingPanel.transform.localPosition = new Vector2 (0, 0);
       changingPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
+    
+    changingPanel.GetComponent<RectTransform> ().offsetMax = new Vector2 (changingPanel.GetComponent<RectTransform> ().offsetMax.x, 1f);
   }
 
   public void GenerateOtherCharacter(CharacterStatus status)

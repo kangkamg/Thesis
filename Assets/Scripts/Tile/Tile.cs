@@ -79,6 +79,11 @@ public class Tile : MonoBehaviour
 
   }
 
+  public void SetImpassible()
+  {
+    impassible = true;
+  }
+  
   public void SetType(TileTypes t)
   {
     type = t;
@@ -88,26 +93,31 @@ public class Tile : MonoBehaviour
       case TileTypes.Normal:
       movementCost = 1;
       impassible = false;
-      _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/Normal");
+      break;
+      
+      case TileTypes.Grass:
+      movementCost = 1;
+      impassible = false;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/Grass");
       break;
 
-      case TileTypes.Impassible:
+      case TileTypes.Water:
       movementCost = int.MaxValue;
       impassible = true;
-      _Prefab = PrefabHolder.GetInstance ().Impassible_TilePrefab;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/Water");
       break;
-
-      case TileTypes.StartPlayer:
+      
+      case TileTypes.Ground:
       movementCost = 1;
       impassible = false;
-      if (SceneManager.GetActiveScene ().name == "MapCreator") _Prefab = PrefabHolder.GetInstance ().StartPlayer_TilePrefab;
-      else _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/Ground");
       break;
 
-      case TileTypes.StartEnemy:
+      case TileTypes.Rock:
       movementCost = 1;
       impassible = false;
-      _Prefab = PrefabHolder.GetInstance ().Normal_TilePrefab;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/Rock");
       break;
     }
 

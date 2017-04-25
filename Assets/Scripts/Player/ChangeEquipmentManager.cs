@@ -197,17 +197,17 @@ public class ChangeEquipmentManager : MonoBehaviour
         }
       }
     }
-
-    if (slots.Count > 6)
+    
+    if (slots.Count > 8)
     {
-      changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (slots.Count - 1));
-      changeAbleItem.transform.localPosition = changeAbleItem.GetComponent<RectTransform> ().sizeDelta / -(slots.Count - 2);
+      changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
+    changeAbleItem.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().offsetMax.x, 1f);
 
     items.Sort (delegate(Item a, Item b) 
       {
@@ -265,16 +265,16 @@ public class ChangeEquipmentManager : MonoBehaviour
       }
     }
 
-    if (slots.Count > 6)
+    if (slots.Count > 8)
     {
-      changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 80 * (slots.Count - 1));
-      changeAbleItem.transform.localPosition = changeAbleItem.GetComponent<RectTransform> ().sizeDelta / -(slots.Count - 2);
+      changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
+    changeAbleItem.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().offsetMax.x, 1f);
 
     items.Sort (delegate(Item a, Item b) 
       {

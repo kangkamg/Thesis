@@ -63,20 +63,16 @@ public class ItemManager : MonoBehaviour
       }
     }
 
-    if (allItem.Count > 6)
+    if (allItem.Count > 8)
     {
-      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 120 * (allItem.Count - 1));
-      showing.transform.localPosition = showing.GetComponent<RectTransform> ().sizeDelta / -(allItem.Count - 2);
+      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 255f * (allItem.Count));
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
-    for (int i = 0; i < allItem.Count; i++)
-    {
-      allItem[i].transform.localPosition = new Vector3 (1, (showing.GetComponent<RectTransform>().sizeDelta.y/2) - (80*i), 0);
-    }
+    showing.GetComponent<RectTransform> ().offsetMax = new Vector2 (showing.GetComponent<RectTransform> ().offsetMax.x, 1f);
   }
   
   public void GenerateInventoryItems(string itemsType)
@@ -106,20 +102,16 @@ public class ItemManager : MonoBehaviour
       allItem.Add (items);
     }
 
-    if (allItem.Count > 6)
+    if (allItem.Count > 8)
     {
-      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (0, 120 * (allItem.Count - 1));
-      showing.transform.localPosition = showing.GetComponent<RectTransform> ().sizeDelta / -(allItem.Count - 2);
+      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 255f * (allItem.Count));
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
     {
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
     }
-    for (int i = 0; i < allItem.Count; i++)
-    {
-      allItem[i].transform.localPosition = new Vector3 (1, (showing.GetComponent<RectTransform>().sizeDelta.y/2) - (80*i), 0);
-    }
+    showing.GetComponent<RectTransform> ().offsetMax = new Vector2 (showing.GetComponent<RectTransform> ().offsetMax.x, 1f);
   }
   
   private void BuyingItem(ItemStatus data)

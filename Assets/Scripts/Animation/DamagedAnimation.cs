@@ -21,6 +21,7 @@ public class DamagedAnimation : StateMachineBehaviour
   {
     CameraManager.GetInstance ().ResetCamera ();
     isComplete = true;
+    animator.Play ("Standing");
 	}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here

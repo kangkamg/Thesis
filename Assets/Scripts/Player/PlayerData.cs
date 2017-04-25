@@ -19,6 +19,7 @@ public class PlayerData
   public string name;
   public List<Quest> acceptedQuest = new List<Quest>();
   public List<CharacterStatus> characters = new List<CharacterStatus>();
+  public List<int> playedMap = new List<int> ();
   public int gold;
   public List<Item> inventory = new List<Item>();
   public int chapter;

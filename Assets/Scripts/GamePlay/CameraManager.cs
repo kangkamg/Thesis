@@ -41,9 +41,24 @@ public class CameraManager : MonoBehaviour
     {
       Vector3 targetCamPos = follower.position ;
 
-      targetCamPos.x += Mathf.Abs(follower.position.x);
-      targetCamPos.y = Mathf.Abs(follower.position.x);
-      targetCamPos.z -=  Mathf.Abs(follower.position.x);
+      if (follower.position.x == 0)
+      {
+        targetCamPos.x += 6;
+        targetCamPos.y = 7;
+        targetCamPos.z -= 6;
+      }
+      else if (follower.position.x > 3)
+      {
+        targetCamPos.x += Mathf.Abs (follower.position.x);
+        targetCamPos.y = Mathf.Abs (follower.position.x);
+        targetCamPos.z -= Mathf.Abs (follower.position.x);
+      }
+      else
+      {
+        targetCamPos.x += Mathf.Abs (follower.position.x*2);
+        targetCamPos.y = Mathf.Abs (follower.position.x*2);
+        targetCamPos.z -= Mathf.Abs (follower.position.x*2);
+      }
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
 
@@ -95,7 +110,7 @@ public class CameraManager : MonoBehaviour
     _originPos = transform.position;
   }
   
-  public void MoveCameraToTarget(Transform followTarget, float mutiply = 7.5f)
+  public void MoveCameraToTarget(Transform followTarget, float mutiply = 6f)
   {
     follower = followTarget;
     previousmultiply = mutiply;

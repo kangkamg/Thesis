@@ -55,6 +55,10 @@ public class MapCreatorManager : MonoBehaviour
               {
                 RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
               }
+              else
+              {
+                CreateEnemy (hit.transform, int.Parse (enemiesID));
+              }
               if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
               {
                 RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
@@ -63,7 +67,6 @@ public class MapCreatorManager : MonoBehaviour
               {
                 RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
               }
-              CreateEnemy (hit.transform, int.Parse (enemiesID));
             } 
             else if (tileTypes == 1)
             {
@@ -75,13 +78,16 @@ public class MapCreatorManager : MonoBehaviour
               {
                 RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
               }
+              else
+              {
+                CreatePlayerPos (hit.transform);
+              }
               if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
               {
                 RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
               }
-              CreatePlayerPos (hit.transform);
             }
-            else 
+            else if (tileTypes == 3)
             {
               if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
               {
@@ -91,13 +97,35 @@ public class MapCreatorManager : MonoBehaviour
               {
                 RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
               }
+              if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+            }
+            else 
+            {
+              /*if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemoveEnemy (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+              if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
+              {
+                RemovePlayer (hit.transform.GetComponent<Tile> ().gridPosition);
+              }*/
               hit.transform.GetComponent<Tile> ().SetType (palletSelection);
             }
           }
           else
           {
-            if(obstacle!=0)
+            if (obstacle != 0)
+            {
+              if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
+              {
+                RemoveObstacle (hit.transform.GetComponent<Tile> ().gridPosition);
+              }
+
               CreateObstacle (hit.transform, obstacle);
+            }
             else
             {
               if (objs.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
@@ -118,6 +146,9 @@ public class MapCreatorManager : MonoBehaviour
       Destroy (mapTransform.GetChild (i).gameObject);
     }
     map = new List<List<Tile>> ();
+    enemies.Clear ();
+    players.Clear ();
+    objs.Clear ();
     
     for (int x = 0; x < mapSize; x++)
     {
@@ -145,19 +176,22 @@ public class MapCreatorManager : MonoBehaviour
 
   private void LoadMap(int mapNumber)
   {
-    MapDatabaseContainner container = MapSaveAndLoad.Load (mapNumber);
-
-    mapSize = container.size;
-    enemies = container.enemies;
-    players = container.players;
-    objs = container.objs;
-
     for (int i = 0; i < mapTransform.childCount; i++)
     {
       Destroy (mapTransform.GetChild (i).gameObject);
     }
-
     map = new List<List<Tile>> ();
+    enemies.Clear ();
+    players.Clear ();
+    objs.Clear ();
+    
+    MapDatabaseContainner container = MapSaveAndLoad.Load (mapNumber);
+    
+    mapSize = container.size;
+    enemies = container.enemies;
+    players = container.players;
+    objs = container.objs;
+    
     for (int x = 0; x < mapSize; x++)
     {
       List<Tile> row = new List<Tile> ();
@@ -170,15 +204,15 @@ public class MapCreatorManager : MonoBehaviour
         row.Add (tile);
         if(enemies.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
         {
-          CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID);
+          CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID,false);
         }
         if(players.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
         {
-          CreatePlayerPos (tile.transform);
+          CreatePlayerPos (tile.transform,false);
         }
         if(objs.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
         {
-          CreateObstacle (tile.transform,objs.Where(i=>i.locX == x && i.locZ ==z).First().objs);
+          CreateObstacle (tile.transform,objs.Where(i=>i.locX == x && i.locZ ==z).First().objs,false);
         }
       }
       map.Add(row);
@@ -208,12 +242,17 @@ public class MapCreatorManager : MonoBehaviour
     obstacle = -1;
   }
   
+  public void RemoveObjectOnTile()
+  {
+    tileTypes = 3;
+  }
+  
   public void AddObstacle(int obstacleID)
   {
     obstacle = obstacleID;
   }
   
-  public void CreateObstacle(Transform tilePos, int obstacleID)
+  public void CreateObstacle(Transform tilePos, int obstacleID, bool Adding = true)
   {
     GameObject obstacleObj = Instantiate (Resources.Load<GameObject> ("TilePrefab/Obstacle/"  + obstacleID));
     obstacleObj.name = "obstacle";
@@ -221,78 +260,69 @@ public class MapCreatorManager : MonoBehaviour
     
     obstacleObj.transform.position = tilePos.position + (Vector3.up * ((obstacleObj.transform.localScale.y/2)+0.5f) );
     
-    ObstacleInMap obstacleInMap = new ObstacleInMap ();
-    obstacleInMap.objs = obstacleID;
-    obstacleInMap.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
-    obstacleInMap.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
-    objs.Add (obstacleInMap);
+    if (Adding) 
+    {
+      ObstacleInMap obstacleInMap = new ObstacleInMap ();
+      obstacleInMap.objs = obstacleID;
+      obstacleInMap.locX = (int)tilePos.GetComponent<Tile> ().gridPosition.x;
+      obstacleInMap.locZ = (int)tilePos.GetComponent<Tile> ().gridPosition.z;
+      objs.Add (obstacleInMap);
+    }
   }
   
   public void RemoveEnemy(Vector3 gridPosition)
   {
     enemies.Remove(enemies.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.GetChild (1).gameObject);
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("enemy").gameObject);
   }
   
   public void RemovePlayer(Vector3 gridPosition)
   {
     players.Remove(players.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.GetChild (1).gameObject);
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("player").gameObject);
   }
   
   public void RemoveObstacle(Vector3 gridPosition)
   {
     objs.Remove(objs.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("obstacle"));
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("obstacle").gameObject);
   }
   
-  public void CreatePlayerPos(Transform tilePos)
+  public void CreatePlayerPos(Transform tilePos, bool Adding = true)
   {
-    GameObject playerObj = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/PlayerA"));
     GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
-    renderer.transform.SetParent (playerObj.transform);
+    renderer.name = "player";
+    renderer.transform.SetParent (tilePos);
     renderer.transform.SetAsFirstSibling ();
     renderer.transform.localScale = Vector3.one*2;
-    renderer.transform.localPosition = Vector3.zero - Vector3.up;
-    
-    playerObj.transform.SetParent (tilePos);
-    playerObj.transform.localScale = Vector3.one + Vector3.up;
-    playerObj.transform.position = tilePos.position + ((Vector3.up * playerObj.transform.localScale.y) + (Vector3.up/2));
+    renderer.transform.position = tilePos.position + ((Vector3.up * renderer.transform.localScale.y) + (Vector3.up/2));
 
-    PlayerInMapData newPlayerPos = new PlayerInMapData ();
-    newPlayerPos.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
-    newPlayerPos.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
-    players.Add (newPlayerPos);
+    if (Adding) 
+    {
+      PlayerInMapData newPlayerPos = new PlayerInMapData ();
+      newPlayerPos.locX = (int)tilePos.GetComponent<Tile> ().gridPosition.x;
+      newPlayerPos.locZ = (int)tilePos.GetComponent<Tile> ().gridPosition.z;
+      players.Add (newPlayerPos);
+    }
   }
   
-  public void CreateEnemy(Transform tilePos, int ID)
+  public void CreateEnemy(Transform tilePos, int ID, bool Adding = true)
   {
-    GameObject enemyObj = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/AIPlayer"));
-    if (Resources.Load ("PlayerPrefab/" + ID) != null) 
-    {
-      GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/" + ID));
-      renderer.transform.SetParent (enemyObj.transform);
-      renderer.transform.SetAsFirstSibling ();
-      renderer.transform.localScale = Vector3.one*2;
-      renderer.transform.localPosition = Vector3.zero - Vector3.up;
-    } 
-    else 
-    {
-      GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
-      renderer.transform.SetParent (enemyObj.transform);
-      renderer.transform.SetAsFirstSibling ();
-      renderer.transform.localScale = Vector3.one*2;
-      renderer.transform.localPosition = Vector3.zero - Vector3.up;
-    }
-    enemyObj.transform.SetParent (tilePos);
-    enemyObj.transform.localScale = Vector3.one + Vector3.up;
-    enemyObj.transform.position = tilePos.position + ((Vector3.up * enemyObj.transform.localScale.y) + (Vector3.up/2));
+    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+    renderer.name = "enemy";
+    renderer.transform.SetParent (tilePos);
+    renderer.transform.SetAsFirstSibling ();
+    renderer.transform.localScale = Vector3.one*2;
+    renderer.transform.position = tilePos.position + ((Vector3.up * renderer.transform.localScale.y) + (Vector3.up/2));
     
-    EnemyInMapData newEnemy = new EnemyInMapData ();
-    newEnemy.enemyID = ID;
-    newEnemy.locX = (int)tilePos.GetComponent<Tile>().gridPosition.x;
-    newEnemy.locZ = (int)tilePos.GetComponent<Tile>().gridPosition.z;
-    enemies.Add (newEnemy);
+    if (Adding)
+    {
+      EnemyInMapData newEnemy = new EnemyInMapData ();
+      newEnemy.enemyID = ID;
+      newEnemy.locX = (int)tilePos.GetComponent<Tile> ().gridPosition.x;
+      newEnemy.locZ = (int)tilePos.GetComponent<Tile> ().gridPosition.z;
+      enemies.Add (newEnemy);
+    }
   }
   
   public void SaveAndLoad(bool isSaving)

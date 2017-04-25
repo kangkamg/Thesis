@@ -11,8 +11,6 @@ public class Character : MonoBehaviour
   public float moveSpeed = 0.25f;
 
   public Vector3 gridPosition = Vector3.zero;
-
-  public GameObject info;
   
   public int currentHP;
   public int ordering;

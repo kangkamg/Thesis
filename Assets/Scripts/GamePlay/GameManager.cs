@@ -250,8 +250,8 @@ public class GameManager : MonoBehaviour
         {
           
           GameObject obstacleObj = Instantiate (Resources.Load<GameObject> ("TilePrefab/Obstacle/" + obstacle.Where (a => a.locX == x && a.locZ == z).First ().objs));
-          obstacleObj.transform.position = new Vector3 ((obstacleObj.transform.localScale.x * x) - Mathf.Floor (_mapSize / 2), (obstacleObj.transform.localScale.y / 2)+0.5f,
-            (obstacleObj.transform.localScale.z * z) - Mathf.Floor (_mapSize / 2));
+          obstacleObj.transform.SetParent (tileObj.transform);
+          obstacleObj.transform.localPosition = new Vector3 (0, obstacleObj.GetComponent<ObstacleTypes>().yPos,0);
           tile.SetImpassible ();
         }
         tile.transform.SetParent (mapTransform);
@@ -378,14 +378,36 @@ public class GameManager : MonoBehaviour
       
       Vector3 direction = heading / distance;
       
-      if(direction.x < 0 && direction.z < 0)
-        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.left+Vector3.back, 360f, 0.0f));
+      List<Tile> neighbors = new List<Tile> ();
+      
+      if (direction.x < 0 && direction.z < 0)
+      {
+        neighbors = map [(int)aiPlayer.gridPosition.x];
+        Vector3 rotateDirection = neighbors.Where (x => x.gridPosition.x == aiPlayer.gridPosition.x && x.gridPosition.z == aiPlayer.gridPosition.z-1).First ().gridPosition;
+        rotateDirection.y = aiPlayerObj.transform.position.y;
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, rotateDirection - aiPlayerObj.transform.position, 360f, 0.0f));
+      }
       else if(direction.x < 0 && direction.z == 0)
-        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.left, 360f, 0.0f));
+      {
+        neighbors = map [(int)aiPlayer.gridPosition.x-1];
+        Vector3 rotateDirection = neighbors.Where (x => x.gridPosition.x == aiPlayer.gridPosition.x-1 && x.gridPosition.z == aiPlayer.gridPosition.z).First ().gridPosition;
+        rotateDirection.y = aiPlayerObj.transform.position.y;
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, rotateDirection - aiPlayerObj.transform.position, 360f, 0.0f));
+      }
       else if(direction.x > 0 && direction.z == 0)
-        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.right, 360f, 0.0f));
+      {
+        neighbors = map [(int)aiPlayer.gridPosition.x+1];
+        Vector3 rotateDirection = neighbors.Where (x => x.gridPosition.x == aiPlayer.gridPosition.x+1 && x.gridPosition.z == aiPlayer.gridPosition.z).First ().gridPosition;
+        rotateDirection.y = aiPlayerObj.transform.position.y;
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, rotateDirection - aiPlayerObj.transform.position, 360f, 0.0f));
+      }
       else if(direction.x > 0 && direction.z > 0)
-        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, Vector3.right+Vector3.forward, 360f, 0.0f));
+      {
+        neighbors = map [(int)aiPlayer.gridPosition.x];
+        Vector3 rotateDirection = neighbors.Where (x => x.gridPosition.x == aiPlayer.gridPosition.x && x.gridPosition.z == aiPlayer.gridPosition.z+1).First ().gridPosition;
+        rotateDirection.y = aiPlayerObj.transform.position.y;
+        renderer.transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (renderer.transform.forward, rotateDirection - aiPlayerObj.transform.position, 360f, 0.0f));
+      }
       
       foreach (AbilityStatus ability in aiPlayer.characterStatus.equipedAbility) 
       {
@@ -709,6 +731,7 @@ public class GameManager : MonoBehaviour
         {
           selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
         }
+        selectedCharacter.transform.GetChild(0).GetComponent<Animator> ().Play ("Walking");
         selectedCharacter.gridPosition = desTile.gridPosition;
         break;
       } 
@@ -820,17 +843,6 @@ public class GameManager : MonoBehaviour
         break;
       }
     }
-  }
-  
-  public void isAttacking (Character target, int amountOfResults)
-  {
-    Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
-    targetAnim.Play ("Damaged");
-    target.currentHP += amountOfResults;
-    if(amountOfResults <= 0) FloatingTextController (amountOfResults*-1, target.transform);
-    else FloatingTextController (amountOfResults, target.transform);
-    if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
-    else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
   }
   
   private IEnumerator WaitDamageFloating(Character target, int amountOfResults)

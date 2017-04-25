@@ -21,6 +21,7 @@ public class AttackAnimation : StateMachineBehaviour
   override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) 
   {
     amountOfHit (_target, _amountOfResults);
+    animator.Play ("Stading");
 	}
   
   public void amountOfHit(Character target, int amountOfResults)

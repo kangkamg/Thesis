@@ -106,7 +106,7 @@
      <Compile Include="Assets\Scripts\Tile\TilePathFinder.cs" />
      <None Include="Assets\Materials\Shader\Unitychan_chara_eye.shader" />
      <None Include="Assets\Materials\Shader\readme.txt" />
-     <None Include="Assets\Resources\DialogueFile\D0M0.txt" />
+     <None Include="Assets\StreamingAssets\DialogueFile\D0M0.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity5.4.0f3/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.IO;
 
 public class StoryDialogue
 {
@@ -45,7 +46,9 @@ public class DialogueManager : MonoBehaviour
     
     _textComponent.text = "";
      
-    storyDialogue = GetTextAssetFile.GetInstance().LoadText(Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance().playerData.storyID +"M" + PlayerPrefs.GetInt(Const.MapNo,0)  +".txt");
+    string _dialoguePath = "/DialogueFile/" + "D" + TemporaryData.GetInstance().playerData.storyID +"M" + PlayerPrefs.GetInt(Const.MapNo,0)  +".txt";
+
+    storyDialogue = GetTextAssetFile.GetInstance().LoadText(dialoguePath);
       
     for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
     {

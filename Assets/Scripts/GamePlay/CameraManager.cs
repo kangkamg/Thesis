@@ -136,8 +136,32 @@ public class CameraManager : MonoBehaviour
   {
     if (!isLookWholeMap) 
     {
-      transform.position = follower.position;
-      this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * previousmultiply;
+      Vector3 targetCamPos = follower.position ;
+
+      if (follower.position.x == 0)
+      {
+        targetCamPos.x += 6;
+        targetCamPos.y = 7;
+        targetCamPos.z -= 6;
+      }
+      else if (follower.position.x > 3)
+      {
+        targetCamPos.x += Mathf.Abs (follower.position.x);
+        targetCamPos.y = Mathf.Abs (follower.position.x);
+        targetCamPos.z -= Mathf.Abs (follower.position.x);
+      }
+      else
+      {
+        targetCamPos.x += Mathf.Abs (follower.position.x*2);
+        targetCamPos.y = Mathf.Abs (follower.position.x*2);
+        targetCamPos.z -= Mathf.Abs (follower.position.x*2);
+      }
+      transform.position = targetCamPos;
+      
+      if(follower.GetType() == typeof(Character))
+        this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 6f;
+      else
+        this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 5f;
     }
     else 
     {

@@ -19,7 +19,7 @@ public class PlayerCharacter : Character
           positionQueue.RemoveAt (0);
           if (positionQueue.Count == 0)
           {
-            transform.GetChild (0).GetComponent<Animator> ().Play ("Standing");
+            transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();

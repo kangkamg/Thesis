@@ -28,7 +28,6 @@ public class AICharacter : Character
   {
     if (positionQueue.Count > 0)
     {
-      transform.GetChild(0).GetComponent<Animator> ().Play ("Walking");
       if (Vector3.Distance (positionQueue [0], transform.position) > 0.1f)
       {
         transform.position = Vector3.MoveTowards (transform.position, positionQueue [0], moveSpeed*Time.deltaTime);
@@ -39,7 +38,7 @@ public class AICharacter : Character
           positionQueue.RemoveAt (0);
           if (positionQueue.Count == 0)
           {
-            transform.GetChild(0).GetComponent<Animator> ().Play ("Standing");
+            transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();

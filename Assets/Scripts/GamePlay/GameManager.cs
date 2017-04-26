@@ -324,7 +324,6 @@ public class GameManager : MonoBehaviour
       renderer.transform.SetAsFirstSibling ();
       renderer.transform.localScale = Vector3.one*2;
       renderer.transform.localPosition = Vector3.zero - Vector3.up;
-      renderer.GetComponent<Animator> ().Play ("Standing");
         
       foreach (AbilityStatus a in player.characterStatus.equipedAbility) 
       {
@@ -731,7 +730,7 @@ public class GameManager : MonoBehaviour
         {
           selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
         }
-        selectedCharacter.transform.GetChild(0).GetComponent<Animator> ().Play ("Walking");
+        selectedCharacter.transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 3);
         selectedCharacter.gridPosition = desTile.gridPosition;
         break;
       } 
@@ -821,7 +820,7 @@ public class GameManager : MonoBehaviour
         {
           RemoveMapHighlight ();
           selectedCharacter.transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (selectedCharacter.transform.GetChild(0).forward, target.transform.position - selectedCharacter.transform.position, 360f, 0.0f));
-          if (usingAbility.ability.abilityType < 0)
+          if (usingAbility.ability.abilityType > 0)
           {
             int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
             if (amountOfDamage <= 0) amountOfDamage = 0;
@@ -853,9 +852,10 @@ public class GameManager : MonoBehaviour
       target.GetComponent<AICharacter> ().rageGuage += 1;
     Animator anim = selectedCharacter.transform.GetChild(0).GetComponent<Animator> ();
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
+    
     while (i < usingAbility.hitAmount) 
     {
-      anim.Play ("Attack");
+      anim.Play  ("Attacking");
       anim.GetBehaviour<AttackAnimation> ().AddingTarget (target, amountOfResults);
       do 
       {
@@ -874,7 +874,7 @@ public class GameManager : MonoBehaviour
         FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
     }
     selectedCharacter.played = true;
-    anim.Play ("Standing");
+    anim.SetInteger  ("animatorIndex", 0);
     NextTurn ();
     yield return 0;
   }

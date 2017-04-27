@@ -10,11 +10,14 @@ public class MapCreatorManager : MonoBehaviour
 {
   private static MapCreatorManager instance;
 
-  public int mapSize;
+  public int[] mapSize = new int[]{1,1};
   public List<List<Tile>> map = new List<List<Tile>>();
   public List<EnemyInMapData> enemies = new List<EnemyInMapData> ();
   public List<PlayerInMapData> players = new List<PlayerInMapData> ();
   public List<ObstacleInMap> objs = new List<ObstacleInMap> ();
+  public int mapObjective;
+  public List<Vector3> objectivePos = new List<Vector3>();
+  
   public Transform mapTransform;
 
   public TileTypes palletSelection = TileTypes.Normal;
@@ -49,6 +52,7 @@ public class MapCreatorManager : MonoBehaviour
         {
           if (obstacle == -1)
           {
+            AddFleePos (hit.transform.GetComponent<Tile> ().gridPosition);
             if (tileTypes == 2)
             {
               if (enemies.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0)
@@ -139,7 +143,7 @@ public class MapCreatorManager : MonoBehaviour
     }
   }
   
-  private void GenerateBlankMap(int mapSize)
+  private void GenerateBlankMap(int[] mapSize)
   {
     for (int i = 0; i < mapTransform.childCount; i++) 
     {
@@ -150,13 +154,13 @@ public class MapCreatorManager : MonoBehaviour
     players.Clear ();
     objs.Clear ();
     
-    for (int x = 0; x < mapSize; x++)
+    for (int x = 0; x < mapSize[0]; x++)
     {
       List<Tile> row = new List<Tile> ();
-      for (int z = 0; z < mapSize; z++)
+      for (int z = 0; z < mapSize[1]; z++)
       {
-        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize / 2),
-          0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
+        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize[0] / 2),
+          0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize[1] / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType (TileTypes.Normal);
         tile.transform.SetParent (mapTransform);
@@ -165,13 +169,13 @@ public class MapCreatorManager : MonoBehaviour
       map.Add(row);
     }
     
-    Camera.main.orthographicSize = mapSize * 2f;
-    Camera.main.transform.position = new Vector3 ((mapSize / 2f)-0.5f, Camera.main.transform.position.y, mapSize / 2f);
+    Camera.main.orthographicSize = mapSize[1] * 3f;
+    Camera.main.transform.position = new Vector3 ((mapSize[0] / 2f)-0.5f, Camera.main.transform.position.y, mapSize[1] / 2f);
   }
 
   private void SaveMap(int mapNumber)
   {
-    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map,enemies, players, objs), mapNumber);
+    MapSaveAndLoad.SaveData (MapSaveAndLoad.CreateMapContainer (map,enemies, players, objs,mapObjective,objectivePos), mapNumber);
   }
 
   private void LoadMap(int mapNumber)
@@ -191,13 +195,15 @@ public class MapCreatorManager : MonoBehaviour
     enemies = container.enemies;
     players = container.players;
     objs = container.objs;
+    mapObjective = container.mapObjective;
+    objectivePos = container.objectivePos;
     
-    for (int x = 0; x < mapSize; x++)
+    for (int x = 0; x < mapSize[0]; x++)
     {
       List<Tile> row = new List<Tile> ();
-      for (int z = 0; z < mapSize; z++)
+      for (int z = 0; z < mapSize[1]; z++)
       {
-        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize / 2),0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
+        Tile tile = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (mapSize[0] / 2),0,(PrefabHolder.GetInstance().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (mapSize[1] / 2)), Quaternion.identity).gameObject.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType ((TileTypes)container.tiles.Where(a=>a.locX == x && a.locZ ==z).First().type);
         tile.transform.SetParent (mapTransform);
@@ -218,8 +224,8 @@ public class MapCreatorManager : MonoBehaviour
       map.Add(row);
     }
     
-    Camera.main.orthographicSize = mapSize * 2f;
-    Camera.main.transform.position = new Vector3 ((mapSize / 2f)-0.5f, Camera.main.transform.position.y, mapSize / 2f);
+    Camera.main.orthographicSize = mapSize[1] * 3f;
+    Camera.main.transform.position = new Vector3 ((mapSize[0] / 2f)+1.5f, Camera.main.transform.position.y, mapSize[1] / 2f);
   }
   
   public void ChangePallet(int t)
@@ -240,6 +246,19 @@ public class MapCreatorManager : MonoBehaviour
   {
     tileTypes = 1;
     obstacle = -1;
+  }
+  
+  public void SetObjective(int Objective)
+  {
+    mapObjective = Objective;
+  }
+  
+  public void AddFleePos(Vector3 position)
+  {
+    if(mapObjective == 2)
+    {
+      objectivePos.Add (position);
+    }
   }
   
   public void RemoveObjectOnTile()
@@ -339,7 +358,7 @@ public class MapCreatorManager : MonoBehaviour
   
   public void GenerateBlankMap()
   {
-    GenerateBlankMap(int.Parse(EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text));
+    GenerateBlankMap(new int[]{int.Parse(EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text),int.Parse(EventSystem.current.currentSelectedGameObject.transform.GetChild (2).GetComponent<InputField> ().text)});
   }
   
   

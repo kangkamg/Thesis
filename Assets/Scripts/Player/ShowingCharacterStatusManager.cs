@@ -122,10 +122,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
   {
     if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Count > 0) 
     {
-      for (int i = 0; i < TemporaryData.GetInstance ().selectedCharacter.equipItem.Count; i++) 
-      {
-        CheckingEquipment (TemporaryData.GetInstance ().selectedCharacter.equipItem [i]);
-      }
+      CheckingEquipment (TemporaryData.GetInstance ().selectedCharacter.equipItem);
     } 
     else
     {
@@ -141,15 +138,24 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     }
   }
   
-  private void CheckingEquipment(Item equipItem)
+  private void CheckingEquipment(List<Item> equipItem)
   {
     for (int i = 0; i < equipment.childCount; i++)
     {
-      if (equipItem.item.itemType1 == equipment.GetChild(i).name) 
+      if (equipItem.Where(x=>x.item.itemType1 == equipment.GetChild(i).name).Count()>0)
       {
-        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipItem.item.name);
-        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equipItem.item.name;
-        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (equipItem));
+        Item equiped = equipItem.Where (x => x.item.itemType1 == equipment.GetChild (i).name).First ();
+        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name);
+        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equiped.item.name;
+        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (equiped));
+      } 
+      else
+      {
+        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipment.GetChild(i).name);
+        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equipment.GetChild(i).name;
+        
+        string itemType = equipment.GetChild (i).name;
+        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (itemType));
       } 
     }
   }

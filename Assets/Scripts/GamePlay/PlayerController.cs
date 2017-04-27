@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     selectedTile = Instantiate (selectedSlots, Vector3.zero, Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
     selectedTile.name = "selectedTileController";
     selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
-    CameraManager.GetInstance ().MoveCameraToTarget (selectedTile.transform,5);
+    CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform,5);
   }
   
   public void RemoveSelected()
@@ -53,6 +53,6 @@ public class PlayerController : MonoBehaviour
     }
     if (selectedPosition.z >= 0 && selectedPosition.x >= 0 && selectedPosition.z < GameManager.GetInstance ().map [(int)selectedPosition.x].Count && selectedPosition.x < GameManager.GetInstance ().map.Count)
       selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
-    CameraManager.GetInstance ().MoveCameraToTarget (selectedTile.transform,5);
+    CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform,5);
   }
 }

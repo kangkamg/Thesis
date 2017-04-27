@@ -75,24 +75,15 @@ public class StartSceneManager : MonoBehaviour
     adding.experience = 0;
 
     equipedItem.item = GetDataFromSql.GetItemFromID (1100);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (2100);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (3100);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     data.characters.Add (adding);
 
@@ -126,36 +117,36 @@ public class StartSceneManager : MonoBehaviour
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (1200);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (2100);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (3100);
-    equipedItem.equiped = true;
-    adding.equipItem.Add (equipedItem);
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data);
 
     data.characters.Add (adding);
     
     equipedItem = new Item ();
     equipedItem.item = GetDataFromSql.GetItemFromID (1100);
-    equipedItem.equiped = false;
-    data.inventory.Add (equipedItem);
-    equipedItem.ordering = data.inventory.Count - 1;
+    SetUpEquipment (equipedItem, adding, data, false);
 
     TemporaryData.GetInstance ().playerData = data;
   }
-
+  
+  private static void SetUpEquipment(Item checking, CharacterStatus adding, PlayerData data, bool equiped = true)
+  {
+    if (checking.item != null)
+    {
+      checking.equiped = equiped;
+      if(equiped) adding.equipItem.Add (checking);
+      data.inventory.Add (checking);
+      checking.ordering = data.inventory.Count - 1;
+    }
+  }
+  
   private void Update()
   {
     BlinkText ();

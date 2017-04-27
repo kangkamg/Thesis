@@ -19,7 +19,7 @@ public class Tile : MonoBehaviour
 
   public int movementCost = 1;
   public bool impassible = false;
-  public bool canMove = false;
+  public bool canMove = false; 
 
   private void Start()
   {
@@ -29,7 +29,7 @@ public class Tile : MonoBehaviour
   public void GenerateNeighbors()
   {
     //forward
-    if (gridPosition.z < GameManager.GetInstance()._mapSize-1)
+    if (gridPosition.z < GameManager.GetInstance()._mapSize[1]-1)
     {
       Vector3 n = new Vector3 (gridPosition.x, 0, gridPosition.z + 1);
       neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
@@ -41,7 +41,7 @@ public class Tile : MonoBehaviour
       neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //right
-    if (gridPosition.x < GameManager.GetInstance()._mapSize-1)
+    if (gridPosition.x < GameManager.GetInstance()._mapSize[0]-1)
     {
       Vector3 n = new Vector3 (gridPosition.x+1, 0, gridPosition.z);
       neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
@@ -53,19 +53,19 @@ public class Tile : MonoBehaviour
       neighborsPlus.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //rightforward
-    if (gridPosition.x < GameManager.GetInstance()._mapSize-1 && gridPosition.z < GameManager.GetInstance()._mapSize-1)
+    if (gridPosition.x < GameManager.GetInstance()._mapSize[0]-1 && gridPosition.z < GameManager.GetInstance()._mapSize[1]-1)
     {
       Vector3 n = new Vector3 (gridPosition.x + 1, 0, gridPosition.z + 1);
       neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //leftforward
-    if (gridPosition.x > 0 && gridPosition.z < GameManager.GetInstance()._mapSize-1)
+    if (gridPosition.x > 0 && gridPosition.z < GameManager.GetInstance()._mapSize[1]-1)
     {
       Vector3 n = new Vector3 (gridPosition.x - 1, 0, gridPosition.z + 1);
       neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);
     }
     //rightbackward
-    if (gridPosition.x < GameManager.GetInstance()._mapSize-1 && gridPosition.z > 0)
+    if (gridPosition.x < GameManager.GetInstance()._mapSize[0]-1 && gridPosition.z > 0)
     {
       Vector3 n = new Vector3 (gridPosition.x + 1, 0, gridPosition.z - 1);
       neighborsCross.Add (GameManager.GetInstance().map [(int)Mathf.Round(n.x)] [(int)Mathf.Round(n.z)]);

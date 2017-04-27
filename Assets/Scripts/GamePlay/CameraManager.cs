@@ -69,13 +69,8 @@ public class CameraManager : MonoBehaviour
       }
     }
     
-    if (!isFocus && !isLookWholeMap && !following) 
-    {
-      if (Input.touchCount == 2)
-      {
-        PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
-      }
-      
+    if (!isFocus && !isLookWholeMap && !following && !GameManager.GetInstance().hitButton) 
+    {      
       if (GameManager.GetInstance ().isTouch) 
       {
         if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began)
@@ -93,6 +88,11 @@ public class CameraManager : MonoBehaviour
           isMoving = false;
         }
       }
+      
+      if (Input.touchCount == 2)
+      {
+        PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
+      }
     }
 	}
     
@@ -100,7 +100,7 @@ public class CameraManager : MonoBehaviour
   {
     following = false;
     isLookWholeMap = false;
-    _orthographicSize = _target.x * 2.5f;
+    _orthographicSize = _target.x * 4f;
     this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
 
     _target.y = transform.position.y;
@@ -110,13 +110,13 @@ public class CameraManager : MonoBehaviour
     _originPos = transform.position;
   }
   
-  public void MoveCameraToTarget(Transform followTarget, float mutiply = 6f)
+  public void MoveCameraToTarget(Transform followTarget, float mutiply = 7.5f)
   {
     follower = followTarget;
     previousmultiply = mutiply;
     if (!isLookWholeMap)
     {
-      this.GetComponent<Camera> ().orthographicSize = followTarget.localScale.x * mutiply;
+      this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * mutiply;
     
       following = true;
     }
@@ -159,7 +159,7 @@ public class CameraManager : MonoBehaviour
       transform.position = targetCamPos;
       
       if(follower.GetType() == typeof(Character))
-        this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 6f;
+        this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 7.5f;
       else
         this.GetComponent<Camera> ().orthographicSize = follower.localScale.x * 5f;
     }
@@ -173,17 +173,18 @@ public class CameraManager : MonoBehaviour
   
   public void LookWholeMap()
   {
-    if (following) 
+    if (!isLookWholeMap) 
     {
       this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
-      transform.position = _originPos;
-      following = false;
       isLookWholeMap = true;
     }
     else 
     {
       isLookWholeMap = false;
-      MoveCameraToTarget (follower);
+      if (follower != null)
+      {
+        MoveCameraToTarget (follower, previousmultiply);
+      }
     }
   }
   
@@ -197,7 +198,7 @@ public class CameraManager : MonoBehaviour
     
     float dealtaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
     
-    if (this.GetComponent<Camera> ().orthographicSize > 4 && this.GetComponent<Camera> ().orthographicSize < 14)
+    if (this.GetComponent<Camera> ().orthographicSize > 4 && this.GetComponent<Camera> ().orthographicSize < 20)
     {
       this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
     

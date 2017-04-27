@@ -11,13 +11,15 @@ public class GameManager : MonoBehaviour
   private static GameManager instance;
   public static GameManager GetInstance() { return instance;}
 
-  public int _mapSize = 11;
+  public int[] _mapSize = new int[]{1,1};
   public int currentCharacterIndex;
   public Transform mapTransform;
 
   public List<List<Tile>> map = new List<List<Tile>>();
   public List<EnemyInMapData> enemies = new List<EnemyInMapData>();
   public List<PlayerInMapData> players = new List<PlayerInMapData>();
+  public List<Vector3> objectivePos = new List<Vector3>();
+  public int mapObjective;
   public List<Character> character = new List<Character> ();
   public List<int> playerCharacterID = new List<int> ();
 
@@ -39,6 +41,7 @@ public class GameManager : MonoBehaviour
   List<GameObject> highlightTileAttack = new List<GameObject> ();
 
   public int oldCharacterNo = -1;
+  private int amountOfDamage;
   public bool isPlayerTurn = true;
   public bool isAutoPlay = false;
   public bool isTouch = true;
@@ -83,7 +86,8 @@ public class GameManager : MonoBehaviour
           {
             if (hit.transform.tag == "Player") 
             {
-              if (oldCharacterNo < 0) {
+              if (oldCharacterNo < 0) 
+              {
                 SelectedCharacter (hit.transform.GetComponent<PlayerCharacter> ());
               } 
               else 
@@ -109,6 +113,7 @@ public class GameManager : MonoBehaviour
                         else
                         {
                           AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
+                          selectedCharacter.target = hit.transform.GetComponent<Character> ();
                           break;
                         }
                       }
@@ -125,10 +130,12 @@ public class GameManager : MonoBehaviour
             }
             if (hit.transform.name.Contains ("Tile"))
             {
-              foreach (Character c in character) {
+              foreach (Character c in character)
+              {
                 if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Enemy") 
                 {
                   AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+                  selectedCharacter.target = c;
                   break;
                 }
                 else if (c.gridPosition == hit.transform.GetComponent<Tile> ().gridPosition && c.tag == "Player")
@@ -136,6 +143,7 @@ public class GameManager : MonoBehaviour
                   if (usingAbility.ability.abilityType < 0)
                   {  
                     AttackWithCurrentCharacter (hit.transform.GetComponent<Tile> ());
+                    selectedCharacter.target = c;
                     break;
                   }
                 } 
@@ -175,6 +183,7 @@ public class GameManager : MonoBehaviour
                     else 
                     {
                       AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
+                      selectedCharacter.target = hit.transform.GetComponent<Character> ();
                       break;
                     }
                   }
@@ -235,14 +244,16 @@ public class GameManager : MonoBehaviour
 
     map = new List<List<Tile>> ();
     obstacle = container.objs;
+    mapObjective = container.mapObjective;
+    if (mapObjective == 2) objectivePos = container.objectivePos;
     
-    for (int x = 0; x < _mapSize; x++)
+    for (int x = 0; x < _mapSize[0]; x++)
     {
       List<Tile> row = new List<Tile> ();
-      for (int z = 0; z < _mapSize; z++)
+      for (int z = 0; z < _mapSize[1]; z++)
       {
-        GameObject tileObj = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance ().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (_mapSize / 2), 0,
-          (PrefabHolder.GetInstance ().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (_mapSize / 2)),Quaternion.Euler (new Vector3 (0, 0, 0)));
+        GameObject tileObj = Instantiate (PrefabHolder.GetInstance ().Base_TilePrefab, new Vector3 ((PrefabHolder.GetInstance ().Base_TilePrefab.transform.localScale.x * x) - Mathf.Floor (_mapSize[0] / 2), 0,
+          (PrefabHolder.GetInstance ().Base_TilePrefab.transform.localScale.z * z) - Mathf.Floor (_mapSize[1] / 2)),Quaternion.Euler (new Vector3 (0, 0, 0)));
         Tile tile = tileObj.GetComponent<Tile> ();
         tile.gridPosition = new Vector3 (x, 0, z);
         tile.SetType ((TileTypes)container.tiles.Where(a=>a.locX == x && a.locZ ==z).First().type);
@@ -262,7 +273,7 @@ public class GameManager : MonoBehaviour
       
     for (int x = 0; x < map.Count; x++)
     {
-      for (int z = 0; z < map.Count; z++)
+      for (int z = 0; z < map[x].Count; z++)
       {
         map [x] [z].GenerateNeighbors ();
       }
@@ -271,7 +282,7 @@ public class GameManager : MonoBehaviour
     mapTransform.gameObject.SetActive (true);
     enemies = container.enemies;
     players = container.players;
-    CameraManager.GetInstance ().SetUpStartCamera (new Vector3(_mapSize,0,0));
+    CameraManager.GetInstance ().SetUpStartCamera (new Vector3(_mapSize[0],0,0));
   }
   
   public void GenerateCharacter()
@@ -756,6 +767,7 @@ public class GameManager : MonoBehaviour
           else
           {
             AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+            selectedCharacter.target = target;
           }
         }
         else if (targetInRange.Where(x=>x.gridPosition == gridPosition && x.GetType() == typeof(PlayerCharacter)).Count()>0)
@@ -771,6 +783,7 @@ public class GameManager : MonoBehaviour
           else
           {
             AttackWithCurrentCharacter (map [(int)gridPosition.x] [(int)gridPosition.z]);
+            selectedCharacter.target = target;
           }
         }
         else 
@@ -822,20 +835,20 @@ public class GameManager : MonoBehaviour
           selectedCharacter.transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (selectedCharacter.transform.GetChild(0).forward, target.transform.position - selectedCharacter.transform.position, 360f, 0.0f));
           if (usingAbility.ability.abilityType > 0)
           {
-            int amountOfDamage = Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense;
-            if (amountOfDamage <= 0) amountOfDamage = 0;
-            showingResultOfAttack.UpdateStatus (selectedCharacter, target, amountOfDamage);
+            amountOfDamage = -(Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense);
+            if (amountOfDamage >= 0) amountOfDamage = -1;
+            showingResultOfAttack.UpdateStatus (selectedCharacter, target, Mathf.Abs(amountOfDamage));
             if (usingAbility.ability.gaugeUse > 0 && selectedCharacter.GetType () == typeof(PlayerCharacter))
               FinishingGaugeManager.GetInstance ().ChangeSliderValue (-usingAbility.ability.gaugeUse);
             else if (usingAbility.ability.gaugeUse > 0 && selectedCharacter.GetType () == typeof(AICharacter))
               selectedCharacter.GetComponent<AICharacter> ().rageGuage -= usingAbility.ability.gaugeUse;
-            StartCoroutine (WaitDamageFloating (target, -amountOfDamage));
+            StartCoroutine (WaitDamageFloating (target));
           }
           else
           {
-            int healing = Mathf.Clamp (Mathf.FloorToInt (usingAbility.power), Mathf.FloorToInt (usingAbility.power), target.characterStatus.maxHp - target.currentHP);
-            showingResultOfAttack.UpdateStatus (selectedCharacter, target, healing);
-            StartCoroutine (WaitDamageFloating (target, healing));
+            amountOfDamage = Mathf.Clamp (Mathf.FloorToInt (usingAbility.power), Mathf.FloorToInt (usingAbility.power), target.characterStatus.maxHp - target.currentHP);
+            showingResultOfAttack.UpdateStatus (selectedCharacter, target, Mathf.Abs(amountOfDamage));
+            StartCoroutine (WaitDamageFloating (target));
           }
           GetUsedAbility.ModifyAbility (selectedCharacter.ID, usingAbility.ability.ID, usingAbility.ability.coolDown);
         }
@@ -844,7 +857,12 @@ public class GameManager : MonoBehaviour
     }
   }
   
-  private IEnumerator WaitDamageFloating(Character target, int amountOfResults)
+  public int DamageResults()
+  {
+    return amountOfDamage;
+  }
+  
+  private IEnumerator WaitDamageFloating(Character target)
   {
     int i = 0;
     CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
@@ -856,12 +874,11 @@ public class GameManager : MonoBehaviour
     while (i < usingAbility.hitAmount) 
     {
       anim.Play  ("Attacking");
-      anim.GetBehaviour<AttackAnimation> ().AddingTarget (target, amountOfResults);
       do 
       {
         yield return null;
-      } while(!targetAnim.GetBehaviour<DamagedAnimation> ().isComplete);
-      targetAnim.GetBehaviour<DamagedAnimation> ().isComplete = false;
+      } while(!isAnimatorPlaying (targetAnim));
+      target.Standing ();
       i++;
     }
     
@@ -873,17 +890,45 @@ public class GameManager : MonoBehaviour
       else
         FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
     }
+    
+    CameraManager.GetInstance ().ResetCamera ();
     selectedCharacter.played = true;
     anim.SetInteger  ("animatorIndex", 0);
     NextTurn ();
     yield return 0;
   }
+        
+  private bool isAnimatorPlaying(Animator anim)
+  {
+    return anim.GetCurrentAnimatorStateInfo (0).normalizedTime >= 1 && anim.GetCurrentAnimatorStateInfo(0).IsName("Damaged");
+  }
 
   public void NextTurn()
   {
-    if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() > 0 && character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() > 0 ) StartCoroutine(WaitEndTurn ());
-    else if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() <= 0) StartCoroutine (ShowResults (true));
-    else if(character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() <= 0) StartCoroutine (ShowResults (false));
+    if(mapObjective == 1)
+    {
+      if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() > 0 && character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() > 0 ) StartCoroutine(WaitEndTurn ());
+      else if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() <= 0) StartCoroutine (ShowResults (true));
+      else if(character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() <= 0) StartCoroutine (ShowResults (false));
+    }
+    else if(mapObjective == 2)
+    {
+      if (character.Where (x => objectivePos.Where (z => x.GetType() == typeof(PlayerCharacter) && x.gridPosition == z).Count () > 0).Count () > 0)
+        StartCoroutine (ShowResults (true));
+      else 
+      {
+        if (character.Where (x => x.GetType () == typeof(PlayerCharacter)).Count () > 0)
+          StartCoroutine (WaitEndTurn ());
+        else if (character.Where (x => x.GetType () == typeof(PlayerCharacter)).Count () <= 0)
+          StartCoroutine (ShowResults (false));
+      }
+    }
+    else if(mapObjective == 3)
+    {
+      if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() > 0 && character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() > 0 ) StartCoroutine(WaitEndTurn ());
+      else if(character.Where(x=>x.GetType() == typeof(AICharacter) && x.characterStatus.basicStatus.ID > 3000).Count() <= 0) StartCoroutine (ShowResults (true));
+      else if(character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() <= 0) StartCoroutine (ShowResults (false));
+    }
   }
 
   private IEnumerator WaitEndTurn()
@@ -1111,6 +1156,7 @@ public class GameManager : MonoBehaviour
       {
         for (int j = 0; j < character [i].GetComponent<AICharacter> ().aiInfo.droppedItem.Count; j++) 
         {
+          Debug.Log (character [i].GetComponent<AICharacter> ().aiInfo.droppedItem.Count);
           string[] droppedItem = character [i].GetComponent<AICharacter> ().aiInfo.droppedItem [j].Split (" " [0]);
           for (int k = 0; k < droppedItem.Length; k += 2)
           {
@@ -1155,8 +1201,8 @@ public class GameManager : MonoBehaviour
 
   public IEnumerator ShowResults(bool isWin)
   {
-    TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;    
-    
+    TemporaryData.GetInstance ().playerData.gold += TemporaryData.GetInstance ().result.givenGold;     
+      
     while (true)
     {
       yield return new WaitForSeconds (0.5f);

@@ -45,7 +45,6 @@ public class AICharacter : Character
               GameManager.GetInstance ().HighlightTileAt (gridPosition, PrefabHolder.GetInstance ().AttackTile, GameManager.GetInstance ().usingAbility.range, GameManager.GetInstance ().usingAbility.ability.rangeType);
 
               GameManager.GetInstance ().AttackWithCurrentCharacter (GameManager.GetInstance ().map [(int)target.gridPosition.x] [(int)target.gridPosition.z]);
-              target = null;
             } 
             else
             {

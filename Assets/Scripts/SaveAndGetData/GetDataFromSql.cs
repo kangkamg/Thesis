@@ -89,10 +89,13 @@ public class GetDataFromSql
       if (reader.GetInt32 (0) == ID)
       {        
         string items = reader.GetString (1);
-        string[] item = items.Split ("," [0]);
-        for(int i = 0; i < item.Length; i++)
+        if(!string.IsNullOrEmpty(items))
         {
-          n.droppedItem.Add (item[i]);
+          string[] item = items.Split ("," [0]);
+          for(int i = 0; i < item.Length; i++)
+          {
+            n.droppedItem.Add (item[i]);
+          }
         }
         n.givenGold = reader.GetInt32 (2);
         n.givenExp = reader.GetInt32 (3);
@@ -180,14 +183,17 @@ public class GetDataFromSql
           n.sellMap.Add (sm[i]);
         }
         n.stackable = reader.GetBoolean (11);
+        
+        reader.Close ();
+        reader = null;
+        dbcmd.Dispose ();
+        dbcmd = null;
+
+        return n; 
       }
     }
-    reader.Close ();
-    reader = null;
-    dbcmd.Dispose ();
-    dbcmd = null;
-
-    return n;
+    
+    return null;
   }
 
   public static List<ItemStatus> GetItemFromMap(string mapNumber)

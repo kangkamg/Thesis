@@ -90,7 +90,7 @@ public class PartySceneManager : MonoBehaviour
     }
       
     partyPanel.transform.position = new Vector2 (partyPanel.transform.position.x, partyPanel.transform.position.y + 50);
-    changingPanel.transform.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y + 50);
+    changingPanel.transform.parent.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y + 50);
 
     if (slotsOtherCharacter.Count > 8)
     {
@@ -140,7 +140,7 @@ public class PartySceneManager : MonoBehaviour
     if (!this.transform.GetChild (1).gameObject.activeSelf && !this.transform.GetChild (0).gameObject.activeSelf ) 
     {
       partyPanel.transform.position = new Vector2 (partyPanel.transform.position.x, partyPanel.transform.position.y - 50);
-      changingPanel.transform.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y - 50);
+      changingPanel.transform.parent.parent.position = new Vector2 (changingPanel.transform.parent.position.x, changingPanel.transform.parent.position.y - 50);
       this.transform.GetChild (1).gameObject.SetActive (true);
     }
     else if (!this.transform.GetChild (1).gameObject.activeSelf && this.transform.GetChild (0).gameObject.activeSelf ) 

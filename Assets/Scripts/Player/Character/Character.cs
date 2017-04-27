@@ -48,6 +48,23 @@ public class Character : MonoBehaviour
     this.name = characterStatus.basicStatus.characterName;
   }
   
+  public void AttackTarget()
+  {
+    Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
+    targetAnim.SetInteger ("animatorIndex", 2);
+    target.currentHP += GameManager.GetInstance().DamageResults();
+    if(GameManager.GetInstance().DamageResults() <= 0) GameManager.GetInstance().FloatingTextController (GameManager.GetInstance().DamageResults()*-1, target.transform);
+    else GameManager.GetInstance().FloatingTextController  (GameManager.GetInstance().DamageResults(), target.transform);
+    if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
+    else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
+  }
+  
+  public void Standing()
+  {
+    transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
+    transform.GetChild (0).GetComponent<Animator> ().Play ("Standing");
+  }
+  
   public virtual bool CheckingAbilityCanPerform(AbilityStatus checking, out List<Tile> returnTiles)
   {
     List<Tile> targetTilesInRange = new List<Tile> ();

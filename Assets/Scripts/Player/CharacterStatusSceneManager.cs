@@ -64,7 +64,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
       allCharacterSlots.Add (characterObj);
     }
     
-    characterPanel.transform.parent.position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y + 50);
+    characterPanel.transform.parent.parent.GetComponent<RectTransform>().position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y + 50);
   }
 
   public void LookStatus(CharacterStatus selectedStatus)
@@ -73,7 +73,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
     {
       if(!this.transform.GetChild(0).gameObject.activeSelf)
       {
-        characterPanel.transform.parent.position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y - 50);
+        characterPanel.transform.parent.parent.position = new Vector2 (characterPanel.transform.parent.position.x, characterPanel.transform.parent.position.y - 50);
       }
       TemporaryData.GetInstance ().selectedCharacter = selectedStatus;
       this.transform.GetChild (0).gameObject.SetActive (true);

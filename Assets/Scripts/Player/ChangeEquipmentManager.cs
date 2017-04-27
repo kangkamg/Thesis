@@ -138,11 +138,11 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
     
-    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = itemtype1.ToString();
-    equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = "0";
-    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = "0";
-    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = "0";
-    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = "0";
+    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = itemtype1.ToString();
+    equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = "0";
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = "0";
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = "0";
+    equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = "0";
   }
     
   public void GenerateInventoryItem(Item selectedItem)

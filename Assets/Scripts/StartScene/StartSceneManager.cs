@@ -17,6 +17,26 @@ public class StartSceneManager : MonoBehaviour
 
   private void Awake()
   {
+    if (string.IsNullOrEmpty (PlayerPrefs.GetString (Const.Language))) 
+    {
+      PlayerPrefs.SetString (Const.Language, Application.systemLanguage.ToString ());
+    } 
+    
+    TemporaryData.GetInstance().choosenLanguage = PlayerPrefs.GetString(Const.Language,"Thai");
+    if (string.IsNullOrEmpty (PlayerPrefs.GetString (Const.Language))) 
+    {
+      PlayerPrefs.SetInt (Const.IsTutorialDone, 0);
+    } 
+    
+    if (PlayerPrefs.GetInt (Const.IsTutorialDone) == 0) 
+    {
+      TemporaryData.GetInstance ().isTutorialDone = false;
+    }
+    else
+    {
+      TemporaryData.GetInstance ().isTutorialDone = true;
+    }
+    
     PlayerPrefs.DeleteAll ();
     touchText.text = "Touch To Start";
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Book");

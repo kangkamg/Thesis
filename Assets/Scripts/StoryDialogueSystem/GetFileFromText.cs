@@ -32,7 +32,11 @@ public class GetTextAssetFile
   
   public bool Load(string filename)
   {
-    TextAsset newTextAsset = Resources.Load<TextAsset> ("DialogueFile/" + filename);
+    TextAsset newTextAsset = new TextAsset ();
+    if(Resources.Load<TextAsset> ("DialogueFile/" + TemporaryData.GetInstance().choosenLanguage + "/" + filename) != null)
+      newTextAsset = Resources.Load<TextAsset> ("DialogueFile/" + TemporaryData.GetInstance().choosenLanguage + "/" + filename);
+    else
+      newTextAsset = Resources.Load<TextAsset> ("DialogueFile/Thai/" + filename);
     
     if (newTextAsset == null)
       return false;

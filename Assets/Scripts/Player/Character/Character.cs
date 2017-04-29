@@ -7,6 +7,8 @@ using System.Linq;
 public class Character : MonoBehaviour
 {
   public List<Vector3>positionQueue = new List<Vector3>();
+  public Vector3 lookRotation = new Vector3 ();
+  public bool isRotate = false;
  
   public float moveSpeed = 0.25f;
 
@@ -21,6 +23,8 @@ public class Character : MonoBehaviour
   public Character target;
 
   public CharacterStatus characterStatus = new CharacterStatus();
+  
+  public bool isActioning = false;
 
   public virtual void MoveToDesTile()
   {
@@ -30,6 +34,25 @@ public class Character : MonoBehaviour
   public virtual void TurnUpdate()
   {
    
+  }
+  
+  public void Update()
+  {
+    if (isRotate)
+    {
+      transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (transform.GetChild(0).forward, lookRotation - transform.position, 360f, 0.0f));
+      if (transform.GetChild (0).rotation ==
+        Quaternion.LookRotation (Vector3.RotateTowards (transform.GetChild (0).forward, lookRotation - transform.position, 360f, 0.0f))) 
+      {
+        isRotate = false;
+      } 
+    }
+  }
+  
+  public virtual void RotateTo(Vector3 rotation)
+  {
+    lookRotation = rotation; 
+    isRotate = true;
   }
   
   public virtual void SetStatus(int ID)

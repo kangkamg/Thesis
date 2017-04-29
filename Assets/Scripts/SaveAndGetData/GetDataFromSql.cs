@@ -36,6 +36,42 @@ public class GetDataFromSql
     if (dbconn.State != ConnectionState.Open) dbconn.Open ();
   }
 
+  public static List<MapStory> GetMapOfType(int ID)
+  {
+    List<MapStory> list = new List<MapStory>  ();
+
+    IDbCommand dbcmd = dbconn.CreateCommand ();
+
+    string sqlQuery = "SELECT *" + "FROM MapStory" ; 
+    dbcmd.CommandText = sqlQuery;
+    IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      if (reader.GetInt32 (3) == ID)
+      {
+        MapStory n = new MapStory ();
+        
+        n.ID = reader.GetInt32 (0);
+        n.storiesName = reader.GetString (1);
+        n.storyTypes = reader.GetInt32 (3);
+        string[] split = reader.GetString (2).Split ("," [0]);
+        
+        for(int i = 0; i < split.Length; i++)
+        {
+          n.mapID.Add (int.Parse (split[i]));
+        }
+        
+        list.Add (n);
+      }
+    }
+    reader.Close ();
+    reader = null;
+    dbcmd.Dispose ();
+    dbcmd = null;
+
+    return list;
+  }
+  
   public static Ability GetAbility(int ID)
   {
     Ability n = new Ability ();

@@ -89,14 +89,6 @@ public class DialogueManager : MonoBehaviour
       _isDialoguePlaying = true;
       StartCoroutine (StartDialogue ());
     }
-
-    if(_isEndOfDialogue)
-    {
-      if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
-          EndingDialogue ();
-        }
-    }
   }
   
   public void EndingDialogue()
@@ -127,7 +119,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
       {
         break;
       }
@@ -137,6 +129,7 @@ public class DialogueManager : MonoBehaviour
 
     _isEndOfDialogue = true;
     _isDialoguePlaying = false;
+    EndingDialogue ();
   }
 
   private IEnumerator DisplayString(string stringToDisplay, int currentDialogueIndex)
@@ -146,6 +139,10 @@ public class DialogueManager : MonoBehaviour
 
     _textComponent.text = "";
    
+    ShowCha (false, false, null, null);
+    talkingCharacter.SetActive (false);
+    BG.sprite = null;
+    
     if (currentDialogueIndex == 0) 
     {
       if (dialogueBG.Count > 0) 
@@ -170,9 +167,8 @@ public class DialogueManager : MonoBehaviour
           talkingCharacter.SetActive (false);
         }
         oldLeft = dialogueSpeaker [currentDialogueIndex];
-      }
+      } 
     }
-      
     else
     {
       if (dialogueBG.Count > 0) 
@@ -240,9 +236,11 @@ public class DialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (/*Input.GetMouseButton (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+        if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
         {
-          yield return new WaitForSeconds (SecondBetweenCharacters * CharacterRateMultiplier);
+          _textComponent.text = stringToDisplay;
+          currentCharacterIndex = stringLength;
+          yield return new WaitForSeconds (SecondBetweenCharacters);
         }
         else
         {
@@ -257,7 +255,7 @@ public class DialogueManager : MonoBehaviour
 
     while (true)
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/ && currentCharacterIndex == stringLength) 
       {
         break;
       }

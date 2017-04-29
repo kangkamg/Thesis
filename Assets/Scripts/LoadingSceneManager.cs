@@ -22,10 +22,10 @@ public class LoadingSceneManager : MonoBehaviour
     int currentCharacterIndex = 7;
 
     _textComponent.text = "Loading";
-    
+      
     if (PlayerPrefs.GetString (Const.PreviousScene) == "MainMenuScene") 
     {
-      if (GetTextAssetFile.GetInstance ().Load (Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0) + ".txt")) 
+      if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0))) 
       {
         async = SceneManager.LoadSceneAsync ("StoryScene");
       } 
@@ -38,13 +38,16 @@ public class LoadingSceneManager : MonoBehaviour
     {
       if (PlayerPrefs.GetInt(Const.MapNo,0) == 0)
       {
-        PlayerPrefs.SetInt (Const.MapNo, 1);
+        async = SceneManager.LoadSceneAsync ("MainMenuScene");
       }
-      async = SceneManager.LoadSceneAsync ("GamePlayScene");
+      else
+      {
+        async = SceneManager.LoadSceneAsync ("GamePlayScene");
+      } 
     } 
     else if (PlayerPrefs.GetString (Const.PreviousScene) == "GamePlayScene")
     {
-      if (GetTextAssetFile.GetInstance ().Load (Application.dataPath + "/Resources/DialogueFile/" + "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0) + ".txt")) 
+      if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0))) 
       {
         async = SceneManager.LoadSceneAsync ("StoryScene");
       }

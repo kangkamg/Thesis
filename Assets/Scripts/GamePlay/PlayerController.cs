@@ -12,11 +12,15 @@ public class PlayerController : MonoBehaviour
   public void SetUpSelectedPosition()
   {
     RemoveSelected ();
-    selectedPosition = GameManager.GetInstance ().selectedCharacter.gridPosition;
+    if (GameManager.GetInstance ().selectedCharacter != null)
+      selectedPosition = GameManager.GetInstance ().selectedCharacter.gridPosition;
+    else
+      selectedPosition = GameManager.GetInstance ().character [0].gridPosition;
+    
     selectedTile = Instantiate (selectedSlots, Vector3.zero, Quaternion.Euler(new Vector3(90,0,0)))as GameObject;
     selectedTile.name = "selectedTileController";
     selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
-    CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform,5);
+    CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform,3.75f);
   }
   
   public void RemoveSelected()
@@ -26,33 +30,75 @@ public class PlayerController : MonoBehaviour
   
   public void SelectedTile()
   {
-    if(selectedPosition != GameManager.GetInstance ().selectedCharacter.gridPosition)
+    if (GameManager.GetInstance ().selectedCharacter != null) 
+    {
+      if (!GameManager.GetInstance ().selectedCharacter.isActioning && !GameManager.GetInstance ().selectedCharacter.played)
+      {
+        if (selectedPosition != GameManager.GetInstance ().selectedCharacter.gridPosition)
+          GameManager.GetInstance ().CheckingSelectedTile (selectedPosition);
+      }
+    } 
+    else
+    {
       GameManager.GetInstance ().CheckingSelectedTile (selectedPosition);
+    }
   }
   
   public void MovePosition(int Direction)
   {
-    switch (Direction)
+    if (GameManager.GetInstance ().selectedCharacter != null) 
     {
-      case 0:
-      if(selectedPosition.x-1>=0)
-        selectedPosition.x -= 1;
-      break;
-      case 1:
-      if(selectedPosition.z+1<GameManager.GetInstance ().map [(int)selectedPosition.x].Count)
-        selectedPosition.z += 1;
-      break;
-      case 2:
-      if(selectedPosition.z-1>=0)
-        selectedPosition.z -= 1;
-      break;
-      case 3:
-      if(selectedPosition.x+1<GameManager.GetInstance ().map.Count)
-        selectedPosition.x += 1;
-      break;
+      if (!GameManager.GetInstance ().selectedCharacter.isActioning && !GameManager.GetInstance ().selectedCharacter.played)
+      {
+        switch (Direction)
+        {
+        case 0:
+          if (selectedPosition.x - 1 >= 0)
+            selectedPosition.x -= 1;
+          break;
+        case 1:
+          if (selectedPosition.z + 1 < GameManager.GetInstance ().map [(int)selectedPosition.x].Count)
+            selectedPosition.z += 1;
+          break;
+        case 2:
+          if (selectedPosition.z - 1 >= 0)
+            selectedPosition.z -= 1;
+          break;
+        case 3:
+          if (selectedPosition.x + 1 < GameManager.GetInstance ().map.Count)
+            selectedPosition.x += 1;
+          break;
+        }
+        if (selectedPosition.z >= 0 && selectedPosition.x >= 0 && selectedPosition.z < GameManager.GetInstance ().map [(int)selectedPosition.x].Count && selectedPosition.x < GameManager.GetInstance ().map.Count)
+          selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
+        CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform, 3.75f);
+      }
     }
-    if (selectedPosition.z >= 0 && selectedPosition.x >= 0 && selectedPosition.z < GameManager.GetInstance ().map [(int)selectedPosition.x].Count && selectedPosition.x < GameManager.GetInstance ().map.Count)
-      selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
-    CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform,5);
+    else
+    {
+        switch (Direction)
+        {
+        case 0:
+          if (selectedPosition.x - 1 >= 0)
+            selectedPosition.x -= 1;
+          break;
+        case 1:
+          if (selectedPosition.z + 1 < GameManager.GetInstance ().map [(int)selectedPosition.x].Count)
+            selectedPosition.z += 1;
+          break;
+        case 2:
+          if (selectedPosition.z - 1 >= 0)
+            selectedPosition.z -= 1;
+          break;
+        case 3:
+          if (selectedPosition.x + 1 < GameManager.GetInstance ().map.Count)
+            selectedPosition.x += 1;
+          break;
+        }
+        if (selectedPosition.z >= 0 && selectedPosition.x >= 0 && selectedPosition.z < GameManager.GetInstance ().map [(int)selectedPosition.x].Count && selectedPosition.x < GameManager.GetInstance ().map.Count)
+          selectedTile.transform.position = GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform.position + (0.53f * Vector3.up);
+        CameraManager.GetInstance ().MoveCameraToTarget (GameManager.GetInstance ().map [(int)selectedPosition.x] [(int)selectedPosition.z].transform, 3.75f);
+    }
+      
   }
 }

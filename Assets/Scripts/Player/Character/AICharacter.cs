@@ -17,6 +17,7 @@ public class AICharacter : Character
 {
   public AIInformation aiInfo;
   public int rageGuage;
+  Vector3 _rotateDirection;
   
   public override void SetStatus(int ID)
   {
@@ -38,6 +39,7 @@ public class AICharacter : Character
           positionQueue.RemoveAt (0);
           if (positionQueue.Count == 0)
           {
+            isActioning = false;
             transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
             if (target != null)
             {
@@ -56,7 +58,7 @@ public class AICharacter : Character
       }
     }
   }
-
+  
   public override void TurnUpdate()
   {
     if (currentHP > 0)

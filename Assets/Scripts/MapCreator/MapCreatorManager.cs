@@ -264,6 +264,7 @@ public class MapCreatorManager : MonoBehaviour
   public void RemoveObjectOnTile()
   {
     tileTypes = 3;
+    obstacle = -1;
   }
   
   public void AddObstacle(int obstacleID)

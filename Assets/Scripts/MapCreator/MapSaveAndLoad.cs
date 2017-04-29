@@ -9,6 +9,15 @@ using System;
 using System.Text;
 
 [System.Serializable]
+public class MapStory
+{
+  public int ID;
+  public int storyTypes;
+  public string storiesName;
+  public List<int> mapID = new List<int>();
+}
+
+[System.Serializable]
 public class TileData
 {
   public int type;

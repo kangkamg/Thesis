@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\GamePlay\GameManager.cs" />
      <Compile Include="Assets\Scripts\GamePlay\PlayerController.cs" />
      <Compile Include="Assets\Scripts\GamePlay\ShowingResultOfAttack.cs" />
+     <Compile Include="Assets\Scripts\GamePlay\Tutorial.cs" />
      <Compile Include="Assets\Scripts\GamePlay\UsingAbilityManager.cs" />
      <Compile Include="Assets\Scripts\Item\Accessory.cs" />
      <Compile Include="Assets\Scripts\Item\Armor.cs" />
@@ -103,8 +104,9 @@
      <Compile Include="Assets\Scripts\Tile\TilePath.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePathFinder.cs" />
      <None Include="Assets\Materials\Shader\Unitychan_chara_eye.shader" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
      <None Include="Assets\Materials\Shader\readme.txt" />
-     <None Include="Assets\Resources\DialogueFile\D0M0.txt" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D-1M0.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

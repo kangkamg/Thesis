@@ -49,10 +49,10 @@ public class TemporaryData
   public CharacterStatus selectedCharacter = new CharacterStatus();
 
   public bool firstTimeOpenGame = false;
+  public bool isTutorialDone = false;
+  public string choosenLanguage = null;
   
   private static TemporaryData instance;
-  
-  public Animator attackingTargetAnim = new Animator();
 
   public static TemporaryData GetInstance()
   {

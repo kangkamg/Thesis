@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CameraManager : MonoBehaviour 
 
@@ -23,8 +24,8 @@ public class CameraManager : MonoBehaviour
   private float _orthographicSize;
   float previousmultiply;
   
-  private bool following = false;
-  private bool isLookWholeMap = false;
+  public bool following = false;
+  public bool isLookWholeMap = false;
   public bool isFocus = false;
   public bool isMoving = false;
   
@@ -40,25 +41,21 @@ public class CameraManager : MonoBehaviour
     if (following)
     {
       Vector3 targetCamPos = follower.position ;
-
-      if (follower.position.x == 0)
+      targetCamPos.y = 2.5f;
+      
+      int mutilplyTargetCam = 0;
+      
+      if (follower.GetComponent<Character>() != null) 
       {
-        targetCamPos.x += 6;
-        targetCamPos.y = 7;
-        targetCamPos.z -= 6;
-      }
-      else if (follower.position.x > 3)
+        mutilplyTargetCam = GameManager.GetInstance ()._mapSize [0] - (int)follower.GetComponent<Character> ().gridPosition.x;
+      } 
+      else if (follower.GetComponent<Tile>() != null)
       {
-        targetCamPos.x += Mathf.Abs (follower.position.x);
-        targetCamPos.y = Mathf.Abs (follower.position.x);
-        targetCamPos.z -= Mathf.Abs (follower.position.x);
+        mutilplyTargetCam = GameManager.GetInstance ()._mapSize [0] - (int)follower.GetComponent<Tile> ().gridPosition.x;
       }
-      else
-      {
-        targetCamPos.x += Mathf.Abs (follower.position.x*2);
-        targetCamPos.y = Mathf.Abs (follower.position.x*2);
-        targetCamPos.z -= Mathf.Abs (follower.position.x*2);
-      }
+      targetCamPos.x += Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
+      targetCamPos.y += Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
+      targetCamPos.z -= Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
 
       transform.position = Vector3.SmoothDamp (transform.position, targetCamPos, ref velocity, smoothing * Time.deltaTime);
 
@@ -69,29 +66,38 @@ public class CameraManager : MonoBehaviour
       }
     }
     
-    if (!isFocus && !isLookWholeMap && !following && !GameManager.GetInstance().hitButton) 
+    if (!isFocus && !isLookWholeMap && !following && !GameManager.GetInstance().hitButton && !GameManager.GetInstance().isPause) 
     {      
       if (GameManager.GetInstance ().isTouch) 
       {
-        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began)
+        if (Input.touchCount > 0)
         {
-          originTouch = Input.GetTouch (0).position;
-        }
+          if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
+          {
+            originTouch = Input.GetTouch (0).position;
+          }
         
-        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved)
-        {
-          MoveCameraWithTouch ();
-        }
+          if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Moved)
+          {
+            MoveCameraWithTouch ();
+          }
         
-        if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Ended) 
-        {
-          isMoving = false;
+          if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Ended) 
+          {
+            isMoving = false;
+          }
         }
-      }
-      
-      if (Input.touchCount == 2)
+        else if (Input.touchCount > 1)
+        {
+          if (Input.touchCount == 2) PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
+        }
+      } 
+      else
       {
-        PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
+        if (Input.touchCount == 2) 
+        {
+          PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
+        }
       }
     }
 	}
@@ -138,24 +144,19 @@ public class CameraManager : MonoBehaviour
     {
       Vector3 targetCamPos = follower.position ;
 
-      if (follower.position.x == 0)
+      int mutilplyTargetCam = 0;
+
+      if (follower.GetComponent<Character>() != null) 
       {
-        targetCamPos.x += 6;
-        targetCamPos.y = 7;
-        targetCamPos.z -= 6;
-      }
-      else if (follower.position.x > 3)
+        mutilplyTargetCam = GameManager.GetInstance ()._mapSize [0] - (int)follower.GetComponent<Character> ().gridPosition.x;
+      } 
+      else if (follower.GetComponent<Tile>() != null)
       {
-        targetCamPos.x += Mathf.Abs (follower.position.x);
-        targetCamPos.y = Mathf.Abs (follower.position.x);
-        targetCamPos.z -= Mathf.Abs (follower.position.x);
+        mutilplyTargetCam = GameManager.GetInstance ()._mapSize [0] - (int)follower.GetComponent<Tile> ().gridPosition.x;
       }
-      else
-      {
-        targetCamPos.x += Mathf.Abs (follower.position.x*2);
-        targetCamPos.y = Mathf.Abs (follower.position.x*2);
-        targetCamPos.z -= Mathf.Abs (follower.position.x*2);
-      }
+      targetCamPos.x += Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
+      targetCamPos.y += Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
+      targetCamPos.z -= Mathf.Abs (follower.position.x + (mutilplyTargetCam*2));
       transform.position = targetCamPos;
       
       if(follower.GetType() == typeof(Character))

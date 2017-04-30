@@ -23,7 +23,7 @@ public class ItemManager : MonoBehaviour
   public void Awake()
   {
     instance = this;
-    canBuy = GetDataFromSql.GetItemFromMap (PlayerPrefs.GetInt (Const.TownSceneNo, 1).ToString ());
+    canBuy = GetDataFromSql.GetShopItem (TemporaryData.GetInstance().playerData.passedMap);
     goldText.text = TemporaryData.GetInstance ().playerData.gold.ToString ();
   }
 
@@ -63,9 +63,9 @@ public class ItemManager : MonoBehaviour
       }
     }
 
-    if (allItem.Count > 8)
+    if (allItem.Count > 7)
     {
-      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 255f * (allItem.Count));
+      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 245f * (allItem.Count));
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else
@@ -102,9 +102,9 @@ public class ItemManager : MonoBehaviour
       allItem.Add (items);
     }
 
-    if (allItem.Count > 8)
+    if (allItem.Count > 7)
     {
-      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 255f * (allItem.Count));
+      showing.GetComponent<RectTransform> ().sizeDelta = new Vector2 (showing.GetComponent<RectTransform> ().sizeDelta.x , 245f * (allItem.Count));
       showing.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
     else

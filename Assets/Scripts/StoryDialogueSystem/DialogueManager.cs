@@ -119,7 +119,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
       {
         break;
       }
@@ -236,11 +236,11 @@ public class DialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/) 
+        if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
         {
           _textComponent.text = stringToDisplay;
           currentCharacterIndex = stringLength;
-          yield return new WaitForSeconds (SecondBetweenCharacters);
+          yield return new WaitForSeconds (1f);
         }
         else
         {
@@ -255,7 +255,7 @@ public class DialogueManager : MonoBehaviour
 
     while (true)
     {
-      if (Input.GetMouseButtonDown (0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/ && currentCharacterIndex == stringLength) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && currentCharacterIndex == stringLength) 
       {
         break;
       }

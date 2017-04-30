@@ -76,9 +76,18 @@ public class Character : MonoBehaviour
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
     targetAnim.SetInteger ("animatorIndex", 2);
     target.currentHP += GameManager.GetInstance().DamageResults();
-    if(GameManager.GetInstance().DamageResults() <= 0) GameManager.GetInstance().FloatingTextController (GameManager.GetInstance().DamageResults()*-1, target.transform);
-    else GameManager.GetInstance().FloatingTextController  (GameManager.GetInstance().DamageResults(), target.transform);
+    if (GameManager.GetInstance ().DamageResults () <= 0)
+    {
+      GameManager.GetInstance ().FloatingTextController (GameManager.GetInstance ().DamageResults () * -1, target.transform);
+      GameManager.GetInstance().FloatingTextController (GameManager.GetInstance().DamageResults()*-1, GameManager.GetInstance().showingResultOfAttack.transform, new Vector2(110,6.9f));
+    }
+    else
+    {
+      GameManager.GetInstance().FloatingTextController (GameManager.GetInstance().DamageResults(), GameManager.GetInstance().showingResultOfAttack.transform, new Vector2(110,6.9f));
+      GameManager.GetInstance().FloatingTextController  (GameManager.GetInstance().DamageResults(), target.transform);
+    }
     if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
+    
     else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
   }
   

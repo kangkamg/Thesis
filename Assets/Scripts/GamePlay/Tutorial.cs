@@ -7,6 +7,7 @@ public class Tutorial : MonoBehaviour
 {
   GameObject tutorial;
   int pages = 1;
+  
 	private void Awake ()
   {
     Time.timeScale = 0f;
@@ -20,7 +21,7 @@ public class Tutorial : MonoBehaviour
     tutorial.transform.localScale = Vector3.one;
     tutorial.transform.localPosition = Vector2.zero;
     tutorial.GetComponent<Button> ().onClick.AddListener (() => NextTutorial ());
-    int pages = 1;
+    pages = 1;
   }
   
   public void NextTutorial()

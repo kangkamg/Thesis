@@ -142,20 +142,28 @@ public class ShowingCharacterStatusManager : MonoBehaviour
   {
     for (int i = 0; i < equipment.childCount; i++)
     {
-      if (equipItem.Where(x=>x.item.itemType1 == equipment.GetChild(i).name).Count()>0)
+      if (i < equipItem.Count) 
       {
-        Item equiped = equipItem.Where (x => x.item.itemType1 == equipment.GetChild (i).name).First ();
-        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name);
-        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equiped.item.name;
+        Item equiped = equipItem [i];
+        
+        if (Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name) != null) 
+        {
+          equipment.GetChild (i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name);
+        }
+        else
+        {
+          equipment.GetChild (i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + equiped.item.itemType1);
+        }
+        equipment.GetChild (i).GetChild (1).GetComponent<Text> ().text = equiped.item.name;
+        
         equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (equiped));
-      } 
+      }
       else
       {
         equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipment.GetChild(i).name);
-        equipment.GetChild(i).GetChild (1).GetComponent<Text> ().text = equipment.GetChild(i).name;
+        equipment.GetChild (i).GetChild (1).GetComponent<Text> ().text = "";
         
-        string itemType = equipment.GetChild (i).name;
-        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage (itemType));
+        equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
       } 
     }
   }

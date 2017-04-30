@@ -49,8 +49,9 @@
      <Compile Include="Assets\Scripts\Ability\Ability.cs" />
      <Compile Include="Assets\Scripts\Ability\AbilityInformation.cs" />
      <Compile Include="Assets\Scripts\Ability\ChangingAbilityInformation.cs" />
-     <Compile Include="Assets\Scripts\Animation\AnimationEventManager.cs" />
+     <Compile Include="Assets\Scripts\Animation\CharacterModelManager.cs" />
      <Compile Include="Assets\Scripts\Const.cs" />
+     <Compile Include="Assets\Scripts\DialogBoxManager.cs" />
      <Compile Include="Assets\Scripts\GamePlay\CameraManager.cs" />
      <Compile Include="Assets\Scripts\GamePlay\FinishingGaugeManager.cs" />
      <Compile Include="Assets\Scripts\GamePlay\FloatingText.cs" />
@@ -103,9 +104,9 @@
      <Compile Include="Assets\Scripts\Tile\TileHighLight.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePath.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePathFinder.cs" />
-     <None Include="Assets\Materials\Shader\Unitychan_chara_eye.shader" />
+     <None Include="Assets\Resources\Materials\Shader\Unitychan_chara_eye.shader" />
      <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
-     <None Include="Assets\Materials\Shader\readme.txt" />
+     <None Include="Assets\Resources\Materials\Shader\readme.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D-1M0.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

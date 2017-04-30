@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
   public GameObject menu;
   public GameObject pauseMenu;
   public GameObject changingTurn;
+  public GameObject objective;
   public ShowingResultOfAttack showingResultOfAttack;
   public Transform playerController;
 
@@ -60,7 +61,6 @@ public class GameManager : MonoBehaviour
     GenerateCharacter ();
     
     isPause = false;
-    isTouch = true;
     isAutoPlay = false;
     isPlayerTurn = true;
     playerController.gameObject.SetActive (false);
@@ -76,8 +76,7 @@ public class GameManager : MonoBehaviour
   private void Start()
   {
     if (!TemporaryData.GetInstance ().isTutorialDone) gameObject.AddComponent<Tutorial> ();
-    StartCoroutine (ChangingTurn ());
-    SelectedCharacter (character [0]);
+      StartCoroutine (InitGame ());
   }
 
   private void Update()
@@ -322,18 +321,46 @@ public class GameManager : MonoBehaviour
     {
       if (selectedCharacter.positionQueue.Count > 0)
       {
-        if (isPlayerTurn) 
-        {
-          if (isTouch)
-            CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
-        }
-        else 
-        {
-          CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
-        }
+        CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
         selectedCharacter.MoveToDesTile ();
       }
     }
+  }
+  
+  private IEnumerator InitGame()
+  { 
+    CameraManager.GetInstance ().SetUpStartCamera (new Vector3(_mapSize[0] + 2,20,_mapSize[1]+3));
+    playerUI.SetActive(false);
+    menu.SetActive (false);
+    
+    yield return new WaitForSeconds (1f);
+    
+    objective.SetActive(true);
+    
+    if(mapObjective == 1)
+    {
+      objective.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Text> ().text = "Kill The Enemy";
+    }
+    
+    yield return new WaitForSeconds (1.5f);
+    
+    objective.SetActive(false);
+      
+    StartCoroutine (ChangingTurn ());
+    
+    yield return new WaitForSeconds (1f);
+    
+    isTouch = true;
+    
+    playerUI.SetActive(true);
+    menu.SetActive (true);
+    menu.transform.GetChild (0).gameObject.SetActive (true);
+    menu.transform.GetChild (1).gameObject.SetActive (true);
+    
+    
+    CameraManager.GetInstance ().transform.eulerAngles = new Vector3 (40, -45, 0);
+    
+    SelectedCharacter (character [0]);
   }
   
   public void GenerateMap(int mapNumber)
@@ -393,7 +420,6 @@ public class GameManager : MonoBehaviour
     mapTransform.gameObject.SetActive (true);
     enemies = container.enemies;
     players = container.players;
-    CameraManager.GetInstance ().SetUpStartCamera (new Vector3(_mapSize[0],0,0));
   }
   
   public void GenerateCharacter()
@@ -419,7 +445,7 @@ public class GameManager : MonoBehaviour
 
     for(int i = 0; i < startPlayer.Count;i++) 
     {
-      if (i > TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == i).Count ()) 
+      if (i >= TemporaryData.GetInstance ().playerData.characters.Where (x => x.isInParty).Count ()) 
       {
         break; 
       }
@@ -818,8 +844,11 @@ public class GameManager : MonoBehaviour
     currentCharacterIndex = -1;
     oldCharacterNo = -1;
     RemoveMapHighlight ();
-    Destroy (chaSelector);
-    chaSelector = null;
+    if (chaSelector != null) 
+    {
+      Destroy (chaSelector);
+      chaSelector = null;
+    }
     playerUI.transform.GetChild (0).gameObject.SetActive (false);
     menu.transform.GetChild (0).gameObject.SetActive (false);
   }
@@ -828,10 +857,15 @@ public class GameManager : MonoBehaviour
   {
     isPause = true;
     changingTurn.SetActive (true);
-   
+    
+    playerUI.transform.GetChild (0).gameObject.SetActive (false);
+    menu.transform.GetChild (0).gameObject.SetActive (false);
+    menu.transform.GetChild (1).gameObject.SetActive (false);
+    
     if (isPlayerTurn) 
     {
       changingTurn.transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "PlayerTurn";
+      
     }
     else
     {
@@ -879,10 +913,17 @@ public class GameManager : MonoBehaviour
         playerUI.transform.parent.GetChild (1).GetChild (0).gameObject.SetActive (false);
       }
     }
-    Destroy (chaSelector);
-    chaSelector = null;
-    chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
-    chaSelector.transform.SetParent (selectedCharacter.transform);
+    
+    if (chaSelector != null)
+    {
+      Destroy (chaSelector);
+      chaSelector = null;
+    }
+    if (chaSelector == null) 
+    {
+      chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
+      chaSelector.transform.SetParent (selectedCharacter.transform);
+    }
 
     ShowPlayerUI (true);
     if(selectedCharacter.GetType() == typeof(PlayerCharacter))
@@ -1085,8 +1126,8 @@ public class GameManager : MonoBehaviour
   
   private IEnumerator WaitDamageFloating(Character target)
   {
-    selectedCharacter.isActioning = true;
     int i = 0;
+    selectedCharacter.isActioning = true;
     CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
     if(target.GetType() == typeof (AICharacter))
       target.GetComponent<AICharacter> ().rageGuage += 1;
@@ -1129,6 +1170,13 @@ public class GameManager : MonoBehaviour
 
   public void NextTurn()
   {
+    RemoveMapHighlight ();
+    
+    foreach (SkinnedMeshRenderer a in selectedCharacter.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+    {
+      a.material.color = new Color (0.3f, 0.3f, 0.3f);
+    }
+    
     if(mapObjective == 1)
     {
       if(character.Where(x=>x.GetType() == typeof(AICharacter)).Count() > 0 && character.Where(x=>x.GetType() == typeof(PlayerCharacter)).Count() > 0 ) StartCoroutine(WaitEndTurn ());
@@ -1157,7 +1205,15 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator WaitEndTurn()
   {
-    ShowPlayerUI (false);
+    CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+    RemoveMapHighlight ();
+    if (chaSelector != null) 
+    {
+      Destroy (chaSelector);
+      chaSelector = null;
+    }
+    
+    yield return new WaitForSeconds (0.75f);
     
     if (currentCharacterIndex == character.Count - 1) 
     {
@@ -1211,6 +1267,10 @@ public class GameManager : MonoBehaviour
         foreach (Character c in character) 
         {
           c.played = false;
+          foreach (SkinnedMeshRenderer a in c.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+          {
+            a.material.color = new Color (0.82f, 0.82f, 0.82f);
+          }
         }
         currentCharacterIndex = 0;
         HitButton (false);
@@ -1231,7 +1291,6 @@ public class GameManager : MonoBehaviour
       {
         menu.transform.GetChild (0).gameObject.SetActive (false);
         menu.transform.GetChild (1).gameObject.SetActive (false);
-        menu.transform.GetChild (2).gameObject.SetActive (false);
         playerController.gameObject.SetActive (false);
         playerController.GetComponent<PlayerController> ().RemoveSelected ();
         character [currentCharacterIndex].TurnUpdate ();
@@ -1254,7 +1313,6 @@ public class GameManager : MonoBehaviour
         {
           menu.transform.GetChild (0).gameObject.SetActive (true);
           menu.transform.GetChild (1).gameObject.SetActive (true);
-          menu.transform.GetChild (2).gameObject.SetActive (true);
           if (!isTouch) 
           {
             playerController.gameObject.SetActive (true);
@@ -1476,28 +1534,32 @@ public class GameManager : MonoBehaviour
     results.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenExp.ToString();
     results.transform.GetChild (0).GetChild (2).GetChild (1).GetComponent<Text>().text = TemporaryData.GetInstance ().result.givenGold.ToString();
     
+    if (isWin)
+    {
+      if(TemporaryData.GetInstance ().playerData.passedMap.Where(x=>x == PlayerPrefs.GetInt(Const.MapNo)).Count()<=0)
+      {
+        TemporaryData.GetInstance ().playerData.passedMap.Add(PlayerPrefs.GetInt(Const.MapNo));
+      }
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("GamePlay/Image/Winner");
+    }
+    else
+      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Loser");
+    results.SetActive (true);
+    
+    if (!TemporaryData.GetInstance ().isTutorialDone) 
+    {
+      PlayerPrefs.SetInt (Const.IsTutorialDone, 1);
+      TemporaryData.GetInstance ().isTutorialDone = true;
+    }
+      
     if(party.Count > 0 && playerCharacterID.Where(x=>x == party[0].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [0], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[0].GetChild(0)));
     if(party.Count > 1 && playerCharacterID.Where(x=>x == party[1].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [1], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[1].GetChild(0)));
     if(party.Count > 2 && playerCharacterID.Where(x=>x == party[2].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [2], TemporaryData.GetInstance ().result.givenExp,showResultCharacters[2].GetChild(0)));
     if(party.Count > 3 && playerCharacterID.Where(x=>x == party[3].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [3], TemporaryData.GetInstance ().result.givenExp,showResultCharacters[3].GetChild(0)));
-
-    while (true)
-    {
-      yield return new WaitForSeconds (1f);
-
-      break;
-    }
-
-    if (isWin)
-      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Winner");
-    else
-      results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Loser");
-
-    results.SetActive (true);
     
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0) && */SystemManager.isFinishLevelUp && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+      if (Input.GetMouseButtonDown (0) && SystemManager.isFinishLevelUp /*&& Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
       {
         AddingResultItem ();
         TemporaryData.GetInstance ().result = new Result ();
@@ -1544,6 +1606,18 @@ public class GameManager : MonoBehaviour
     instance.SetText (value);
   }
   
+  public void FloatingTextController(int value, Transform location, Vector3 Position)
+  {
+    FloatingText popUpText = Resources.Load<FloatingText> ("PopupTextParent");
+    FloatingText instance = Instantiate (popUpText);
+
+    instance.transform.SetParent (location);
+    instance.transform.localPosition = Position;
+    instance.transform.localScale = Vector3.one;
+    instance.GetComponent<RectTransform> ().sizeDelta = new Vector2 (160, 60);
+    instance.SetText (value);
+  }
+  
   public void OpenController()
   {
     isTouch = !isTouch;
@@ -1552,23 +1626,6 @@ public class GameManager : MonoBehaviour
       playerController.GetComponent<PlayerController> ().SetUpSelectedPosition ();
     else
       playerController.GetComponent<PlayerController> ().RemoveSelected ();
-  }
-  
-  public void Auto()
-  {
-    isAutoPlay = !isAutoPlay;
-    if(isAutoPlay) 
-    {
-      RemoveMapHighlight ();        
-      character.Where(x=>x.GetType() == typeof (PlayerCharacter) && x.played == false).First().TurnUpdate ();
-    }
-  }
-  
-  public void ShowFakeResult()
-  {
-    TemporaryData.GetInstance ().result.givenExp = 1000;
-    
-    StartCoroutine (ShowResults (true));
   }
   
   public void PauseGame()

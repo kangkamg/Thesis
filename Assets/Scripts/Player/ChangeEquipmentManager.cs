@@ -122,7 +122,14 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
     
-    equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
+    if (Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name) != null) 
+    {
+      equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
+    }
+    else
+    {
+      equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + selectedItem.item.itemType1);
+    }
     equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = selectedItem.item.name.ToString();
     equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text  = selectedItem.item.increaseHP.ToString ();
     equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = selectedItem.item.increaseAttack.ToString ();
@@ -198,7 +205,7 @@ public class ChangeEquipmentManager : MonoBehaviour
       }
     }
     
-    if (slots.Count > 8)
+    if (slots.Count > 5)
     {
       changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
@@ -265,7 +272,7 @@ public class ChangeEquipmentManager : MonoBehaviour
       }
     }
 
-    if (slots.Count > 8)
+    if (slots.Count > 5)
     {
       changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;

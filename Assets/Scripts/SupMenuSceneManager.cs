@@ -11,7 +11,6 @@ public class SupMenuSceneManager : MonoBehaviour
   public GameObject changingAbility;
   public GameObject party;
   public GameObject item;
-  public GameObject quest;
 
   private void Awake()
   {
@@ -22,7 +21,6 @@ public class SupMenuSceneManager : MonoBehaviour
       changingEquip.SetActive (false);
       party.SetActive (false);
       item.SetActive (false);
-      quest.SetActive (false);
       changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Party") 
@@ -32,7 +30,6 @@ public class SupMenuSceneManager : MonoBehaviour
       changingEquip.SetActive (false);
       party.SetActive (true);
       item.SetActive (false);
-      quest.SetActive (false);
       changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Item") 
@@ -42,7 +39,6 @@ public class SupMenuSceneManager : MonoBehaviour
       changingEquip.SetActive (false);
       party.SetActive (false);
       item.SetActive (true);
-      quest.SetActive (false);
       changingAbility.SetActive (false);
     }
     else if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Quest") 
@@ -52,7 +48,6 @@ public class SupMenuSceneManager : MonoBehaviour
       changingEquip.SetActive (false);
       party.SetActive (false);
       item.SetActive (false);
-      quest.SetActive (true);
       changingAbility.SetActive (false);
     }
   }

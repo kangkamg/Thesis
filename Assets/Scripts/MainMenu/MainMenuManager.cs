@@ -8,8 +8,6 @@ using System.Linq;
 public class MainMenuManager : MonoBehaviour
 {
   public GameObject playerMenu;
-  public GameObject dungeonMenu;
-  public GameObject townMenu;
   public GameObject bgMenu;
   public GameObject mainMenu;
   
@@ -22,11 +20,43 @@ public class MainMenuManager : MonoBehaviour
   
   public void Start()
   {
-    if (!TemporaryData.GetInstance ().isTutorialDone) ShowingTutorial ();
-    if(PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "PlayerMenu") playerMenu.SetActive (true);
+    if (!TemporaryData.GetInstance ().isTutorialDone && TemporaryData.GetInstance ().playerData.passedMap.Where (x => x == 1).Count () <= 0)
+      ShowingTutorial ();
+    else
+      TemporaryData.GetInstance ().isTutorialDone = true;
+    
+    
+    if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Informations")
+    {
+      playerMenu.SetActive (true);
+      foreach (Transform child in playerMenu.transform.GetChild (2)) 
+      {
+        child.gameObject.SetActive (false);
+      }
+      playerMenu.transform.GetChild (2).GetChild (1).gameObject.SetActive (true);
+      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+    }
+    else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Adventures")
+    {
+      playerMenu.SetActive (true);
+      foreach (Transform child in playerMenu.transform.GetChild (2)) 
+      {
+        child.gameObject.SetActive (false);
+      }
+      playerMenu.transform.GetChild (2).GetChild (0).gameObject.SetActive (true);
+      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+    }
+    else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Shop")
+    {
+      playerMenu.SetActive (true);
+      foreach (Transform child in playerMenu.transform.GetChild (2)) 
+      {
+        child.gameObject.SetActive (false);
+      }
+      playerMenu.transform.GetChild (2).GetChild (2).gameObject.SetActive (true);
+      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+    }
     else playerMenu.SetActive (false);
-    dungeonMenu.SetActive (false);
-    townMenu.SetActive (false);
     bgMenu.SetActive (false);
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
   }
@@ -54,6 +84,7 @@ public class MainMenuManager : MonoBehaviour
     }
     playerMenu.transform.GetChild(2).FindChild (name).gameObject.SetActive (true);
     playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (name).GetComponent<Image> ().color;
+    PlayerPrefs.SetString (Const.WhatOpenInMenuScene, name);
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
@@ -81,7 +112,6 @@ public class MainMenuManager : MonoBehaviour
 
   public void ShowTownMenu(int townSceneNumber)
   {
-    townMenu.SetActive (true);
     bgMenu.SetActive (true);
     PlayerPrefs.SetInt (Const.TownSceneNo, townSceneNumber);
     playerMenu.SetActive (false);
@@ -128,6 +158,10 @@ public class MainMenuManager : MonoBehaviour
   
   public void GenerateStories(int storyType, Transform _parent)
   {
+    foreach (Transform child in _parent.GetChild(0)) 
+    {
+      Destroy (child.gameObject);
+    }
     newMapStory = new List<MapStory> ();
     newMapStory = GetDataFromSql.GetMapOfType (storyType);
     
@@ -171,6 +205,11 @@ public class MainMenuManager : MonoBehaviour
   
   public void GenerateMapData(string storyName, Transform _parent)
   {
+    foreach (Transform child in _parent.GetChild(0)) 
+    {
+      Destroy (child.gameObject);
+    }
+    
     List<int> mapInStories = newMapStory.Where (x => x.storiesName == storyName).First ().mapID; 
     
     for (int i = 0; i < mapInStories.Count; i++) 
@@ -178,6 +217,7 @@ public class MainMenuManager : MonoBehaviour
       if (i > mapInStories.Count - 1 || i > 4) break;
       GameObject mapButton = Instantiate(Resources.Load<GameObject>("MainMenuScene/STORIESBUTTON"));
       mapButton.transform.SetParent (_parent.GetChild(0));
+      mapButton.transform.GetChild (0).name = mapInStories [i+(mapPages*4)].ToString();
       mapButton.transform.GetChild (0).GetComponent<Text> ().text = mapInStories [i+(mapPages*4)].ToString();
       mapButton.transform.localScale = Vector3.one;
       mapButton.GetComponent<Button>().onClick.AddListener(()=>ShowDialogBox(int.Parse(mapButton.transform.GetChild (0).GetComponent<Text> ().text)));
@@ -253,21 +293,34 @@ public class MainMenuManager : MonoBehaviour
   public void ShowDialogBox(int mapID)
   {
     PlayerPrefs.SetInt (Const.MapNo, mapID);
-    dungeonMenu.SetActive (true);
+    
+    GameObject dialogBox = GameObject.Instantiate (DialogBoxManager.GetInstance ().GenerateDialogBox ("Enter this map ?", true));
+
+    dialogBox.transform.SetParent (GameObject.Find("MenuCanvas").transform);
+    dialogBox.transform.localScale = Vector3.one;
+    dialogBox.transform.localPosition = Vector2.zero;
+    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => GoPlayScene ());
+    dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => CancelDialogBox (dialogBox));
+    
+    foreach (Transform child in playerMenu.transform.GetChild(2).FindChild ("Map").GetChild(0))
+    {
+      if (int.Parse(child.GetChild (0).name) != mapID)
+      {
+        Destroy (child);
+      }
+      else
+      {
+        child.GetComponent<Button> ().interactable = false;
+      }
+    }
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
-      foreach (Transform child in dungeonMenu.transform.GetChild(0)) 
-      {
-        child.GetComponent<Button>().interactable = false;
-      }
-
-      dungeonMenu.transform.GetChild(0).GetChild (0).GetComponent<Button>().interactable = true;
+      dialogBox.transform.GetChild (2).GetComponent<Button>().interactable = false;
 
       if (GameObject.Find ("tutorialhand") == null) 
       {
         GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
-        handTouch.transform.SetParent (dungeonMenu.transform);
         handTouch.transform.localScale = Vector3.one;
         handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
         handTouch.transform.localPosition = new Vector2 (90, 130);
@@ -275,7 +328,6 @@ public class MainMenuManager : MonoBehaviour
       else
       {
         GameObject handTouch = GameObject.Find ("tutorialhand");
-        handTouch.transform.SetParent (dungeonMenu.transform);
         handTouch.transform.localScale = Vector3.one;
         handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
         handTouch.transform.localPosition = new Vector2 (90, 130);
@@ -310,7 +362,6 @@ public class MainMenuManager : MonoBehaviour
   {
     SceneManager.LoadScene ("SupMenuScene");
     PlayerPrefs.SetString (Const.OpenSupMenuScene, supmenu);
-    PlayerPrefs.SetString (Const.WhatOpenInMenuScene, "PlayerMenu");
   }
 
   public void ExitGame()
@@ -320,8 +371,6 @@ public class MainMenuManager : MonoBehaviour
 
   public void Exit()
   {
-    townMenu.SetActive (false);
-    dungeonMenu.SetActive (false);
     bgMenu.SetActive (false);
   }
   
@@ -332,7 +381,32 @@ public class MainMenuManager : MonoBehaviour
   
   public void BackButton()
   {
-    playerMenu.SetActive (false);
+    if (playerMenu.transform.GetChild (2).FindChild ("Adventures").gameObject.activeSelf) 
+    {
+      playerMenu.SetActive (false);
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Informations").gameObject.activeSelf) 
+    {
+      playerMenu.SetActive (false);
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Shop").gameObject.activeSelf) 
+    {
+      playerMenu.SetActive (false);
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Options").gameObject.activeSelf) 
+    {
+      playerMenu.SetActive (false);
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.activeSelf) 
+    {
+      playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).FindChild ("Adventures").gameObject.SetActive (true);
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.activeSelf) 
+    {
+      playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.SetActive (false);
+      ShowMapMenu (storyTypes);
+    }
   }
   
   public void NextPageStories(int i)
@@ -345,5 +419,18 @@ public class MainMenuManager : MonoBehaviour
   {
     mapPages += i;
     GenerateMapData (storiesName, playerMenu.transform.GetChild (2).FindChild ("Map"));
+  }
+
+  public void CancelDialogBox(GameObject dialogBox)
+  {
+    Destroy (dialogBox);
+    if (playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.activeSelf) 
+    {
+      GenerateStories (storyTypes, playerMenu.transform.GetChild (2).FindChild ("Stories"));
+    }
+    else if (playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.activeSelf) 
+    {
+      GenerateMapData (storiesName, playerMenu.transform.GetChild (2).FindChild ("Map"));
+    }
   }
 }

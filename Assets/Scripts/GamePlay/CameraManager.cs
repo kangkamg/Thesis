@@ -106,14 +106,13 @@ public class CameraManager : MonoBehaviour
   {
     following = false;
     isLookWholeMap = false;
-    _orthographicSize = _target.x * 4f;
+    _orthographicSize = _target.x *3;
     this.GetComponent<Camera> ().orthographicSize = _orthographicSize;
-
-    _target.y = transform.position.y;
-    _target.z = transform.position.z;
 
     transform.position = _target;
     _originPos = transform.position;
+    
+    transform.eulerAngles = new Vector3 (90, 0, 0);
   }
   
   public void MoveCameraToTarget(Transform followTarget, float mutiply = 7.5f)

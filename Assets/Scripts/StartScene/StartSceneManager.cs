@@ -15,15 +15,24 @@ public class StartSceneManager : MonoBehaviour
 
   public bool bookOpen = false;
 
+  private static StartSceneManager _instance;
+  public static StartSceneManager GetInstance()
+  {
+    return _instance;
+  }
+  
   private void Awake()
   {
+    _instance = this;
+    
     if (string.IsNullOrEmpty (PlayerPrefs.GetString (Const.Language))) 
     {
       PlayerPrefs.SetString (Const.Language, Application.systemLanguage.ToString ());
     } 
     
     TemporaryData.GetInstance().choosenLanguage = PlayerPrefs.GetString(Const.Language,"Thai");
-    if (string.IsNullOrEmpty (PlayerPrefs.GetString (Const.Language))) 
+    
+    if (PlayerPrefs.GetInt (Const.IsTutorialDone,-1) == -1) 
     {
       PlayerPrefs.SetInt (Const.IsTutorialDone, 0);
     } 
@@ -94,65 +103,14 @@ public class StartSceneManager : MonoBehaviour
     adding.partyOrdering = 0;
     adding.experience = 0;
 
-    equipedItem.item = GetDataFromSql.GetItemFromID (1100);
+    equipedItem.item = GetDataFromSql.GetItemFromID (1000);
     SetUpEquipment (equipedItem, adding, data);
 
     equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (2100);
+    equipedItem.item = GetDataFromSql.GetItemFromID (2000);
     SetUpEquipment (equipedItem, adding, data);
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (3100);
-    SetUpEquipment (equipedItem, adding, data);
-
-    data.characters.Add (adding);
-
-    adding = new CharacterStatus ();
-    adding.basicStatus = GetDataFromSql.GetCharacter (1002);
-    adding.characterLevel = 1;
-    adding.isInParty = true;
-    for(int i= 0; i < adding.basicStatus.learnAbleAbility.Count;i++)
-    {
-      string[] learnAbleAb = adding.basicStatus.learnAbleAbility [i].Split (" " [0]);
-      for(int j = 0; j < learnAbleAb.Length; j=j+2)
-      {
-        if(int.Parse(learnAbleAb[j+1]) == adding.characterLevel)
-        {
-          learning = new AbilityStatus ();
-          learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
-          learning.level = 1;
-          learning.exp = 0;
-          adding.learnedAbility.Add (learning);
-
-          equiped = new AbilityStatus ();
-          equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
-          equiped.level = 1;
-          equiped.exp = 0;
-          adding.equipedAbility.Add (equiped);
-        }
-      }
-    }
-    adding.partyOrdering = 1;
-    adding.experience = 0;
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (1200);
-    SetUpEquipment (equipedItem, adding, data);
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (2100);
-    SetUpEquipment (equipedItem, adding, data);
-
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (3100);
-    SetUpEquipment (equipedItem, adding, data);
-
-    data.characters.Add (adding);
     
-    equipedItem = new Item ();
-    equipedItem.item = GetDataFromSql.GetItemFromID (1100);
-    SetUpEquipment (equipedItem, adding, data, false);
-
+    data.characters.Add (adding);
     TemporaryData.GetInstance ().playerData = data;
   }
   
@@ -213,6 +171,19 @@ public class StartSceneManager : MonoBehaviour
       }
     }
   }
+  
+  public void BackButton()
+  {
+    if (openBook.transform.GetChild (1).gameObject.activeSelf)
+    {
+      openBook.transform.GetChild (0).gameObject.SetActive (true);
+      openBook.transform.GetChild (1).gameObject.SetActive (false);
+    }
+    else if (openBook.transform.GetChild (0).gameObject.activeSelf)
+    {
+      CloseTheBook ();
+    } 
+  }
 
   private void BlinkText()
   {
@@ -244,7 +215,7 @@ public class StartSceneManager : MonoBehaviour
     openBook.transform.GetChild (1).gameObject.SetActive (false);
   }
   
-  private void CreateSaveIndex(int isNewGame)
+  public void CreateSaveIndex(int isNewGame)
   {
     foreach (Transform child in openBook.transform.GetChild (1).GetChild(1)) 
     {

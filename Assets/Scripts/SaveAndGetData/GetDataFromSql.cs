@@ -4,6 +4,7 @@ using UnityEngine;
 using Mono.Data.Sqlite;
 using System.IO;
 using System.Data;
+using System.Linq;
 
 public class GetDataFromSql
 {
@@ -177,8 +178,6 @@ public class GetDataFromSql
         {
           n.learnAbleAbility.Add (learnAbleAb[i]);
         }
-        n.weaponEff = reader.GetString (12);
-        n.armorEff = reader.GetString (13);
       }
     }
     reader.Close ();
@@ -232,7 +231,7 @@ public class GetDataFromSql
     return null;
   }
 
-  public static List<ItemStatus> GetItemFromMap(string mapNumber)
+  public static List<ItemStatus> GetShopItem(List<int> passedMap)
   {
     List<ItemStatus> list = new List<ItemStatus> ();
 
@@ -244,33 +243,29 @@ public class GetDataFromSql
     while (reader.Read ()) 
     {
       ItemStatus n = new ItemStatus ();
-      List<string> s = new List<string> ();
 
       string sellMap = reader.GetString (10);
-      string[] sm = sellMap.Split ("," [0]);
-      for(int i = 0; i < sm.Length; i++)
-      {
-        s.Add (sm[i]);
-      }
+      List<string> sm = sellMap.Split ("," [0]).ToList();
 
-      if (s.Contains(mapNumber))
+      foreach (string s in sm) 
       {
-        n.ID = reader.GetInt32 (0);
-        n.name = reader.GetString (1);
-        n.price = reader.GetInt32 (2);
-        n.increaseHP = (int)reader.GetFloat (3);
-        n.increaseAttack = (int)reader.GetFloat (4);
-        n.increaseDefense = (int)reader.GetFloat (5);
-        n.increaseCriRate = (int)reader.GetFloat (6);
-        n.increaseMovementPoint = (int)reader.GetFloat (7);
-        n.itemType1 = reader.GetString(8);
-        n.itemType2 = reader.GetString(9);
-        for(int i = 0; i < sm.Length; i++)
+        if (passedMap.Where (x => x >= int.Parse (s)).Count() > 0) 
         {
-          n.sellMap = s;
+          n.ID = reader.GetInt32 (0);
+          n.name = reader.GetString (1);
+          n.price = reader.GetInt32 (2);
+          n.increaseHP = (int)reader.GetFloat (3);
+          n.increaseAttack = (int)reader.GetFloat (4);
+          n.increaseDefense = (int)reader.GetFloat (5);
+          n.increaseCriRate = (int)reader.GetFloat (6);
+          n.increaseMovementPoint = (int)reader.GetFloat (7);
+          n.itemType1 = reader.GetString(8);
+          n.itemType2 = reader.GetString(9);
+          n.stackable = reader.GetBoolean (11);
+          break;
         }
-        n.stackable = reader.GetBoolean (11);
       }
+      
       list.Add (n);
     }
     reader.Close ();

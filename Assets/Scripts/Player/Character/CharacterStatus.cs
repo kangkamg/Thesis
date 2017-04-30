@@ -16,8 +16,6 @@ public class CharacterBasicStatus
   public float criRate;
   public float criRateGrowth;
   public int movementPoint;
-  public string weaponEff;
-  public string armorEff;
   public List<string> learnAbleAbility = new List<string>();
 }
 

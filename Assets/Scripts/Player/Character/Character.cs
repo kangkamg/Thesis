@@ -18,6 +18,8 @@ public class Character : MonoBehaviour
   public int ordering;
   public int ID;
 
+  public Slider hpSlider;
+  
   public bool played = false;
 
   public Character target;
@@ -61,6 +63,8 @@ public class Character : MonoBehaviour
 
     currentHP = characterStatus.maxHp;
     this.name = characterStatus.basicStatus.characterName;
+    hpSlider.maxValue = currentHP;
+    hpSlider.value = currentHP;
   }
 
   public virtual void SetStatus(CharacterStatus status)
@@ -69,6 +73,8 @@ public class Character : MonoBehaviour
 
     currentHP = characterStatus.maxHp;
     this.name = characterStatus.basicStatus.characterName;
+    hpSlider.maxValue = currentHP;
+    hpSlider.value = currentHP;
   }
   
   public void AttackTarget()
@@ -76,6 +82,7 @@ public class Character : MonoBehaviour
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
     targetAnim.SetInteger ("animatorIndex", 2);
     target.currentHP += GameManager.GetInstance().DamageResults();
+    if (target.currentHP <= 0) target.currentHP = 0;
     if (GameManager.GetInstance ().DamageResults () <= 0)
     {
       GameManager.GetInstance ().FloatingTextController (GameManager.GetInstance ().DamageResults () * -1, target.transform);

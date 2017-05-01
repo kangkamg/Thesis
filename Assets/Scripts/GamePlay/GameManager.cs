@@ -450,7 +450,7 @@ public class GameManager : MonoBehaviour
         break; 
       }
 
-      GameObject playerObj = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3 (startPlayer [i].transform.position.x, PrefabHolder.GetInstance ().Player.transform.localScale.y + 0.5f, startPlayer [i].transform.position.z),Quaternion.identity);
+      GameObject playerObj = Instantiate (PrefabHolder.GetInstance ().Player, new Vector3 (startPlayer [i].transform.position.x, 2.4f, startPlayer [i].transform.position.z),Quaternion.identity);
       
       PlayerCharacter player = playerObj.GetComponent<PlayerCharacter> ();
       player.SetStatus(TemporaryData.GetInstance ().playerData.characters.Where (x => x.partyOrdering == i).First());
@@ -471,8 +471,9 @@ public class GameManager : MonoBehaviour
       renderer.transform.SetParent (playerObj.transform);
       renderer.transform.SetAsFirstSibling ();
       renderer.transform.localScale = Vector3.one*2;
-      renderer.transform.localPosition = Vector3.zero - Vector3.up;
-        
+      renderer.transform.localPosition = new Vector3(0,-0.46f,0);
+      renderer.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, 0));  
+      
       foreach (AbilityStatus a in player.characterStatus.equipedAbility) 
       {
         GetUsedAbility.AddAbility (player.ID, a.ability);
@@ -481,7 +482,7 @@ public class GameManager : MonoBehaviour
 
     foreach (Tile a in startEnemy) 
     {
-      GameObject aiPlayerObj = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3 (a.transform.position.x, PrefabHolder.GetInstance ().AIPlayer.transform.localScale.y + 0.5f, a.transform.position.z),Quaternion.identity);
+      GameObject aiPlayerObj = Instantiate (PrefabHolder.GetInstance ().AIPlayer, new Vector3 (a.transform.position.x, 2.4f, a.transform.position.z),Quaternion.identity);
       
       AICharacter aiPlayer = aiPlayerObj.GetComponent<AICharacter> ();
       aiPlayer.SetStatus (enemies.Where(x=>x.locX == a.gridPosition.x && x.locZ == a.gridPosition.z).First().enemyID);
@@ -518,7 +519,7 @@ public class GameManager : MonoBehaviour
       renderer.transform.SetParent (aiPlayerObj.transform);
       renderer.transform.SetAsFirstSibling ();
       renderer.transform.localScale = Vector3.one*2;
-      renderer.transform.localPosition = Vector3.zero - Vector3.up;
+      renderer.transform.localPosition = new Vector3(0,-0.46f,0);
       
       Vector3 heading = character [0].transform.position - aiPlayerObj.transform.position;
       float distance = heading.magnitude;
@@ -633,7 +634,7 @@ public class GameManager : MonoBehaviour
     else
     {
       specialAbObj.transform.GetChild (1).gameObject.SetActive (true);
-      specialAbObj.transform.GetChild (1).GetChild (0).GetComponent<Text> ().text = "GaugeNotEnough";
+      specialAbObj.transform.GetChild (1).GetChild (1).GetComponent<Text> ().text = "Gauge\nNotEnough";
       specialAbObj.transform.GetChild (1).GetComponent<Slider> ().maxValue = 1;
       specialAbObj.transform.GetChild (1).GetComponent<Slider> ().value = 1;
       specialAbObj.GetComponent<Toggle> ().interactable = false;
@@ -861,6 +862,7 @@ public class GameManager : MonoBehaviour
     playerUI.transform.GetChild (0).gameObject.SetActive (false);
     menu.transform.GetChild (0).gameObject.SetActive (false);
     menu.transform.GetChild (1).gameObject.SetActive (false);
+    playerController.gameObject.SetActive (false);
     
     if (isPlayerTurn) 
     {
@@ -869,6 +871,7 @@ public class GameManager : MonoBehaviour
     }
     else
     {
+      playerController.GetComponent<PlayerController> ().RemoveSelected ();
       changingTurn.transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "EnemyTurn";
     }
     
@@ -900,6 +903,7 @@ public class GameManager : MonoBehaviour
     CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
       
     HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().MovementTile, selectedCharacter.characterStatus.movementPoint);
+    
     if (selectedCharacter.GetType () == typeof(AICharacter))
       SelectedAbility (selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).First ());
     else 
@@ -923,6 +927,7 @@ public class GameManager : MonoBehaviour
     {
       chaSelector = Instantiate (PrefabHolder.GetInstance ().Selected_TilePrefab, new Vector3 (selectedCharacter.transform.position.x, 0.51f, selectedCharacter.transform.position.z), Quaternion.Euler (90, 0, 0));
       chaSelector.transform.SetParent (selectedCharacter.transform);
+      chaSelector.transform.localPosition = new Vector3 (0, -0.47f, 0);
     }
 
     ShowPlayerUI (true);
@@ -955,6 +960,10 @@ public class GameManager : MonoBehaviour
           foreach (Tile t in TilePathFinder.FindPathPlus(map[(int)selectedCharacter.gridPosition.x][(int)selectedCharacter.gridPosition.z], desTile, occupied.ToArray())) 
           {
             selectedCharacter.positionQueue.Add (map [(int)t.gridPosition.x] [(int)t.gridPosition.z].transform.position + selectedCharacter.transform.position.y * Vector3.up);
+          }
+          if (chaSelector != null)
+          {
+            chaSelector.SetActive (false);
           }
           selectedCharacter.transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 3);
           selectedCharacter.gridPosition = desTile.gridPosition;
@@ -1099,7 +1108,15 @@ public class GameManager : MonoBehaviour
           selectedCharacter.transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (selectedCharacter.transform.GetChild(0).forward, target.transform.position - selectedCharacter.transform.position, 360f, 0.0f));
           if (usingAbility.ability.abilityType > 0)
           {
-            amountOfDamage = -(Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power) - target.characterStatus.defense);
+            float multiply = 1f;
+            if (target.GetType() == typeof(AICharacter)) 
+            {
+              if (target.GetComponent<AICharacter> ().aiInfo.effectiveAttack == usingAbility.ability.abilityEff)
+                multiply = 1.5f;
+              else
+                multiply = 0.9f;
+            }
+            amountOfDamage = -(Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power * multiply) - target.characterStatus.defense);
             if (amountOfDamage >= 0) amountOfDamage = -1;
             if (usingAbility.ability.gaugeUse > 0 && selectedCharacter.GetType () == typeof(PlayerCharacter))
               FinishingGaugeManager.GetInstance ().ChangeSliderValue (-usingAbility.ability.gaugeUse);
@@ -1126,6 +1143,13 @@ public class GameManager : MonoBehaviour
   
   private IEnumerator WaitDamageFloating(Character target)
   {
+    if (isPlayerTurn) 
+    {
+      playerUI.transform.GetChild (3).gameObject.SetActive (false);
+      menu.transform.GetChild (0).gameObject.SetActive (false);
+      menu.transform.GetChild (1).gameObject.SetActive (false);
+    }
+    
     int i = 0;
     selectedCharacter.isActioning = true;
     CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
@@ -1136,26 +1160,46 @@ public class GameManager : MonoBehaviour
     
     while (i < usingAbility.hitAmount) 
     {
-      anim.Play  ("Attacking");
+      if (usingAbility.ability.abilityType == 3)
+        anim.Play ("FinalAttacking");
+      else
+        anim.Play  ("Attacking");
+      
+      if (amountOfDamage <= 0)
+      {
+        target.hpSlider.value -= Mathf.Abs (amountOfDamage);
+      } 
+      else
+      {
+        target.hpSlider.value += Mathf.Abs (amountOfDamage);
+      }
+      
       do 
       {
         showingResultOfAttack.UpdateStatus (selectedCharacter, target, Mathf.Abs(amountOfDamage));
         yield return null;
-      } while(!isAnimatorPlaying (targetAnim));
+      } while(!isAnimatorPlaying (targetAnim,"Damaged"));
       target.Standing ();
       i++;
     }
     
+    CameraManager.GetInstance ().ResetCamera ();
+    
     if (target.currentHP <= 0) 
     {
-      RemoveDead ();
+      RemoveDead ();  
       if (target.GetType () == typeof(AICharacter))
         FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
       else
         FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
     }
     
-    CameraManager.GetInstance ().ResetCamera ();
+    if (isPlayerTurn) 
+    {
+      playerUI.transform.GetChild (3).gameObject.SetActive (true);
+      menu.transform.GetChild (0).gameObject.SetActive (true);
+      menu.transform.GetChild (1).gameObject.SetActive (true);
+    }
     selectedCharacter.played = true;
     selectedCharacter.isActioning = false;
     anim.SetInteger  ("animatorIndex", 0);
@@ -1163,14 +1207,15 @@ public class GameManager : MonoBehaviour
     yield return 0;
   }
         
-  private bool isAnimatorPlaying(Animator anim)
+  private bool isAnimatorPlaying(Animator anim, string name)
   {
-    return anim.GetCurrentAnimatorStateInfo (0).normalizedTime >= 1 && anim.GetCurrentAnimatorStateInfo(0).IsName("Damaged");
+    return anim.GetCurrentAnimatorStateInfo (0).normalizedTime >= 1 && anim.GetCurrentAnimatorStateInfo(0).IsName(name);
   }
 
   public void NextTurn()
   {
     RemoveMapHighlight ();
+    RemoveTargetInRangeHighlight ();
     
     foreach (SkinnedMeshRenderer a in selectedCharacter.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
     {
@@ -1461,7 +1506,6 @@ public class GameManager : MonoBehaviour
       {
         for (int j = 0; j < character [i].GetComponent<AICharacter> ().aiInfo.droppedItem.Count; j++) 
         {
-          Debug.Log (character [i].GetComponent<AICharacter> ().aiInfo.droppedItem.Count);
           string[] droppedItem = character [i].GetComponent<AICharacter> ().aiInfo.droppedItem [j].Split (" " [0]);
           for (int k = 0; k < droppedItem.Length; k += 2)
           {
@@ -1475,6 +1519,7 @@ public class GameManager : MonoBehaviour
         }
         addResult.givenExp += character [i].GetComponent<AICharacter> ().aiInfo.givenExp;
         addResult.givenGold += character [i].GetComponent<AICharacter> ().aiInfo.givenGold;
+          
         Destroy (character [i].gameObject);
         character.Remove (character[i]);
         break;

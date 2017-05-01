@@ -104,9 +104,19 @@
      <Compile Include="Assets\Scripts\Tile\TileHighLight.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePath.cs" />
      <Compile Include="Assets\Scripts\Tile\TilePathFinder.cs" />
+     <Compile Include="Assets\Suriyun\Fantasy Customizable Pack\Scripts\AnimatorController.cs" />
+     <Compile Include="Assets\Suriyun\Scripts\General Scripts\ActivateTrigger.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\ArmParts.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\CharacterParts.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\LegParts.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\PartSelectionController.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\PartsCollections.cs" />
+     <Compile Include="Assets\Suriyun\SuriyunPlugins\SavePrefab.cs" />
      <None Include="Assets\Resources\Materials\Shader\Unitychan_chara_eye.shader" />
      <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
      <None Include="Assets\Resources\Materials\Shader\readme.txt" />
+     <None Include="Assets\Suriyun\README.txt" />
+     <None Include="Assets\Suriyun\Update v1.4.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D-1M0.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

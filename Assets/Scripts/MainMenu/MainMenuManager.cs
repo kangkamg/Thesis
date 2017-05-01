@@ -318,19 +318,22 @@ public class MainMenuManager : MonoBehaviour
     {
       dialogBox.transform.GetChild (2).GetComponent<Button>().interactable = false;
 
+      
       if (GameObject.Find ("tutorialhand") == null) 
       {
         GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
+        handTouch.transform.SetParent (dialogBox.transform);
         handTouch.transform.localScale = Vector3.one;
         handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
-        handTouch.transform.localPosition = new Vector2 (90, 130);
+        handTouch.transform.localPosition = new Vector2 (290, -125);
       }
       else
       {
         GameObject handTouch = GameObject.Find ("tutorialhand");
+        handTouch.transform.SetParent (dialogBox.transform);
         handTouch.transform.localScale = Vector3.one;
         handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
-        handTouch.transform.localPosition = new Vector2 (90, 130);
+        handTouch.transform.localPosition = new Vector2 (290, -125);
       }
     }
   }

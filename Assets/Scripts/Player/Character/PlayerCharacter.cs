@@ -21,6 +21,8 @@ public class PlayerCharacter : Character
           {
             isActioning = false;
             transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
+            GameManager.GetInstance().chaSelector.SetActive (true);
+            
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();

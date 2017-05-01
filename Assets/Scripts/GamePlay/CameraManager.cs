@@ -115,7 +115,7 @@ public class CameraManager : MonoBehaviour
     transform.eulerAngles = new Vector3 (90, 0, 0);
   }
   
-  public void MoveCameraToTarget(Transform followTarget, float mutiply = 7.5f)
+  public void MoveCameraToTarget(Transform followTarget, float mutiply = 3.75f)
   {
     follower = followTarget;
     previousmultiply = mutiply;

@@ -71,10 +71,10 @@ public class ChangeAbility : MonoBehaviour
     } 
     else
     {
-      changeAbleAbilitySlots.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+      changeAbleAbilitySlots.GetComponentInParent<ScrollRect> ().vertical = false;
     }
 
-    changeAbleAbilitySlots.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleAbilitySlots.GetComponent<RectTransform> ().offsetMax.x, 1f);
+    changeAbleAbilitySlots.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -changeAbleAbilitySlots.GetComponent<RectTransform> ().rect.height/ 2);
   }
   
   public bool CheckingEquipedAbility(int ID,int type)

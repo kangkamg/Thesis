@@ -212,9 +212,10 @@ public class ChangeEquipmentManager : MonoBehaviour
     } 
     else
     {
-      changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+      changeAbleItem.GetComponentInParent<ScrollRect> ().vertical = false;
     }
-    changeAbleItem.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().offsetMax.x, 1f);
+
+    changeAbleItem.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -changeAbleItem.GetComponent<RectTransform> ().rect.height / 2);
 
     items.Sort (delegate(Item a, Item b) 
       {
@@ -279,9 +280,9 @@ public class ChangeEquipmentManager : MonoBehaviour
     } 
     else
     {
-      changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+      changeAbleItem.GetComponentInParent<ScrollRect> ().vertical = false;
     }
-    changeAbleItem.GetComponent<RectTransform> ().offsetMax = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().offsetMax.x, 1f);
+    changeAbleItem.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -changeAbleItem.GetComponent<RectTransform> ().rect.height / 2);
 
     items.Sort (delegate(Item a, Item b) 
       {

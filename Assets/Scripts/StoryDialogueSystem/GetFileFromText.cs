@@ -46,6 +46,9 @@ public class GetTextAssetFile
       do 
       {
         string[] entry = line [0].Split ("," [0]);
+        
+        if(entry[0] != "AddCharacter")
+        {
         for (int i = 0; i < entry.Length; i++) 
         {
           newStoryDialogue.allDialogue.Add (entry [i]);
@@ -55,6 +58,14 @@ public class GetTextAssetFile
         {
           newStoryDialogue.characterName.Add (entry [1]);
           newStoryDialogue.bgName.Add (entry [2]);
+        }
+        }
+        else
+        {
+          for(int i = 0; i < entry.Length;i++)
+          {
+            newStoryDialogue.allDialogue.Add(entry[i]);
+          }
         }
         
         line.RemoveAt(0);

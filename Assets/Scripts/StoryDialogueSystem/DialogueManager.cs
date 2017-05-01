@@ -23,6 +23,7 @@ public class DialogueManager : MonoBehaviour
   public List<string> dialogueWord;
   public List<string> dialogueSpeaker;
   public List<string> dialogueBG;
+  public List<string> addingCharacter;
 
   public float SecondBetweenCharacters = 0.01f;
   public float CharacterRateMultiplier = 0.05f;
@@ -41,13 +42,11 @@ public class DialogueManager : MonoBehaviour
   public string oldRight;
 
   private void Start()
-  {
-    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
-    
+  { 
     _textComponent.text = "";
      
     string _dialoguePath = "D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0);
-
+    
     storyDialogue = GetTextAssetFile.GetInstance().LoadText(_dialoguePath);
       
     for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
@@ -77,9 +76,40 @@ public class DialogueManager : MonoBehaviour
         _isName = false;
         continue;
       }
+      
+      if (storyDialogue.allDialogue [i] == "AddCharacter")
+      {
+        List<int> equipItemID = new List<int> ();
+        equipItemID.Add (int.Parse(storyDialogue.allDialogue [i + 5]));
+        equipItemID.Add (int.Parse(storyDialogue.allDialogue [i + 6]));
+        
+        bool isInParty = false;
+        string party = "";
+        
+        if (storyDialogue.allDialogue [i + 4] == "false") 
+        {
+          isInParty = false;
+          party = " To Your Party";
+        }
+        else
+        {
+          isInParty = true;
+          party = " To Your Team";
+        }
+        
+        SystemManager.AddCharacterToParty (int.Parse (storyDialogue.allDialogue [i + 2]), equipItemID, int.Parse (storyDialogue.allDialogue [i + 3]), isInParty);
+        
+        dialogueWord.Add ("Adding " + storyDialogue.allDialogue [i + 1] + party);
+        
+        break;
+      }
 
       dialogueWord.Add(storyDialogue.allDialogue [i]);
     }
+    
+    if(PlayerPrefs.GetString(Const.PreviousScene) == "GamePlayScene") PlayerPrefs.SetInt (Const.MapNo, 0); 
+    
+    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
   }
 
   private void Update()
@@ -142,7 +172,7 @@ public class DialogueManager : MonoBehaviour
     ShowCha (false, false, null, null);
     talkingCharacter.SetActive (false);
     BG.sprite = null;
-    
+
     if (currentDialogueIndex == 0) 
     {
       if (dialogueBG.Count > 0) 

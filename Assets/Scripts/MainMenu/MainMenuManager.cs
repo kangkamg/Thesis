@@ -16,52 +16,63 @@ public class MainMenuManager : MonoBehaviour
   private int mapPages = 0;
   private string storiesName;
   
+  public int tutorialNo = 0;
+  
   private List<MapStory> newMapStory = new List<MapStory> ();
   
   public void Start()
   {
-    if (!TemporaryData.GetInstance ().isTutorialDone && TemporaryData.GetInstance ().playerData.passedMap.Where (x => x == 1).Count () <= 0)
-      ShowingTutorial ();
-    else
-      TemporaryData.GetInstance ().isTutorialDone = true;
-    
-    
-    if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Informations")
-    {
-      playerMenu.SetActive (true);
-      foreach (Transform child in playerMenu.transform.GetChild (2)) 
-      {
-        child.gameObject.SetActive (false);
-      }
-      playerMenu.transform.GetChild (2).GetChild (1).gameObject.SetActive (true);
-      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
-    }
-    else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Adventures")
-    {
-      playerMenu.SetActive (true);
-      foreach (Transform child in playerMenu.transform.GetChild (2)) 
-      {
-        child.gameObject.SetActive (false);
-      }
-      playerMenu.transform.GetChild (2).GetChild (0).gameObject.SetActive (true);
-      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
-    }
-    else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Shop")
-    {
-      playerMenu.SetActive (true);
-      foreach (Transform child in playerMenu.transform.GetChild (2)) 
-      {
-        child.gameObject.SetActive (false);
-      }
-      playerMenu.transform.GetChild (2).GetChild (2).gameObject.SetActive (true);
-      playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
-    }
-    else playerMenu.SetActive (false);
+    playerMenu.SetActive (false);
     bgMenu.SetActive (false);
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
+    
+    if (!TemporaryData.GetInstance ().isTutorialDone)
+    {
+      playerMenu.transform.GetChild (3).gameObject.SetActive (false);
+      
+      if (TemporaryData.GetInstance ().playerData.passedMap.Where (x => x == 1).Count () <= 0)
+        ShowingTutorial1 ();
+      else if (TemporaryData.GetInstance ().playerData.passedMap.Where (x => x == 1).Count () == 1)
+        ShowingTutorial2 ();
+    } 
+    else 
+    {
+      if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Informations") 
+      {
+        playerMenu.SetActive (true);
+        foreach (Transform child in playerMenu.transform.GetChild (2)) 
+        {
+          child.gameObject.SetActive (false);
+        }
+        playerMenu.transform.GetChild (2).GetChild (1).gameObject.SetActive (true);
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+      } 
+      else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Adventures")
+      {
+        playerMenu.SetActive (true);
+        foreach (Transform child in playerMenu.transform.GetChild (2))
+        {
+          child.gameObject.SetActive (false);
+        }
+        playerMenu.transform.GetChild (2).GetChild (0).gameObject.SetActive (true);
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+      }
+      else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Shop") 
+      {
+        playerMenu.SetActive (true);
+        foreach (Transform child in playerMenu.transform.GetChild (2))
+        {
+          child.gameObject.SetActive (false);
+        }
+        playerMenu.transform.GetChild (2).GetChild (2).gameObject.SetActive (true);
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+      } 
+      else playerMenu.SetActive (false);
+      bgMenu.SetActive (false);
+    }
   }
   
-  private void ShowingTutorial()
+  private void ShowingTutorial1()
   {
     mainMenu.transform.GetChild (2).GetComponent<Button> ().interactable = false;
     mainMenu.transform.GetChild (3).GetComponent<Button> ().interactable = false;
@@ -73,6 +84,24 @@ public class MainMenuManager : MonoBehaviour
     handTouch.transform.localScale = Vector3.one;
     handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
     handTouch.transform.localPosition = new Vector2 (-308, -71);
+    
+    tutorialNo = 1;
+  }
+  
+  private void ShowingTutorial2()
+  {
+    mainMenu.transform.GetChild (1).GetComponent<Button> ().interactable = false;
+    mainMenu.transform.GetChild (3).GetComponent<Button> ().interactable = false;
+    mainMenu.transform.GetChild (4).GetComponent<Button> ().interactable = false;
+
+    GameObject handTouch = Instantiate(Resources.Load<GameObject> ("TutorialHand"));
+    handTouch.name = "tutorialhand";
+    handTouch.transform.SetParent (mainMenu.transform);
+    handTouch.transform.localScale = Vector3.one;
+    handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+    handTouch.transform.localPosition = new Vector2 (-30, -71);
+    
+    tutorialNo = 2;
   }
   
   public void ShowMenu(string name)
@@ -88,24 +117,49 @@ public class MainMenuManager : MonoBehaviour
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
-      playerMenu.transform.GetChild (2).GetChild (0).GetChild(1).GetComponent<Button> ().interactable = false;
-      playerMenu.transform.GetChild (2).GetChild (0).GetChild (2).GetComponent<Button> ().interactable = false;
+      if (tutorialNo == 1)
+      {
+        playerMenu.transform.GetChild (2).GetChild (0).GetChild (1).GetComponent<Button> ().interactable = false;
+        playerMenu.transform.GetChild (2).GetChild (0).GetChild (2).GetComponent<Button> ().interactable = false;
 
-      if (GameObject.Find ("tutorialhand") == null) 
-      {
-        GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
-        handTouch.transform.SetParent (playerMenu.transform);
-        handTouch.transform.localScale = Vector3.one;
-        handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
-        handTouch.transform.localPosition = new Vector2 (160, 280);
+        if (GameObject.Find ("tutorialhand") == null)
+        {
+          GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
+          handTouch.transform.SetParent (playerMenu.transform);
+          handTouch.transform.localScale = Vector3.one;
+          handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+          handTouch.transform.localPosition = new Vector2 (160, 280);
+        } 
+        else
+        {
+          GameObject handTouch = GameObject.Find ("tutorialhand");
+          handTouch.transform.SetParent (playerMenu.transform);
+          handTouch.transform.localScale = Vector3.one;
+          handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+          handTouch.transform.localPosition = new Vector2 (160, 280);
+        }
       }
-      else
+      else if (tutorialNo == 2)
       {
-        GameObject handTouch = GameObject.Find ("tutorialhand");
-        handTouch.transform.SetParent (playerMenu.transform);
-        handTouch.transform.localScale = Vector3.one;
-        handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
-        handTouch.transform.localPosition = new Vector2 (160, 280);
+        playerMenu.transform.GetChild (2).GetChild (1).GetChild (1).GetComponent<Button> ().interactable = false;
+        playerMenu.transform.GetChild (2).GetChild (1).GetChild (2).GetComponent<Button> ().interactable = false;
+
+        if (GameObject.Find ("tutorialhand") == null)
+        {
+          GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
+          handTouch.transform.SetParent (playerMenu.transform);
+          handTouch.transform.localScale = Vector3.one;
+          handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+          handTouch.transform.localPosition = new Vector2 (160, 300);
+        } 
+        else
+        {
+          GameObject handTouch = GameObject.Find ("tutorialhand");
+          handTouch.transform.SetParent (playerMenu.transform);
+          handTouch.transform.localScale = Vector3.one;
+          handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+          handTouch.transform.localPosition = new Vector2 (160, 300);
+        }
       }
     }
   }

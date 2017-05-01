@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class SupMenuSceneManager : MonoBehaviour 
 
@@ -11,9 +12,18 @@ public class SupMenuSceneManager : MonoBehaviour
   public GameObject changingAbility;
   public GameObject party;
   public GameObject item;
+  
+  private bool isClicked = false;
+  private int isClick = 0;
 
+  private static SupMenuSceneManager _instance;
+  public static SupMenuSceneManager GetInstance()
+  {
+    return _instance;
+  }
   private void Awake()
   {
+    _instance = this;
     if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "CharacterStatus")
     {
       allCharacterStatus.SetActive (true);
@@ -49,6 +59,17 @@ public class SupMenuSceneManager : MonoBehaviour
       party.SetActive (false);
       item.SetActive (false);
       changingAbility.SetActive (false);
+    }
+  }
+  
+  private void Start()
+  {
+    if (!TemporaryData.GetInstance ().isTutorialDone) 
+    {
+      if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Party") 
+      {
+        StartCoroutine(ShowTutorial ());
+      }
     }
   }
 
@@ -106,5 +127,40 @@ public class SupMenuSceneManager : MonoBehaviour
   {
     selectedCharacterStatus.SetActive (false);
     changingEquip.SetActive (true);
+  }
+  
+  public IEnumerator ShowTutorial()
+  {
+    GameObject handTouch = Instantiate (Resources.Load<GameObject> ("TutorialHand"));
+    handTouch.transform.SetParent (party.transform);
+    handTouch.transform.localScale = Vector3.one;
+    handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+    handTouch.transform.localPosition = new Vector2 (-190, 190);
+    
+    GameObject.Find ("Canvas").transform.GetChild (7).gameObject.SetActive (false);
+    
+    do 
+    {
+      yield return null;
+    } while(!isClicked);
+    
+    GameObject.Find ("Canvas").transform.GetChild (7).gameObject.SetActive (true);
+    handTouch.transform.SetParent (GameObject.Find ("Canvas").transform.GetChild (7));
+    handTouch.transform.localScale = Vector3.one;
+    handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
+    handTouch.transform.localPosition = new Vector2 (46.5f, -20.5f);
+    
+    if (!TemporaryData.GetInstance ().isTutorialDone) 
+    {
+      TemporaryData.GetInstance ().isTutorialDone = true;
+    }
+  }
+      
+  
+  public void Clicked()
+  {
+    isClick+=1;
+    if(isClick ==2)
+    isClicked = true;
   }
 }

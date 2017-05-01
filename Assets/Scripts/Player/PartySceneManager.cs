@@ -94,15 +94,15 @@ public class PartySceneManager : MonoBehaviour
 
     if (slotsOtherCharacter.Count > 8)
     {
-      changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changingPanel.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slotsOtherCharacter.Count));
+      changingPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changingPanel.GetComponent<RectTransform> ().sizeDelta.x, 255f * (slotsOtherCharacter.Count));
       changingPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
-    else
+    else 
     {
-      changingPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+      changingPanel.GetComponentInParent<ScrollRect> ().vertical = false;
     }
     
-    changingPanel.GetComponent<RectTransform> ().offsetMax = new Vector2 (changingPanel.GetComponent<RectTransform> ().offsetMax.x, 1f);
+    changingPanel.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -changingPanel.GetComponent<RectTransform> ().rect.height/ 2);
   }
 
   public void GenerateOtherCharacter(CharacterStatus status)
@@ -115,6 +115,8 @@ public class PartySceneManager : MonoBehaviour
     otherObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/"  + status.basicStatus.characterName);
     otherObj.GetComponent<Button> ().onClick.AddListener (() => LookStatus (otherObj));
     otherObj.GetComponent<Button> ().onClick.AddListener (() => CompareStatus (otherObj.GetComponent<AllCharacterData> ().characterStatus,false));
+    if(!TemporaryData.GetInstance().isTutorialDone)
+      otherObj.GetComponent<Button> ().onClick.AddListener (() => SupMenuSceneManager.GetInstance().Clicked ());
     slotsOtherCharacter.Add (otherObj);
   }
 

@@ -40,7 +40,7 @@ public class CharacterStatusSceneManager : MonoBehaviour
     GenerateCharacter ();
     this.transform.GetChild (0).gameObject.SetActive (false);
   }
-
+  
   public void GenerateCharacter()
   {
     foreach (GameObject a in allCharacterSlots)
@@ -64,7 +64,20 @@ public class CharacterStatusSceneManager : MonoBehaviour
       allCharacterSlots.Add (characterObj);
     }
     
+    if (allCharacterSlots.Count > 6) 
+    {
+      characterPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (characterPanel.GetComponent<RectTransform> ().sizeDelta.x, 340f * (allCharacterSlots.Count));
+      characterPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+    } 
+    else
+    {
+      characterPanel.GetComponentInParent<ScrollRect> ().vertical = false;
+    }
+
+    characterPanel.GetComponent<RectTransform> ().anchoredPosition  = new Vector2 (0, -characterPanel.GetComponent<RectTransform> ().rect.height / 2);
+    
     characterPanel.transform.parent.parent.GetComponent<RectTransform>().position = new Vector2 (characterPanel.transform.parent.parent.position.x, characterPanel.transform.parent.parent.position.y + 50);
+    
   }
 
   public void LookStatus(CharacterStatus selectedStatus)

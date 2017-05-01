@@ -14,7 +14,7 @@ public class InventoryManager : MonoBehaviour
 
   private void Start()
   {
-    GenerateInventoryItem ("Weapon");
+    GenerateInventoryItem ("Heart");
   }
     
   public void GenerateInventoryItem(string itemType)
@@ -71,14 +71,15 @@ public class InventoryManager : MonoBehaviour
 
     if (slots.Count > 8)
     {
-      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (slotPanel.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
+      slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (slotPanel.GetComponent<RectTransform> ().sizeDelta.x, 255f * (slots.Count));
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
     } 
-    else
+    else 
     {
-      slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Clamped;
+      slotPanel.GetComponentInParent<ScrollRect> ().vertical = false;
     }
-    slotPanel.GetComponent<RectTransform> ().offsetMax = new Vector2 (slotPanel.GetComponent<RectTransform> ().offsetMax.x, 1f);
+    
+    slotPanel.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -slotPanel.GetComponent<RectTransform> ().rect.height / 2);
     
     items.Sort (delegate(Item a, Item b) 
       {

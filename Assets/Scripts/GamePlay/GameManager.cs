@@ -1590,12 +1590,6 @@ public class GameManager : MonoBehaviour
     else
       results.transform.GetChild (0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite>("GamePlay/Image/Loser");
     results.SetActive (true);
-    
-    if (!TemporaryData.GetInstance ().isTutorialDone) 
-    {
-      PlayerPrefs.SetInt (Const.IsTutorialDone, 1);
-      TemporaryData.GetInstance ().isTutorialDone = true;
-    }
       
     if(party.Count > 0 && playerCharacterID.Where(x=>x == party[0].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [0], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[0].GetChild(0)));
     if(party.Count > 1 && playerCharacterID.Where(x=>x == party[1].basicStatus.ID).Count()>0)StartCoroutine (SystemManager.LevelUpSystem(party [1], TemporaryData.GetInstance ().result.givenExp, showResultCharacters[1].GetChild(0)));

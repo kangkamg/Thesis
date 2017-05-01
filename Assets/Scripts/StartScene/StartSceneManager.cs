@@ -33,20 +33,6 @@ public class StartSceneManager : MonoBehaviour
     
     TemporaryData.GetInstance().choosenLanguage = PlayerPrefs.GetString(Const.Language,"Thai");
     
-    if (PlayerPrefs.GetInt (Const.IsTutorialDone,-1) == -1) 
-    {
-      PlayerPrefs.SetInt (Const.IsTutorialDone, 0);
-    } 
-    
-    if (PlayerPrefs.GetInt (Const.IsTutorialDone) == 0) 
-    {
-      TemporaryData.GetInstance ().isTutorialDone = false;
-    }
-    else
-    {
-      TemporaryData.GetInstance ().isTutorialDone = true;
-    }
-    
     PlayerPrefs.DeleteAll ();
     touchText.text = "Touch To Start";
     Book.sprite = Resources.Load<Sprite> ("StartSceneImage/Book");

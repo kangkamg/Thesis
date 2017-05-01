@@ -81,6 +81,7 @@ public class SaveData : MonoBehaviour
   
   public void SelectedThisSave(PlayerData data)
   {
+    TemporaryData.GetInstance ().isTutorialDone = true;
     transform.SetAsFirstSibling ();
     foreach (Transform child in transform.parent) 
     {
@@ -105,6 +106,8 @@ public class SaveData : MonoBehaviour
   
   public void StartThisSave(int saveID)
   {
+    TemporaryData.GetInstance ().isTutorialDone = false;
+    
     StartSceneManager.InitFirstData ();
     TemporaryData.GetInstance ().playerData.id = saveID;
     TemporaryData.GetInstance ().playerData.storyID = -1;

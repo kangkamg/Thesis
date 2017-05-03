@@ -23,6 +23,8 @@ public class MapCreatorManager : MonoBehaviour
   public TileTypes palletSelection = TileTypes.Normal;
 
   public string enemiesID = "2001";
+  public string enemiesLevel = "1";
+  public string enemiesStyle = "0";
   
   public int tileTypes;
   public int obstacle;
@@ -38,6 +40,8 @@ public class MapCreatorManager : MonoBehaviour
   {
     instance = GetComponent<MapCreatorManager>();
     GetDataFromSql.OpenDB ("ThesisDatabase.db");
+    
+    mapObjective = 1;
   }
 
   private void Update()
@@ -61,7 +65,7 @@ public class MapCreatorManager : MonoBehaviour
               }
               else
               {
-                CreateEnemy (hit.transform, int.Parse (enemiesID));
+                CreateEnemy (hit.transform, int.Parse (enemiesID), int.Parse(enemiesLevel), int.Parse(enemiesStyle));
               }
               if (players.Where (x => x.locX == hit.transform.GetComponent<Tile> ().gridPosition.x && x.locZ == hit.transform.GetComponent<Tile> ().gridPosition.z).Count () > 0) 
               {
@@ -210,7 +214,7 @@ public class MapCreatorManager : MonoBehaviour
         row.Add (tile);
         if(enemies.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
         {
-          CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID,false);
+          CreateEnemy (tile.transform, enemies.Where (i => i.locX == x && i.locZ == z).First ().enemyID, enemies.Where (i => i.locX == x && i.locZ == z).First ().level, enemies.Where (i => i.locX == x && i.locZ == z).First ().style, false);
         }
         if(players.Where(i=>i.locX == x && i.locZ ==z).Count()>0)  
         {
@@ -240,6 +244,8 @@ public class MapCreatorManager : MonoBehaviour
     tileTypes = 2;
     obstacle = -1;
     enemiesID = EventSystem.current.currentSelectedGameObject.transform.GetChild (1).GetComponent<InputField> ().text;
+    enemiesLevel = EventSystem.current.currentSelectedGameObject.transform.GetChild (2).GetComponent<InputField> ().text;
+    enemiesStyle = EventSystem.current.currentSelectedGameObject.transform.GetChild (3).GetComponent<InputField> ().text;
   }
   
   public void AddPlayer()
@@ -310,7 +316,7 @@ public class MapCreatorManager : MonoBehaviour
   
   public void CreatePlayerPos(Transform tilePos, bool Adding = true)
   {
-    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/1001"));
     renderer.name = "player";
     renderer.transform.SetParent (tilePos);
     renderer.transform.SetAsFirstSibling ();
@@ -326,9 +332,9 @@ public class MapCreatorManager : MonoBehaviour
     }
   }
   
-  public void CreateEnemy(Transform tilePos, int ID, bool Adding = true)
+  public void CreateEnemy(Transform tilePos, int ID, int Level, int style, bool Adding = true)
   {
-    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/0000"));
+    GameObject renderer = Instantiate (Resources.Load<GameObject> ("PlayerPrefab/2001"));
     renderer.name = "enemy";
     renderer.transform.SetParent (tilePos);
     renderer.transform.SetAsFirstSibling ();
@@ -341,6 +347,8 @@ public class MapCreatorManager : MonoBehaviour
       newEnemy.enemyID = ID;
       newEnemy.locX = (int)tilePos.GetComponent<Tile> ().gridPosition.x;
       newEnemy.locZ = (int)tilePos.GetComponent<Tile> ().gridPosition.z;
+      newEnemy.level = Level;
+      newEnemy.style = style;
       enemies.Add (newEnemy);
     }
   }

@@ -19,6 +19,7 @@ public class Character : MonoBehaviour
   public int ID;
 
   public Slider hpSlider;
+  public TextMesh skillText;
   
   public bool played = false;
 
@@ -57,10 +58,12 @@ public class Character : MonoBehaviour
     isRotate = true;
   }
   
-  public virtual void SetStatus(int ID)
+  public virtual void SetStatus(int ID, int level = 0)
   {
     characterStatus.basicStatus = GetDataFromSql.GetCharacter (ID);
 
+    if (level != 0) characterStatus.characterLevel = level;
+    
     currentHP = characterStatus.maxHp;
     this.name = characterStatus.basicStatus.characterName;
     hpSlider.maxValue = currentHP;
@@ -82,6 +85,16 @@ public class Character : MonoBehaviour
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
     targetAnim.SetInteger ("animatorIndex", 2);
     target.currentHP += GameManager.GetInstance().DamageResults();
+    
+    if (GameManager.GetInstance().DamageResults() <= 0)
+    {
+      target.hpSlider.value -= Mathf.Abs (GameManager.GetInstance().DamageResults());
+    } 
+    else
+    {
+      target.hpSlider.value += Mathf.Abs (GameManager.GetInstance().DamageResults());
+    }
+    
     if (target.currentHP <= 0) target.currentHP = 0;
     if (GameManager.GetInstance ().DamageResults () <= 0)
     {

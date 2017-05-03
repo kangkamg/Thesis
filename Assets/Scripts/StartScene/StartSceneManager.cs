@@ -55,7 +55,6 @@ public class StartSceneManager : MonoBehaviour
     data.name = SystemInfo.deviceName;
     data.gold = 500;
     data.id = 0;
-    data.chapter = 1;
     data.acceptedQuest = new List<Quest> ();
 
     CharacterStatus adding = new CharacterStatus ();
@@ -148,8 +147,16 @@ public class StartSceneManager : MonoBehaviour
       {
         if (openBook.transform.GetChild (1).gameObject.activeSelf)
         {
-          openBook.transform.GetChild (0).gameObject.SetActive (true);
-          openBook.transform.GetChild (1).gameObject.SetActive (false);
+          if(GameObject.Find("DialogBox(Clone)") != null)
+          {
+            Destroy(GameObject.Find("DialogBox(Clone)"));
+            CreateSaveIndex(openBook.transform.GetChild (1).GetChild (1).GetChild (0).GetComponent<SaveData> ()._isNewgame);
+          }
+          else
+          {
+            openBook.transform.GetChild (0).gameObject.SetActive (true);
+            openBook.transform.GetChild (1).gameObject.SetActive (false);
+          }
         }
         else if (openBook.transform.GetChild (0).gameObject.activeSelf)
         {

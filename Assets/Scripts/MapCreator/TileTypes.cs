@@ -6,6 +6,7 @@ public enum TileTypes
 {
   Grass,
   Water,
+  WaterDeep,
   Ground,
   Rock,
   Normal

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharacterModelManager : MonoBehaviour 
 {
-  public SkinnedMeshRenderer[] materials;
+  public Renderer[] materials;
   
   public void AttackTarget()
   {

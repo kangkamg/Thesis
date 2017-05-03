@@ -56,7 +56,7 @@ public class InventoryManager : MonoBehaviour
 
           Sprite sprite = new Sprite();
           if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
-          else sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[0].item.name);
+          else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
 
           itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
@@ -73,9 +73,13 @@ public class InventoryManager : MonoBehaviour
     {
       slotPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (slotPanel.GetComponent<RectTransform> ().sizeDelta.x, 255f * (slots.Count));
       slotPanel.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+      slotPanel.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
     } 
     else 
     {
+      if(slots.Count < 1) slotPanel.transform.parent.parent.GetChild(1).GetComponent<Text>().text = "Empty Inventory";
+      else slotPanel.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
+      
       slotPanel.GetComponentInParent<ScrollRect> ().vertical = false;
     }
     

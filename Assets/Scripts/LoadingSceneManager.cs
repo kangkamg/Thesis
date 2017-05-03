@@ -27,13 +27,25 @@ public class LoadingSceneManager : MonoBehaviour
     {
       if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0))) 
       {
+        TemporaryData.GetInstance ().storyPlayingName = "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0);
         async = SceneManager.LoadSceneAsync ("StoryScene");
       } 
       else 
       {
-        async = SceneManager.LoadSceneAsync ("GamePlayScene");
+        if (string.IsNullOrEmpty (TemporaryData.GetInstance ().storyPlayingName)) 
+        {
+          async = SceneManager.LoadSceneAsync ("GamePlayScene");
+        } 
+        else 
+        {
+          if (GetTextAssetFile.GetInstance ().Load ( TemporaryData.GetInstance ().storyPlayingName)) 
+          {
+            async = SceneManager.LoadSceneAsync ("StoryScene");
+          } 
+        }
       }
     } 
+    
     else if (PlayerPrefs.GetString (Const.PreviousScene) == "StoryScene")
     {
       if (PlayerPrefs.GetInt(Const.MapNo,0) == 0)
@@ -45,11 +57,21 @@ public class LoadingSceneManager : MonoBehaviour
         async = SceneManager.LoadSceneAsync ("GamePlayScene");
       } 
     } 
+    
     else if (PlayerPrefs.GetString (Const.PreviousScene) == "GamePlayScene")
     {
-      if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0))) 
+      if (TemporaryData.GetInstance ().playerData.passedMap.Where (x => x == PlayerPrefs.GetInt (Const.MapNo)).Count () > 0) 
       {
-        async = SceneManager.LoadSceneAsync ("StoryScene");
+        if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0))) 
+        {
+          TemporaryData.GetInstance().storyPlayingName = "D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0);
+          PlayerPrefs.SetInt (Const.MapNo, 0);
+          async = SceneManager.LoadSceneAsync ("StoryScene");
+        }
+        else
+        {
+          async = SceneManager.LoadSceneAsync ("MainMenuScene");
+        } 
       }
       else
       {
@@ -64,7 +86,7 @@ public class LoadingSceneManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        yield return new WaitForSeconds (1f);
+        yield return new WaitForSeconds (0.5f);
       } 
       else 
       {

@@ -31,6 +31,8 @@ public class SystemManager
             characterStatus.experience = 0;
             showingSlider.GetComponent<Slider> ().value = 0;
             AddingAbility (characterStatus);
+            showingSlider.parent.GetChild (1).gameObject.SetActive (true);
+            showingSlider.parent.GetChild (1).GetComponent<Animator> ().Play ("LevelUpFloating");
           }
           isFinishLevelUp = true;
         }
@@ -62,7 +64,7 @@ public class SystemManager
     
     yield return 0;
   }
-  
+              
   public static void AddingAbility(CharacterStatus characterStatus)
   {
     for (int i = 0; i < characterStatus.basicStatus.learnAbleAbility.Count; i++) 

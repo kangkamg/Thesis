@@ -24,6 +24,12 @@ public class DialogBoxManager
       dialogBox.transform.GetChild (2).gameObject.SetActive (false);
       dialogBox.transform.GetChild (1).localPosition = new Vector2 (0, -69.5f);
     }
+    else 
+    {
+      dialogBox.transform.GetChild (2).gameObject.SetActive (true);
+      dialogBox.transform.GetChild (1).localPosition = new Vector2 (190, -69.5f);
+      dialogBox.transform.GetChild (2).localPosition = new Vector2 (-190, -69.5f);
+    }
     return dialogBox;
   }
   

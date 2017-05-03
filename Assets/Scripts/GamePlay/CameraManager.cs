@@ -70,7 +70,7 @@ public class CameraManager : MonoBehaviour
     {      
       if (GameManager.GetInstance ().isTouch) 
       {
-        if (Input.touchCount > 0)
+        if (Input.touchCount == 1)
         {
           if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
           {
@@ -87,9 +87,9 @@ public class CameraManager : MonoBehaviour
             isMoving = false;
           }
         }
-        else if (Input.touchCount > 1)
+        else if (Input.touchCount == 2)
         {
-          if (Input.touchCount == 2) PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
+          PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
         }
       } 
       else
@@ -198,7 +198,7 @@ public class CameraManager : MonoBehaviour
     
     float dealtaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
     
-    if (this.GetComponent<Camera> ().orthographicSize > 4 && this.GetComponent<Camera> ().orthographicSize < 20)
+    if (this.GetComponent<Camera> ().orthographicSize > 4 && this.GetComponent<Camera> ().orthographicSize < 25)
     {
       this.GetComponent<Camera> ().orthographicSize += dealtaMagnitudeDiff * orthoZoomSpeed;
     

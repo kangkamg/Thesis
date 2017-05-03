@@ -19,12 +19,36 @@ public class ChangeAbility : MonoBehaviour
     HideAbility ();
     changingAbilityID = abilityStatus.ability.ID;
     changingDetails.gameObject.SetActive (true); 
-    changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + abilityStatus.ability.ID);
+    if (abilityStatus.ability.abilityType > -3 && abilityStatus.ability.abilityType < 3)
+    {
+      if (Resources.Load<Sprite> ("Ability/Normal/" + abilityStatus.ability.ID) != null) 
+      {
+        changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + abilityStatus.ability.ID);
+      } 
+      else 
+      {
+        Debug.Log ("Ability/Normal/" + abilityStatus.ability.abilityEff);
+        changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + abilityStatus.ability.abilityEff);
+      }
+    }
+    else
+    {
+      if(Resources.Load<Sprite> ("Ability/Special/" + abilityStatus.ability.ID) != null)
+        changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" + abilityStatus.ability.ID);
+      else
+        changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" + abilityStatus.ability.abilityEff);
+    }
     changingDetails.GetChild (1).GetChild (0).GetComponent<Text> ().text = abilityStatus.ability.abilityName.ToString ();
     changingDetails.GetChild (2).GetComponent<Text> ().text = abilityStatus.ability.describe.ToString ();
-    changingDetails.GetChild (3).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.power.ToString ();
+    changingDetails.GetChild (3).GetChild(0).GetComponent<Text> ().text = (abilityStatus.ability.power*100).ToString () + "%";
     changingDetails.GetChild (4).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.hitAmount.ToString ();
-    changingDetails.GetChild (5).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.abilityEff.ToString ();
+    
+    
+    if(abilityStatus.ability.abilityType > -3 && abilityStatus.ability.abilityType < 3)
+      changingDetails.GetChild (5).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" +  abilityStatus.ability.abilityEff);
+    else
+      changingDetails.GetChild (5).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  abilityStatus.ability.abilityEff);
+    
   }
   
   public void HideAbility()
@@ -51,6 +75,11 @@ public class ChangeAbility : MonoBehaviour
     
     List<AbilityStatus> changeAbleAbility = TemporaryData.GetInstance ().selectedCharacter.learnedAbility.Where (x => x.ability.abilityType == type || x.ability.abilityType == -type).ToList ();
     
+    if (changeAbleAbility.Count <= 0)
+      changeAbleAbilitySlots.transform.parent.parent.GetChild (1).GetComponent<Text> ().text = "None Selectable Ability";
+    else
+      changeAbleAbilitySlots.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
+      
     for (int i = 0; i < changeAbleAbility.Count; i++)
     {
       if (CheckingEquipedAbility(changeAbleAbility [i].ability.ID,type)) 
@@ -58,7 +87,20 @@ public class ChangeAbility : MonoBehaviour
         GameObject abilityObj = Instantiate (abilityInSlots);
         abilityObj.transform.SetParent (changeAbleAbilitySlots);
         abilityObj.transform.localScale = Vector3.one;
-        abilityObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + changeAbleAbility [i].ability.ID);
+        if ( changeAbleAbility [i].ability.abilityType > -3 &&  changeAbleAbility [i].ability.abilityType < 3)
+        {
+          if(Resources.Load<Sprite> ("Ability/Normal/" +  changeAbleAbility [i].ability.ID) != null)
+            abilityObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" +  changeAbleAbility [i].ability.ID);
+          else
+            abilityObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" +  changeAbleAbility [i].ability.abilityEff);
+        }
+        else
+        {
+          if(Resources.Load<Sprite> ("Ability/Special/" +  changeAbleAbility [i].ability.ID) != null)
+            abilityObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  changeAbleAbility [i].ability.ID);
+          else
+            abilityObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  changeAbleAbility [i].ability.abilityEff);
+        }
         abilityObj.transform.GetChild (1).GetComponent<Text> ().text = changeAbleAbility [i].ability.abilityName;
         abilityObj.GetComponent<ChangingAbilityInformation> ().abilityStatus = changeAbleAbility [i];
       }
@@ -94,9 +136,13 @@ public class ChangeAbility : MonoBehaviour
   {
     changeAbleDetails.gameObject.SetActive (true);
     changeAbleDetails.GetChild (1).GetChild (0).GetComponent<Text> ().text = abilityStatus.ability.describe.ToString ();
-    changeAbleDetails.GetChild (1).GetChild (1).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.power.ToString ();
+    changeAbleDetails.GetChild (1).GetChild (1).GetChild(0).GetComponent<Text> ().text = (abilityStatus.ability.power*100).ToString () + "%";
     changeAbleDetails.GetChild (1).GetChild (2).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.hitAmount.ToString ();
-    changeAbleDetails.GetChild (1).GetChild (3).GetChild(0).GetComponent<Text> ().text = abilityStatus.ability.abilityEff.ToString ();
+    
+    if(abilityStatus.ability.abilityType > -3 && abilityStatus.ability.abilityType < 3)
+      changeAbleDetails.GetChild (1).GetChild (3).GetChild(0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" +  abilityStatus.ability.abilityEff);
+    else
+      changeAbleDetails.GetChild (1).GetChild (3).GetChild(0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  abilityStatus.ability.abilityEff);
   }
   
   public void EquipedAbility(AbilityStatus abilityStatus)

@@ -22,6 +22,7 @@ public class PlayerData
   public List<int> passedMap = new List<int> ();
   public int gold;
   public List<Item> inventory = new List<Item>();
+  public List<string> readedStories = new List<string> ();
   public int chapter;
   public int storyID;
   public float playedHrs;
@@ -53,6 +54,8 @@ public class TemporaryData
   public string choosenLanguage = null;
   
   private static TemporaryData instance;
+  
+  public string storyPlayingName;
 
   public static TemporaryData GetInstance()
   {

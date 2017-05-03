@@ -8,7 +8,8 @@ using UnityEngine.SceneManagement;
 public class SaveData : MonoBehaviour
 
 {
-  int _isNewgame;
+  public int _isNewgame;
+  
   public void SetSaveData(int i, int isNewGame)
   {
     _isNewgame = isNewGame;
@@ -110,7 +111,8 @@ public class SaveData : MonoBehaviour
     
     StartSceneManager.InitFirstData ();
     TemporaryData.GetInstance ().playerData.id = saveID;
-    TemporaryData.GetInstance ().playerData.storyID = -1;
+    TemporaryData.GetInstance ().playerData.storyID = 0;
+    TemporaryData.GetInstance ().storyPlayingName = "Tutorial";
     
     if (SaveAndLoadPlayerData.CheckingSave (saveID))
     {

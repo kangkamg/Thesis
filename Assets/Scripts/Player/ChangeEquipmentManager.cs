@@ -17,16 +17,16 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (0).gameObject.SetActive (true);
     this.transform.GetChild (1).gameObject.SetActive (false);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
-    Transform firstWeaponStatus = this.transform.GetChild (0).GetChild(0);
-    Transform secondWeaponStatus = this.transform.GetChild (0).GetChild(1);
-    Transform isChanging = this.transform.GetChild (0).GetChild (2);
+    Transform firstWeaponStatus = this.transform.GetChild (0).GetChild(1);
+    Transform secondWeaponStatus = this.transform.GetChild (0).GetChild(2);
+    Transform isChanging = this.transform.GetChild (0).GetChild (3);
     
-    firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (0).GetComponent<Image> ().sprite;
-    firstWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text = equipedWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite;
+    firstWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text = equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text;
+    firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text;
     
     secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
     secondWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = equipedItem.items.item.name;
@@ -83,12 +83,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
 
-    equipedWeaponStatus.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
-    equipedWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.name.ToString();
-    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
-    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
-    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseDefense.ToString ();
-    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseCriRate.ToString ();
+    equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.name.ToString();
+    equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseDefense.ToString ();
+    equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseCriRate.ToString ();
     
     GenerateInventoryItem (equipedItem.items);
   }
@@ -192,7 +192,7 @@ public class ChangeEquipmentManager : MonoBehaviour
 
           Sprite sprite = new Sprite();
           if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
-          else sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[0].item.name);
+          else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
 
           itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.GetComponent<ItemData> ().amount = 1;
@@ -200,18 +200,21 @@ public class ChangeEquipmentManager : MonoBehaviour
           itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
 
-          itemObj.transform.localScale = new Vector3 (1, 1, 1);
+          itemObj.transform.localScale = Vector3.one;
         }
       }
     }
-    
+   
     if (slots.Count > 5)
     {
       changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+      changeAbleItem.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
     } 
     else
     {
+      if(slots.Count < 1) changeAbleItem.transform.parent.parent.GetChild(1).GetComponent<Text>().text = "None Equipable Item";
+      else changeAbleItem.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
       changeAbleItem.GetComponentInParent<ScrollRect> ().vertical = false;
     }
 
@@ -269,6 +272,7 @@ public class ChangeEquipmentManager : MonoBehaviour
           itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
           itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
+          itemObj.transform.localScale = Vector3.one;
         }
       }
     }
@@ -277,9 +281,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     {
       changeAbleItem.GetComponent<RectTransform> ().sizeDelta = new Vector2 (changeAbleItem.GetComponent<RectTransform> ().sizeDelta.x , 255f * (slots.Count));
       changeAbleItem.GetComponentInParent<ScrollRect> ().movementType = ScrollRect.MovementType.Elastic;
+      changeAbleItem.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
     } 
     else
     {
+      if(slots.Count < 1) changeAbleItem.transform.parent.parent.GetChild(1).GetComponent<Text>().text = "None Equipable Item";
+      else changeAbleItem.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
       changeAbleItem.GetComponentInParent<ScrollRect> ().vertical = false;
     }
     changeAbleItem.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (0, -changeAbleItem.GetComponent<RectTransform> ().rect.height / 2);

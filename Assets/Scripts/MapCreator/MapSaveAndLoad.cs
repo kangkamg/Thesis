@@ -31,6 +31,8 @@ public class EnemyInMapData
   public int enemyID;
   public int locX;
   public int locZ;
+  public int level;
+  public int style;
 }
 
 [System.Serializable]

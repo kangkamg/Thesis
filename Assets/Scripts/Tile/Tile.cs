@@ -103,9 +103,15 @@ public class Tile : MonoBehaviour
       break;
 
       case TileTypes.Water:
-      movementCost = int.MaxValue;
+      movementCost = 1;
       impassible = true;
       _Prefab = Resources.Load<GameObject> ("TilePrefab/Water");
+      break;
+      
+      case TileTypes.WaterDeep:
+      movementCost = int.MaxValue;
+      impassible = true;
+      _Prefab = Resources.Load<GameObject> ("TilePrefab/WaterDeep");
       break;
       
       case TileTypes.Ground:

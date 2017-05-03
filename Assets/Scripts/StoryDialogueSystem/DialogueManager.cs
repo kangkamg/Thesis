@@ -24,6 +24,7 @@ public class DialogueManager : MonoBehaviour
   public List<string> dialogueSpeaker;
   public List<string> dialogueBG;
   public List<string> addingCharacter;
+  public List<int> addItem;
 
   public float SecondBetweenCharacters = 0.01f;
   public float CharacterRateMultiplier = 0.05f;
@@ -45,7 +46,7 @@ public class DialogueManager : MonoBehaviour
   { 
     _textComponent.text = "";
      
-    string _dialoguePath = "D" + TemporaryData.GetInstance().playerData.storyID + "M" + PlayerPrefs.GetInt(Const.MapNo,0);
+    string _dialoguePath = TemporaryData.GetInstance ().storyPlayingName;
     
     storyDialogue = GetTextAssetFile.GetInstance().LoadText(_dialoguePath);
       
@@ -79,36 +80,73 @@ public class DialogueManager : MonoBehaviour
       
       if (storyDialogue.allDialogue [i] == "AddCharacter")
       {
-        List<int> equipItemID = new List<int> ();
-        equipItemID.Add (int.Parse(storyDialogue.allDialogue [i + 5]));
-        equipItemID.Add (int.Parse(storyDialogue.allDialogue [i + 6]));
-        
-        bool isInParty = false;
         string party = "";
         
         if (storyDialogue.allDialogue [i + 4] == "false") 
         {
-          isInParty = false;
           party = " To Your Party";
         }
         else
         {
-          isInParty = true;
           party = " To Your Team";
         }
         
-        SystemManager.AddCharacterToParty (int.Parse (storyDialogue.allDialogue [i + 2]), equipItemID, int.Parse (storyDialogue.allDialogue [i + 3]), isInParty);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 2]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 3]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 4]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 5]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 6]);
         
         dialogueWord.Add ("Adding " + storyDialogue.allDialogue [i + 1] + party);
         
         break;
       }
+      else if (storyDialogue.allDialogue [i] == "AddCharacter(FirstTime)")
+      {
+        string party = "";
+
+        if (storyDialogue.allDialogue [i + 4] == "false") 
+        {
+          party = " To Your Party";
+        }
+        else
+        {
+          party = " To Your Team";
+        }
+
+        addingCharacter.Add (storyDialogue.allDialogue [i + 2]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 3]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 4]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 5]);
+        addingCharacter.Add (storyDialogue.allDialogue [i + 6]);
+
+        dialogueWord.Add ("Adding " + storyDialogue.allDialogue [i + 1] + " In your teams go to add to your party in informations->party");
+
+        break;
+      }
+      else if (storyDialogue.allDialogue [i] == "AddItem")
+      {
+        addItem = GetDataFromSql.GetReward (_dialoguePath);
+        dialogueWord.Add ("You recieve new items");
+
+        continue;
+      }
+      else if (storyDialogue.allDialogue [i] == "Ending")
+      {
+        dialogueWord.Add ("You recieve new story book");
+
+        continue;
+      }
+      else if (storyDialogue.allDialogue [i] == "Ending(FirstTime)")
+      {
+        dialogueWord.Add ("You recieve new story book go to look in informations->storybook");
+
+        continue;
+      }
+      
 
       dialogueWord.Add(storyDialogue.allDialogue [i]);
-    }
-    
-    if(PlayerPrefs.GetString(Const.PreviousScene) == "GamePlayScene") PlayerPrefs.SetInt (Const.MapNo, 0); 
-    
+    }    
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
   }
 
@@ -123,8 +161,42 @@ public class DialogueManager : MonoBehaviour
   
   public void EndingDialogue()
   {
+    if(PlayerPrefs.GetString(Const.PreviousScene) == "GamePlayScene") PlayerPrefs.SetInt (Const.MapNo, 0); 
     SceneManager.LoadScene("LoadScene");
-    TemporaryData.GetInstance ().playerData.storyID ++;
+    if(TemporaryData.GetInstance().storyPlayingName.Contains("D")) TemporaryData.GetInstance ().playerData.storyID ++;
+    TemporaryData.GetInstance ().storyPlayingName = null;
+    
+    if (addingCharacter.Count > 0) 
+    {
+      List<int> equipItemID = new List<int> ();
+      equipItemID.Add (int.Parse(addingCharacter [3]));
+      equipItemID.Add (int.Parse(addingCharacter [4]));
+      
+      bool isInParty = false;
+
+      if (addingCharacter [2] == "false") 
+      {
+        isInParty = false;
+      }
+      else
+      {
+        isInParty = true;
+      }
+      
+      SystemManager.AddCharacterToParty (int.Parse (addingCharacter [0]), equipItemID, int.Parse (addingCharacter [1]), isInParty);
+    }
+    
+    if (addItem.Count > 0) 
+    {
+      for (int i = 0; i < addItem.Count; i++) 
+      {
+        Item adding = new Item ();
+        adding.item = GetDataFromSql.GetItemFromID (addItem [i]);
+        adding.equiped = false;
+        adding.ordering = TemporaryData.GetInstance ().playerData.inventory.Count - 1;
+        TemporaryData.GetInstance ().playerData.inventory.Add (adding);
+      }
+    }
   }
 
   private IEnumerator StartDialogue()
@@ -149,7 +221,7 @@ public class DialogueManager : MonoBehaviour
       
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && !_isStringBeingReveled) 
       {
         break;
       }
@@ -177,9 +249,14 @@ public class DialogueManager : MonoBehaviour
     {
       if (dialogueBG.Count > 0) 
       {
-        if (dialogueBG [currentDialogueIndex] != "None")
+        string bg = dialogueBG [currentDialogueIndex];
+        
+        if (bg != "None" || !string.IsNullOrEmpty(bg) )
         {
-          BG.sprite = Resources.Load<Sprite> ("Image/StorySceneBG/" + dialogueBG [currentDialogueIndex]);
+          
+          if(Resources.Load<Sprite> ("Image/StoryScene/" + bg)!=null) Debug.Log("hello");
+          
+          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + bg);
         }
       }
       
@@ -203,62 +280,82 @@ public class DialogueManager : MonoBehaviour
     {
       if (dialogueBG.Count > 0) 
       {
-        if (dialogueBG [currentDialogueIndex] != "None")
+        string bg = dialogueBG [currentDialogueIndex];
+        
+        if (bg != "None" || !string.IsNullOrEmpty(bg))
         {
-          BG.sprite = Resources.Load<Sprite> ("Image/StorySceneBG/" + dialogueBG [currentDialogueIndex]);
+          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + bg);
         }
       }
       
       if (dialogueSpeaker.Count > 0) {
-        if (dialogueSpeaker [currentDialogueIndex] == oldLeft || dialogueSpeaker [currentDialogueIndex] == oldRight) {
-          if (dialogueSpeaker [currentDialogueIndex] == oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) {
+        if (dialogueSpeaker [currentDialogueIndex] == oldLeft || dialogueSpeaker [currentDialogueIndex] == oldRight) 
+        {
+          if (dialogueSpeaker [currentDialogueIndex] == oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) 
+          {
             if (!string.IsNullOrEmpty (oldRight)) {
               ShowCha (true, true, oldLeft, oldRight);
               talkingCharacter.SetActive (true);
               talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-            } else {
+            }
+            else 
+            {
               ShowCha (true, false, oldLeft, null);
               talkingCharacter.SetActive (true);
               talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
             }
-          } else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight) {
-            if (!string.IsNullOrEmpty (oldLeft)) {
+          } else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight) 
+          {
+            if (!string.IsNullOrEmpty (oldLeft))
+            {
               ShowCha (true, true, oldLeft, oldRight);
               talkingCharacter.SetActive (true);
               talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-            } else {
+            }
+            else
+            {
               ShowCha (false, true, null, oldRight);
               talkingCharacter.SetActive (true);
               talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
             }
           } 
-        } else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) {
-          if (!string.IsNullOrEmpty (oldLeft)) {
-            if (!string.IsNullOrEmpty (oldRight)) {
+        } 
+        else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight)
+        {
+          if (!string.IsNullOrEmpty (oldLeft))
+          {
+            if (!string.IsNullOrEmpty (oldRight))
+            {
               ShowCha (false, false, null, null);
               oldLeft = null;
               oldRight = null;
               talkingCharacter.SetActive (false);
-            } else {
-              if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) {
+            }
+            else 
+            {
+              if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
+              {
                 ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
                 oldRight = dialogueSpeaker [currentDialogueIndex];
-                talkingCharacter.SetActive (true);
-                talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
               }
-            }
-          } else {
-            if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) {
-              ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
-              oldLeft = dialogueSpeaker [currentDialogueIndex];
               talkingCharacter.SetActive (true);
               talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
             }
+          } 
+          else
+          {
+            if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null)
+            {
+              ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
+              oldLeft = dialogueSpeaker [currentDialogueIndex];
+            }
+            talkingCharacter.SetActive (true);
+            talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
           }
         }
       }
     }
-
+    
     while (currentCharacterIndex < stringLength)
     {
       _textComponent.text += stringToDisplay [currentCharacterIndex];
@@ -270,7 +367,7 @@ public class DialogueManager : MonoBehaviour
         {
           _textComponent.text = stringToDisplay;
           currentCharacterIndex = stringLength;
-          yield return new WaitForSeconds (1f);
+          yield return new WaitForSeconds (0.5f);
         }
         else
         {
@@ -306,9 +403,17 @@ public class DialogueManager : MonoBehaviour
   {
     if (showLeft) 
     {
-      LeftCharacter.SetActive (true);
-      RightCharacter.SetActive (showRight);
-      LeftCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character1);
+      if(character1 == "???" || Resources.Load<Sprite> ("Image/Character/" + character1) == null )
+      {
+        LeftCharacter.SetActive (false);
+        RightCharacter.SetActive (showRight);
+      }
+      else
+      {
+        LeftCharacter.SetActive (true);
+        RightCharacter.SetActive (showRight);
+        LeftCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character1);
+      }
     } 
     else
     {

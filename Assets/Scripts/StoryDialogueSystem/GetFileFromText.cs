@@ -43,34 +43,60 @@ public class GetTextAssetFile
     else 
     {
       List<string> line = newTextAsset.text.Split ("\n" [0]).ToList ();
-      do 
+      
+      if (line.Count > 0) 
       {
-        string[] entry = line [0].Split ("," [0]);
+        do 
+        {
+          string[] entry = line [0].Split ("," [0]);
         
-        if(entry[0] != "AddCharacter")
-        {
-        for (int i = 0; i < entry.Length; i++) 
-        {
-          newStoryDialogue.allDialogue.Add (entry [i]);
-        }
-        
-        if(entry.Length > 1)
-        {
-          newStoryDialogue.characterName.Add (entry [1]);
-          newStoryDialogue.bgName.Add (entry [2]);
-        }
-        }
-        else
-        {
-          for(int i = 0; i < entry.Length;i++)
+          if (!entry [0].Contains ("AddCharacter") && !entry [0].Contains ("AddItem") && !entry [0].Contains ("Ending"))
           {
-            newStoryDialogue.allDialogue.Add(entry[i]);
-          }
-        }
+            for (int i = 0; i < entry.Length; i++)
+            {
+              if (entry.Length <= 1)
+              {
+                newStoryDialogue.allDialogue.Add ("-Not Complete-");
+              }
+              else
+              {
+                newStoryDialogue.allDialogue.Add (entry [i]);
+              }
+            }
         
-        line.RemoveAt(0);
-      } while(line.Count > 0);
-    
+            if (entry.Length > 2) 
+            {
+              newStoryDialogue.characterName.Add (entry [1]);
+              newStoryDialogue.bgName.Add (entry [2]);
+            }
+            else if (entry.Length > 1) 
+            {
+              newStoryDialogue.characterName.Add (entry [1]);
+              newStoryDialogue.bgName.Add ("None");
+            } 
+            else if (entry.Length <= 1)
+            {
+              newStoryDialogue.characterName.Add ("");
+              newStoryDialogue.bgName.Add ("None");
+            }
+          } 
+          else 
+          {
+            for (int i = 0; i < entry.Length; i++)
+            {
+              newStoryDialogue.allDialogue.Add (entry [i]);
+            }
+          }
+        
+          line.RemoveAt (0);
+        } while(line.Count > 0);
+      }
+      else
+      {
+        newStoryDialogue.allDialogue.Add ("-Not Complete-");
+        newStoryDialogue.characterName.Add ("");
+        newStoryDialogue.bgName.Add ("None");
+      } 
       return true;
     }
   }

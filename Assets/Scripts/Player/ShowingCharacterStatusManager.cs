@@ -43,14 +43,14 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     {
       Destroy (child.gameObject);
     }
-    foreach (Transform child in skill.GetChild(0).GetChild(0))
-    {
-      Destroy (child.gameObject);
-    }
     abilityInSlots.Clear ();
     
     List<AbilityStatus> normalAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).ToList ();
-    List<AbilityStatus> specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
+    List<AbilityStatus> specialAttacks = new List<AbilityStatus> ();
+    
+    if(TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).Count() > 0)
+      specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
+    
     List<AbilityStatus> skills = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 2 || x.ability.abilityType == -2 || x.ability.abilityType == 0).ToList ();
     
     for (int i = 0; i < 2; i++)
@@ -62,7 +62,10 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       if (i <= normalAttacks.Count - 1) 
       {
         AbilityStatus equipedStatus = normalAttacks [i];
-        normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + equipedStatus.ability.ID);
+        if(Resources.Load<Sprite> ("Ability/Normal/" +  equipedStatus.ability.ID) != null)
+          normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + equipedStatus.ability.ID);
+        else
+          normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + equipedStatus.ability.abilityEff);
         normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (equipedStatus);
         abilityInSlots.Add (normalAtkObj.GetComponent<AbilityInformation> ());
       }
@@ -75,27 +78,14 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     GameObject specialAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
     specialAtkObj.transform.SetParent (attack.GetChild (1).GetChild(0));
     specialAtkObj.transform.localScale = Vector3.one;
-    specialAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + specialAttacks [0].ability.ID);
+    if(Resources.Load<Sprite> ("Ability/Special/" +  specialAttacks [0].ability.ID) != null)
+      specialAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  specialAttacks [0].ability.ID);
+    else
+      specialAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Special/" +  specialAttacks [0].ability.abilityEff);
+    
     specialAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (specialAttacks [0]);
     specialAtkObj.GetComponent<AbilityInformation> ().ordering = 2;
     abilityInSlots.Add (specialAtkObj.GetComponent<AbilityInformation> ());
-    for (int i = 0; i < 3; i++)
-    {
-      GameObject skillObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
-      skillObj.transform.SetParent (skill.GetChild (0).GetChild(0));
-      skillObj.transform.localScale = Vector3.one;
-      skillObj.GetComponent<AbilityInformation> ().ordering = i;
-      if(i <= skills.Count-1)
-      {
-        skillObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/" + skills[i].ability.ID);
-        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (skills[i]);
-        abilityInSlots.Add (skillObj.GetComponent<AbilityInformation> ());
-      }
-      else
-      {
-        skillObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (2);
-      }
-    }
     
     SortingAbility ();
   }
@@ -126,15 +116,15 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     } 
     else
     {
-      equipment.GetChild(0).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Weapon"));
-      equipment.GetChild(0).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Weapon");
-      equipment.GetChild(0).GetChild (1).GetComponent<Text> ().text = "Weapon";
-      equipment.GetChild(1).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Armor"));
-      equipment.GetChild(1).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Armor");
-      equipment.GetChild(1).GetChild (1).GetComponent<Text> ().text = "Armor";
-      equipment.GetChild(2).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Accessory"));
-      equipment.GetChild(2).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/Accessory");
-      equipment.GetChild(2).GetChild (1).GetComponent<Text> ().text = "Accessory";
+      equipment.GetChild(0).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
+      equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      equipment.GetChild(0).GetChild (1).GetComponent<Text> ().text = "Empty";
+      equipment.GetChild(1).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
+      equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      equipment.GetChild(1).GetChild (1).GetComponent<Text> ().text = "Empty";
+      equipment.GetChild(2).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
+      equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      equipment.GetChild(2).GetChild (1).GetComponent<Text> ().text = "Empty";
     }
   }
   
@@ -146,6 +136,7 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       {
         Item equiped = equipItem [i];
         
+        equipment.GetChild (i).GetChild (0).gameObject.SetActive (true);
         if (Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name) != null) 
         {
           equipment.GetChild (i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equiped.item.name);
@@ -160,8 +151,9 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       }
       else
       {
-        equipment.GetChild(i).GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipment.GetChild(i).name);
-        equipment.GetChild (i).GetChild (1).GetComponent<Text> ().text = "";
+        equipment.GetChild (i).GetChild (0).gameObject.SetActive (false);
+        equipment.GetChild (i).GetChild (1).GetComponent<Text> ().text = "Empty";
+        equipment.GetChild(i).GetChild(1).localPosition = Vector2.zero;
         
         equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
       } 

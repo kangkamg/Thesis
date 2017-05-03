@@ -111,6 +111,39 @@ public class GetDataFromSql
 
     return n;
   }
+  
+  public static List<int> GetReward(string StoriesName)
+  {
+    List<int> reward = new List<int> ();
+    
+    IDbCommand dbcmd = dbconn.CreateCommand ();
+
+    string sqlQuery = "SELECT *" + "FROM RewardAfterStory" ; 
+    dbcmd.CommandText = sqlQuery;
+    IDataReader reader = dbcmd.ExecuteReader ();
+    while (reader.Read ()) 
+    {
+      if (reader.GetString (1) == StoriesName)
+      {
+        string rewardID = reader.GetString (2);
+        if (!string.IsNullOrEmpty (rewardID))
+        {
+          string[] _rewardID = rewardID.Split ("," [0]);
+          for (int i = 0; i < _rewardID.Length; i++) 
+          {
+            reward.Add (int.Parse(_rewardID [i]));
+          }
+        }
+        break;
+      }
+    }
+    reader.Close ();
+    reader = null;
+    dbcmd.Dispose ();
+    dbcmd = null;
+
+    return reward;
+  }
 
   public static AIInformation GetAiInfomation (int ID)
   {
@@ -211,11 +244,14 @@ public class GetDataFromSql
         n.increaseMovementPoint = (int)reader.GetFloat (7);
         n.itemType1 = reader.GetString(8);
         n.itemType2 = reader.GetString(9);
-        string sellMap = reader.GetString (10);
-        string[] sm = sellMap.Split ("," [0]);
-        for(int i = 0; i < sm.Length; i++)
+        if (!string.IsNullOrEmpty (reader.GetString (10))) 
         {
-          n.sellMap.Add (sm[i]);
+          string sellMap = reader.GetString (10);
+          string[] sm = sellMap.Split ("," [0]);
+          for (int i = 0; i < sm.Length; i++)
+          {
+            n.sellMap.Add (sm [i]);
+          }
         }
         n.stackable = reader.GetBoolean (11);
         
@@ -244,28 +280,41 @@ public class GetDataFromSql
     {
       ItemStatus n = new ItemStatus ();
 
-      string sellMap = reader.GetString (10);
-      List<string> sm = sellMap.Split ("," [0]).ToList();
-
-      foreach (string s in sm) 
+      
+      string sellMap = null;
+      List<string> sm = new List<string>();
+      
+      if (!string.IsNullOrEmpty (reader.GetString (10))) 
       {
-        if (passedMap.Where (x => x >= int.Parse (s)).Count() > 0) 
+        sellMap = reader.GetString (10);
+        sm = sellMap.Split ("," [0]).ToList();
+      }
+
+      if(sm.Count > 0)
+      {
+        foreach (string s in sm) 
         {
-          n.ID = reader.GetInt32 (0);
-          n.name = reader.GetString (1);
-          n.price = reader.GetInt32 (2);
-          n.increaseHP = (int)reader.GetFloat (3);
-          n.increaseAttack = (int)reader.GetFloat (4);
-          n.increaseDefense = (int)reader.GetFloat (5);
-          n.increaseCriRate = (int)reader.GetFloat (6);
-          n.increaseMovementPoint = (int)reader.GetFloat (7);
-          n.itemType1 = reader.GetString(8);
-          n.itemType2 = reader.GetString(9);
-          n.stackable = reader.GetBoolean (11);
-          break;
+          if (passedMap.Where (x => x >= int.Parse (s)).Count() > 0) 
+          {
+            n.ID = reader.GetInt32 (0);
+            n.name = reader.GetString (1);
+            n.price = reader.GetInt32 (2);
+            n.increaseHP = (int)reader.GetFloat (3);
+            n.increaseAttack = (int)reader.GetFloat (4);
+            n.increaseDefense = (int)reader.GetFloat (5);
+            n.increaseCriRate = (int)reader.GetFloat (6);
+            n.increaseMovementPoint = (int)reader.GetFloat (7);
+            n.itemType1 = reader.GetString(8);
+            n.itemType2 = reader.GetString(9);
+            n.stackable = reader.GetBoolean (11);
+            break;
+          }
         }
       }
-      
+      else
+      {
+        continue;
+      }
       list.Add (n);
     }
     reader.Close ();

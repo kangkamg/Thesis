@@ -1,0 +1,1 @@
+﻿AddCharacter(FirstTime),Tapaokaew,1002,3,false,2000,4000

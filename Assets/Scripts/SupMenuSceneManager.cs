@@ -135,12 +135,16 @@ public class SupMenuSceneManager : MonoBehaviour
     handTouch.transform.SetParent (party.transform);
     handTouch.transform.localScale = Vector3.one;
     handTouch.transform.localRotation = new Quaternion (0, 0, -0.35f, -0.7f);
-    handTouch.transform.localPosition = new Vector2 (-190, 190);
+    handTouch.transform.localPosition = new Vector2 (-150, 100);
     
     GameObject.Find ("Canvas").transform.GetChild (7).gameObject.SetActive (false);
     
     do 
     {
+      if(isClick == 1)
+      {
+        handTouch.transform.localPosition = new Vector2 (-150, 50);
+      }
       yield return null;
     } while(!isClicked);
     
@@ -160,6 +164,8 @@ public class SupMenuSceneManager : MonoBehaviour
   public void Clicked()
   {
     isClick+=1;
+    
+    
     if(isClick ==2)
     isClicked = true;
   }

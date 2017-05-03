@@ -14,6 +14,7 @@ public class Const
   
   public static string WhatOpenInMenuScene = "WHATOPENINMENUSCENE";
   public static string OpenSupMenuScene = "OPENSUPMENUSCENE";
+  public static string StoryType = "STORYTYPE";
 
   public static string NewGame = "NewGame";
 }

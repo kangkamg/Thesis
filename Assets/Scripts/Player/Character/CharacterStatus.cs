@@ -176,6 +176,7 @@ public class CharacterStatus
         ret += equipItem[i].item.increaseCriRate;
       }
 
+      if (ret > 80) ret = 80;
       return ret;
     }
     private set{ }

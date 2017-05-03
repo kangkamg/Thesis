@@ -20,6 +20,7 @@ public class SystemManager
       {
         if (characterStatus.experience < characterStatus.nextLevelExp) 
         {
+          showingSlider.parent.GetChild (1).gameObject.SetActive (false);
           characterStatus.experience++;
           getExp--;   
           showingSlider.GetComponent<Slider> ().value = Mathf.Lerp (showingSlider.GetComponent<Slider> ().value, (characterStatus.experience * 100) / characterStatus.nextLevelExp,
@@ -54,6 +55,8 @@ public class SystemManager
             characterStatus.experience = 0;
             showingSlider.GetComponent<Slider> ().value = 0;
             AddingAbility (characterStatus);
+            showingSlider.parent.GetChild (1).gameObject.SetActive (true);
+            showingSlider.parent.GetChild (1).GetComponent<Animator> ().Play ("LevelUpFloating");
           }
           
           if(getExp <= 0) isFinishLevelUp = true;
@@ -62,6 +65,7 @@ public class SystemManager
       }
     }
     
+    showingSlider.parent.GetChild (1).gameObject.SetActive (false);
     yield return 0;
   }
               

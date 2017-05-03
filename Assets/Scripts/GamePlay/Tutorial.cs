@@ -15,13 +15,7 @@ public class Tutorial : MonoBehaviour
   
   private void Start()
   {
-    tutorial = Instantiate (Resources.Load<GameObject> ("GamePlay/Tutorial/1"));
-    tutorial.name = "Tutorial";
-    tutorial.transform.SetParent (GameObject.Find ("Canvas").transform);
-    tutorial.transform.localScale = Vector3.one;
-    tutorial.transform.localPosition = Vector2.zero;
-    tutorial.GetComponent<Button> ().onClick.AddListener (() => NextTutorial ());
-    pages = 1;
+    StartCoroutine (StartTutorial ());
   }
   
   public void NextTutorial()
@@ -29,7 +23,7 @@ public class Tutorial : MonoBehaviour
     if (pages < 4) 
     {
       pages += 1;
-      GenerateNextTutorial ();
+      StartCoroutine(GenerateNextTutorial ());
     }
     else
     {
@@ -38,7 +32,24 @@ public class Tutorial : MonoBehaviour
     }
   }
   
-  public void GenerateNextTutorial()
+  public IEnumerator StartTutorial()
+  {
+    yield return StartCoroutine (Tutorial_ ());
+  }
+  
+  public IEnumerator Tutorial_()
+  {
+    tutorial = Instantiate (Resources.Load<GameObject> ("GamePlay/Tutorial/1"));
+    tutorial.name = "Tutorial";
+    tutorial.transform.SetParent (GameObject.Find ("Canvas").transform);
+    tutorial.transform.localScale = Vector3.one;
+    tutorial.transform.localPosition = Vector2.zero;
+    tutorial.GetComponent<Button> ().onClick.AddListener (() => NextTutorial ());
+    pages = 1;
+    yield return 0;
+  }
+  
+  public IEnumerator GenerateNextTutorial()
   {
     Destroy (tutorial);
     tutorial = Instantiate (Resources.Load<GameObject> ("GamePlay/Tutorial/" + pages));
@@ -46,5 +57,6 @@ public class Tutorial : MonoBehaviour
     tutorial.transform.localScale = Vector3.one;
     tutorial.transform.localPosition = Vector2.zero;
     tutorial.GetComponent<Button> ().onClick.AddListener (() => NextTutorial ());
+    yield return 0;
   }
 }

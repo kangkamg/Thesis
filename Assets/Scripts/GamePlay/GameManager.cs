@@ -5,12 +5,14 @@ using System.Linq;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {
   private static GameManager instance;
   public static GameManager GetInstance() { return instance;}
 
+  public Camera canvasCamera;
   public int[] _mapSize = new int[]{1,1};
   public int currentCharacterIndex;
   public Transform mapTransform;
@@ -82,17 +84,26 @@ public class GameManager : MonoBehaviour
     if (!TemporaryData.GetInstance ().isTutorialDone) gameObject.AddComponent<Tutorial> ();
       StartCoroutine (InitGame ());
   }
-
+  
   private void Update()
-  {
+  {    
     foreach (Touch toches in Input.touches) 
     {
+      if (Input.touchCount > 1) break;
+      if (showingResultOfAttack.gameObject.activeSelf || isChangingTurn || isPause || changingTurn.activeSelf) continue;
+
+      if (Input.touchCount  ==  1 && Input.GetTouch(0).phase == TouchPhase.Began)
+     {
+        hitButton = EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+     }
+
       Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch(0).position);
       
       RaycastHit hit;
+      
       if (Physics.Raycast (ray, out hit, 1000f)) 
       {
-        if (/*Input.GetMouseButtonDown(0) &&*/ !showingResultOfAttack.gameObject.activeSelf && !isChangingTurn && !isPause && !changingTurn.activeSelf && !hitButton && isPlayerTurn && isTouch && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended && !CameraManager.GetInstance().isMoving)
+        if (/*Input.GetMouseButtonDown(0) &&*/ !hitButton && isPlayerTurn && isTouch && Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended && !CameraManager.GetInstance().isMoving)
         {
           if (selectedCharacter != null)
           {
@@ -837,6 +848,7 @@ public class GameManager : MonoBehaviour
   
   private IEnumerator ChangingTurn()
   {
+    isPause = true;
     selectedCharacter = null;
     oldGridPosition = Vector3.zero;
     oldPosition = Vector3.zero;
@@ -864,6 +876,7 @@ public class GameManager : MonoBehaviour
     
     changingTurn.SetActive (false);
     isChangingTurn = false;
+    isPause = false;
     
     yield return 0;
   }
@@ -1247,7 +1260,6 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator WaitEndTurn()
   {
-    isPause = true;
     CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
     RemoveMapHighlight ();
     if (chaSelector != null) 
@@ -1314,9 +1326,7 @@ public class GameManager : MonoBehaviour
         }
         isChangingTurn = true;
         isPlayerTurn = !isPlayerTurn;
-        yield return new WaitForSeconds (0.5f);
-        StartCoroutine (ChangingTurn ());
-        yield return new WaitForSeconds (1.25f);
+        yield return StartCoroutine (ChangingTurn ());
         currentCharacterIndex = 0;
         
         if(isTouch)
@@ -1327,19 +1337,16 @@ public class GameManager : MonoBehaviour
       } 
       else
       { 
+        currentCharacterIndex ++;
         isChangingTurn = true;
         isPlayerTurn = !isPlayerTurn;
-        yield return new WaitForSeconds (0.5f);
-        StartCoroutine (ChangingTurn ());
-        yield return new WaitForSeconds (1.25f);
-        currentCharacterIndex ++;
+        yield return StartCoroutine (ChangingTurn ());
       }
     }
     
     if (character [currentCharacterIndex] != null && character [currentCharacterIndex].currentHP > 0 && character[currentCharacterIndex].played == false)
     {
       SelectedCharacter (character [currentCharacterIndex]);
-      isPause = false;
       if (character [currentCharacterIndex].GetType() == typeof(AICharacter))
       {
         menu.transform.GetChild (0).gameObject.SetActive (false);

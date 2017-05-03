@@ -153,7 +153,6 @@ public class ShowingCharacterStatusManager : MonoBehaviour
       {
         equipment.GetChild (i).GetChild (0).gameObject.SetActive (false);
         equipment.GetChild (i).GetChild (1).GetComponent<Text> ().text = "Empty";
-        equipment.GetChild(i).GetChild(1).localPosition = Vector2.zero;
         
         equipment.GetChild(i).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
       } 

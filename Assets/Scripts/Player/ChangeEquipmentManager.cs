@@ -28,7 +28,10 @@ public class ChangeEquipmentManager : MonoBehaviour
     firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text;
     firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text;
     
-    secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    if (Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name) != null)
+      secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    else
+      secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + equipedItem.items.item.itemType1);
     secondWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = equipedItem.items.item.name;
     secondWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
     secondWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
@@ -83,7 +86,10 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
 
-    equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    if(Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name) != null)
+      equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
+    else
+      equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + equipedItem.items.item.itemType1);
     equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.name.ToString();
     equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
     equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
@@ -265,7 +271,7 @@ public class ChangeEquipmentManager : MonoBehaviour
          
           Sprite sprite = new Sprite();
           if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
-          else sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[0].item.name);
+          else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
 
           itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.GetComponent<ItemData> ().amount = 1;

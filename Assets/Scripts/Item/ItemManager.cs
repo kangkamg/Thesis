@@ -166,7 +166,7 @@ public class ItemManager : MonoBehaviour
       Item newItem = new Item ();
       newItem.item = data;
       newItem.equiped = false;
-      newItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count;
+      newItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count-1;
 
       TemporaryData.GetInstance ().playerData.inventory.Add (newItem);
       TemporaryData.GetInstance ().playerData.gold -= newItem.item.price;

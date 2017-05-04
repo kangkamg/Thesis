@@ -21,7 +21,13 @@ public class ChangeEquipmentManager : MonoBehaviour
     Transform secondWeaponStatus = this.transform.GetChild (0).GetChild(2);
     Transform isChanging = this.transform.GetChild (0).GetChild (3);
     
-    firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite;
+    if (equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite != null) 
+    {
+      firstWeaponStatus.GetChild (0).gameObject.SetActive (true);
+      firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite;
+    }
+    else
+      firstWeaponStatus.GetChild (0).gameObject.SetActive (false);
     firstWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text = equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text;
     firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text;
     firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text;
@@ -40,38 +46,70 @@ public class ChangeEquipmentManager : MonoBehaviour
     
     if (int.Parse (firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseHP)
     {
+      isChanging.GetChild (0).gameObject.SetActive (true);
       isChanging.GetChild (0).GetComponent<Image> ().color = Color.green;
+      isChanging.GetChild (0).rotation = Quaternion.Euler (new Vector3 (0, 0, 0));
     }
     else if (int.Parse (firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseHP)
     {
+      isChanging.GetChild (0).gameObject.SetActive (true);
       isChanging.GetChild (0).GetComponent<Image> ().color = Color.red;
+      isChanging.GetChild (0).rotation = Quaternion.Euler (new Vector3 (0, 0, 180));
+    }
+    else
+    {
+      isChanging.GetChild (0).gameObject.SetActive (false);
     }
       
     if (int.Parse (firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseAttack)
     {
+      isChanging.GetChild (1).gameObject.SetActive (true);
       isChanging.GetChild (1).GetComponent<Image> ().color = Color.green;
+      isChanging.GetChild (1).rotation = Quaternion.Euler (new Vector3 (0, 0, 0));
     }
     else if (int.Parse (firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseAttack)
     {
+      isChanging.GetChild (1).gameObject.SetActive (true);
       isChanging.GetChild (1).GetComponent<Image> ().color = Color.red;
+      isChanging.GetChild (1).rotation = Quaternion.Euler (new Vector3 (0, 0, 180));
+    }
+    else
+    {
+      isChanging.GetChild (1).gameObject.SetActive (false);
     }
       
     if (int.Parse (firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseDefense)
     {
+      isChanging.GetChild (2).gameObject.SetActive (true);
       isChanging.GetChild (2).GetComponent<Image> ().color = Color.green;
+      isChanging.GetChild (2).rotation = Quaternion.Euler (new Vector3 (0, 0, 0));
     }
     else if (int.Parse (firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseDefense)
     {
+      isChanging.GetChild (2).gameObject.SetActive (true);
       isChanging.GetChild (2).GetComponent<Image> ().color = Color.red;
+      isChanging.GetChild (2).rotation = Quaternion.Euler (new Vector3 (0, 0, 180));
+    }
+    else
+    {
+      isChanging.GetChild (2).gameObject.SetActive (false);
     }
       
     if (int.Parse (firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text.ToString ()) < equipedItem.items.item.increaseCriRate)
     {
+      isChanging.GetChild (3).gameObject.SetActive (true);
       isChanging.GetChild (3).GetComponent<Image> ().color = Color.green;
+      isChanging.GetChild (3).rotation = Quaternion.Euler (new Vector3 (0, 0, 0));
     }
     else if (int.Parse (firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text.ToString ()) > equipedItem.items.item.increaseCriRate)
     {
+      isChanging.GetChild (3).gameObject.SetActive (true);
       isChanging.GetChild (3).GetComponent<Image> ().color = Color.red;
+      isChanging.GetChild (3).rotation = Quaternion.Euler (new Vector3 (0, 0, 180));
+    }
+    else
+    {
+      isChanging.GetChild (3).gameObject.SetActive (false);
     }
   }
 
@@ -90,6 +128,7 @@ public class ChangeEquipmentManager : MonoBehaviour
       equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
     else
       equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + equipedItem.items.item.itemType1);
+    
     equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.name.ToString();
     equipedWeaponStatus.GetChild(2).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseHP.ToString ();
     equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseAttack.ToString ();
@@ -128,6 +167,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
     
+    equipedWeaponStatus.GetChild (1).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild (2).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild(3).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild(4).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild(5).gameObject.SetActive (true);
+    
     if (Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name) != null) 
     {
       equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + selectedItem.item.name);
@@ -151,11 +196,11 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
     
-    equipedWeaponStatus.GetChild(1).GetChild(0).GetComponent<Text>().text  = itemtype1.ToString();
-    equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = "0";
-    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = "0";
-    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = "0";
-    equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = "0";
+    equipedWeaponStatus.GetChild (1).gameObject.SetActive (false);
+    equipedWeaponStatus.GetChild (2).gameObject.SetActive (false);
+    equipedWeaponStatus.GetChild(3).gameObject.SetActive (false);
+    equipedWeaponStatus.GetChild(4).gameObject.SetActive (false);
+    equipedWeaponStatus.GetChild(5).gameObject.SetActive (false);
   }
     
   public void GenerateInventoryItem(Item selectedItem)

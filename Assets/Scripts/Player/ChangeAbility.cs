@@ -27,7 +27,6 @@ public class ChangeAbility : MonoBehaviour
       } 
       else 
       {
-        Debug.Log ("Ability/Normal/" + abilityStatus.ability.abilityEff);
         changingDetails.GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + abilityStatus.ability.abilityEff);
       }
     }

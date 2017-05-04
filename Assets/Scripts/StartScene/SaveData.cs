@@ -145,6 +145,7 @@ public class SaveData : MonoBehaviour
   public void OkDialogBox(PlayerData data)
   {
     TemporaryData.GetInstance().playerData = data;
+    TemporaryData.GetInstance ().storyPlayingName = null;
   }
   
   public void CancelDialogBox(GameObject dialogBox)

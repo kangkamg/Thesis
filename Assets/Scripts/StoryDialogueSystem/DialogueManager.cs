@@ -20,11 +20,11 @@ public class DialogueManager : MonoBehaviour
   public Image BG;
 
   public StoryDialogue storyDialogue;
-  public List<string> dialogueWord;
-  public List<string> dialogueSpeaker;
-  public List<string> dialogueBG;
-  public List<string> addingCharacter;
-  public List<int> addItem;
+  public List<string> dialogueWord = new List<string>();
+  public List<string> dialogueSpeaker = new List<string>();
+  public List<string> dialogueBG = new List<string>();
+  public List<string> addingCharacter = new List<string>();
+  public List<int> addItem = new List<int>();
 
   public float SecondBetweenCharacters = 0.01f;
   public float CharacterRateMultiplier = 0.05f;
@@ -103,17 +103,6 @@ public class DialogueManager : MonoBehaviour
       }
       else if (storyDialogue.allDialogue [i] == "AddCharacter(FirstTime)")
       {
-        string party = "";
-
-        if (storyDialogue.allDialogue [i + 4] == "false") 
-        {
-          party = " To Your Party";
-        }
-        else
-        {
-          party = " To Your Team";
-        }
-
         addingCharacter.Add (storyDialogue.allDialogue [i + 2]);
         addingCharacter.Add (storyDialogue.allDialogue [i + 3]);
         addingCharacter.Add (storyDialogue.allDialogue [i + 4]);
@@ -243,23 +232,16 @@ public class DialogueManager : MonoBehaviour
    
     ShowCha (false, false, null, null);
     talkingCharacter.SetActive (false);
-    BG.sprite = null;
-
+    
     if (currentDialogueIndex == 0) 
     {
       if (dialogueBG.Count > 0) 
       {
-        string bg = dialogueBG [currentDialogueIndex];
-        
-        if (bg != "None" || !string.IsNullOrEmpty(bg) )
+        if (dialogueBG [currentDialogueIndex] != "None" || !string.IsNullOrEmpty(dialogueBG [currentDialogueIndex]) )
         {
-          
-          if(Resources.Load<Sprite> ("Image/StoryScene/" + bg)!=null) Debug.Log("hello");
-          
-          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + bg);
+          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + dialogueBG [currentDialogueIndex]);
         }
       }
-      
       if(dialogueSpeaker.Count > 0)
       {
         if(!string.IsNullOrEmpty(dialogueSpeaker [currentDialogueIndex]))
@@ -280,11 +262,9 @@ public class DialogueManager : MonoBehaviour
     {
       if (dialogueBG.Count > 0) 
       {
-        string bg = dialogueBG [currentDialogueIndex];
-        
-        if (bg != "None" || !string.IsNullOrEmpty(bg))
+        if (dialogueBG [currentDialogueIndex] != "None" || !string.IsNullOrEmpty(dialogueBG [currentDialogueIndex]))
         {
-          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + bg);
+          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + dialogueBG [currentDialogueIndex]);
         }
       }
       

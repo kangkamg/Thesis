@@ -51,8 +51,6 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     if(TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).Count() > 0)
       specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
     
-    List<AbilityStatus> skills = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 2 || x.ability.abilityType == -2 || x.ability.abilityType == 0).ToList ();
-    
     for (int i = 0; i < 2; i++)
     {
       GameObject normalAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));

@@ -28,6 +28,7 @@ public class CameraManager : MonoBehaviour
   public bool isLookWholeMap = false;
   public bool isFocus = false;
   public bool isMoving = false;
+  public bool isZoom = false;
   
   Vector2 originTouch;
 
@@ -70,7 +71,7 @@ public class CameraManager : MonoBehaviour
     {      
       if (GameManager.GetInstance ().isTouch) 
       {
-        if (Input.touchCount == 1)
+        if (Input.touchCount == 1 && !isZoom)
         {
           if (Input.touchCount == 1 && Input.GetTouch (0).phase == TouchPhase.Began) 
           {
@@ -91,6 +92,12 @@ public class CameraManager : MonoBehaviour
         {
           PinchToZoom (Input.GetTouch (0), Input.GetTouch (1));
         }
+        
+        else if (Input.touchCount == 0)
+        {
+          isZoom = false;
+        }
+        
       } 
       else
       {
@@ -190,6 +197,7 @@ public class CameraManager : MonoBehaviour
   
   public void PinchToZoom(Touch touchZero, Touch touchOne)
   {
+    isZoom = true;
     Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
     Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
     

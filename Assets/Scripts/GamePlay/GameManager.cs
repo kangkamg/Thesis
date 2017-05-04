@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
   private static GameManager instance;
   public static GameManager GetInstance() { return instance;}
 
-  public Camera canvasCamera;
   public int[] _mapSize = new int[]{1,1};
   public int currentCharacterIndex;
   public Transform mapTransform;
@@ -96,6 +95,7 @@ public class GameManager : MonoBehaviour
       {
         hitButton = EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
       }
+      
       if (Input.touchCount  ==  1 && Input.GetTouch(0).phase == TouchPhase.Moved)
       {
         break;
@@ -687,31 +687,59 @@ public class GameManager : MonoBehaviour
     else 
     {
       if (selectedCharacter.played) return;
-
+      
       if (type == 2) 
       {
         foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false)) 
-        {
-          highlightedTiles.Add (t);
-        }
+          {
+            highlightedTiles.Add (t);
+          }
+        foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, true))
+          {
+            highlightedTiles.Add (t);
+          }
       } 
       else if (type == 1) 
       {
-        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, true);
+        foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, true))
+          {
+            highlightedTiles.Add (t);
+          }
       } 
       else 
       {
-        highlightedTiles = TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false);
+        foreach (Tile t in TileHighLight.FindHighLight (map [(int)originLocation.x] [(int)originLocation.z], distance, true, false)) 
+          {
+            highlightedTiles.Add (t);
+          }
       }
-
+      
+      for(int i = 0;i<highlightedTiles.Count;i++)
+      {
+        if (usingAbility.ability.abilityType > 0)
+        {
+            if (character.Where (x => x.GetType () == selectedCharacter.GetType ()  && x.gridPosition == highlightedTiles [i].gridPosition).Count() > 0)
+            {
+              highlightedTiles.RemoveAt (i);
+            }
+        }
+        else if (usingAbility.ability.abilityType < 0)
+        {
+          if (character.Where (x => x.GetType () != selectedCharacter.GetType () && x.gridPosition == highlightedTiles [i].gridPosition).Count() > 0)
+          {
+            highlightedTiles.RemoveAt (i);
+          }
+        }
+      }
+      
       foreach (Tile t in highlightedTiles) 
       {
         if (highlightTileMovement.Where (x => x.GetComponentInParent<Tile> ().gridPosition == t.gridPosition).Count () <= 0) 
         {
-          GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler (new Vector3 (90, 0, 0)))as GameObject;
-          h.transform.SetParent (t.transform);
-          h.name = "highlightAttack";
-          highlightTileAttack.Add (h);
+            GameObject h = Instantiate (highlight, t.transform.position + (0.51f * Vector3.up), Quaternion.Euler (new Vector3 (90, 0, 0)))as GameObject;
+            h.transform.SetParent (t.transform);
+            h.name = "highlightAttack";
+            highlightTileAttack.Add (h);
         }
       }
     }
@@ -762,8 +790,6 @@ public class GameManager : MonoBehaviour
         }
       }
     }
-
-    Vector3 targetPosition = new Vector3(target.transform.position.x,0,target.transform.position.z);
 
     if (targetTile.Count > 0) 
     {
@@ -864,16 +890,37 @@ public class GameManager : MonoBehaviour
     menu.transform.GetChild (0).gameObject.SetActive (false);
     menu.transform.GetChild (1).gameObject.SetActive (false);
     playerController.gameObject.SetActive (false);
-    
+        
     if (isPlayerTurn) 
     {
       changingTurn.transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "PlayerTurn";
-      
+      foreach (Character c in character)
+      {
+        if (c.GetType () == typeof(AICharacter))
+        {
+          foreach (Renderer a in c.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+          {
+            a.material.color = Color.white;
+          }
+        }
+      }
     }
     else
     {
       playerController.GetComponent<PlayerController> ().RemoveSelected ();
       changingTurn.transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = "EnemyTurn";
+      foreach (Character c in character)
+      {
+        if (c.GetType () == typeof(PlayerCharacter))
+        {
+          foreach (Renderer a in c.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+          {
+            a.material.color = Color.white;
+          }
+        }
+        else
+          continue;
+      }
     }
     
     yield return new WaitForSeconds (1f);
@@ -1323,10 +1370,6 @@ public class GameManager : MonoBehaviour
         foreach (Character c in character) 
         {
           c.played = false;
-          foreach (Renderer a in c.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
-          {
-            a.material.color = Color.white;
-          }
         }
         isChangingTurn = true;
         isPlayerTurn = !isPlayerTurn;

@@ -20,7 +20,7 @@ public class Tutorial : MonoBehaviour
   
   public void NextTutorial()
   {
-    if (pages < 4) 
+    if (pages < 5) 
     {
       pages += 1;
       StartCoroutine(GenerateNextTutorial ());

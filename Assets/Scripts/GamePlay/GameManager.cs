@@ -93,9 +93,13 @@ public class GameManager : MonoBehaviour
       if (showingResultOfAttack.gameObject.activeSelf || isChangingTurn || isPause || changingTurn.activeSelf) continue;
 
       if (Input.touchCount  ==  1 && Input.GetTouch(0).phase == TouchPhase.Began)
-     {
+      {
         hitButton = EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
-     }
+      }
+      if (Input.touchCount  ==  1 && Input.GetTouch(0).phase == TouchPhase.Moved)
+      {
+        break;
+      }
 
       Ray ray = Camera.main.ScreenPointToRay (Input.GetTouch(0).position);
       

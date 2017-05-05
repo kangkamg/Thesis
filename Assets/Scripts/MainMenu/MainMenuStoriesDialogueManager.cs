@@ -110,9 +110,7 @@ public class MainMenuStoriesDialogueManager : MonoBehaviour
       {
         if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
         {
-          _textComponent.text = stringToDisplay;
-          currentCharacterIndex = stringLength;
-          yield return new WaitForSeconds (SecondBetweenCharacters);
+          yield return new WaitForSeconds (SecondBetweenCharacters * 0.1f);
         }
         else
         {

@@ -12,6 +12,8 @@ public class ChangeEquipmentManager : MonoBehaviour
   public List<Item> items = new List<Item>();
   public List<GameObject> slots = new List<GameObject> ();
 
+  Item _equipedItem = new Item();
+
   public void TryingItem(ItemData equipedItem)
   {
     this.transform.GetChild (0).gameObject.SetActive (true);
@@ -124,6 +126,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
 
+    equipedWeaponStatus.GetChild (1).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild (2).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild (3).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild (4).gameObject.SetActive (true);
+    equipedWeaponStatus.GetChild (5).gameObject.SetActive (true);
+
     if(Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name) != null)
       equipedWeaponStatus.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
     else
@@ -140,29 +148,30 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   private bool CheckingIfEquipedThisItemType(ItemData equipedItem)
   {
-    for (int i = 0; i < TemporaryData.GetInstance ().selectedCharacter.equipItem.Count; i++)
+    if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == _equipedItem).Count() > 0)
     {
-      if (TemporaryData.GetInstance ().selectedCharacter.equipItem [i].item.itemType1 == equipedItem.items.item.itemType1) 
+      for (int j = 0; j < TemporaryData.GetInstance ().playerData.inventory.Count; j++) 
       {
-        for (int j = 0; j < TemporaryData.GetInstance ().playerData.inventory.Count; j++) 
+        if (TemporaryData.GetInstance ().playerData.inventory [j].ordering == TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == _equipedItem).First().ordering) 
         {
-          if (TemporaryData.GetInstance ().playerData.inventory [j].ordering == TemporaryData.GetInstance ().selectedCharacter.equipItem [i].ordering) 
-          {
-            TemporaryData.GetInstance ().playerData.inventory [j].equiped = false;
-            break;
-          }
+          TemporaryData.GetInstance ().playerData.inventory [j].equiped = false;
+          break;
         }
-        TemporaryData.GetInstance ().selectedCharacter.equipItem [i] = equipedItem.items;
-        return true;
-      } 
-    }
+      }
+      Item changeItem = TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == _equipedItem).First ();
+      TemporaryData.GetInstance ().selectedCharacter.equipItem.Remove (changeItem);
+      TemporaryData.GetInstance ().selectedCharacter.equipItem.Add (equipedItem.items);
+      return true;
+    } 
     return false;
   }
 
   public void ChangingItem(Item selectedItem)
   {
     GenerateInventoryItem (selectedItem);
-    
+
+    _equipedItem = selectedItem;
+
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
@@ -192,6 +201,8 @@ public class ChangeEquipmentManager : MonoBehaviour
   {
     GenerateInventoryItem (itemtype1);
 
+    _equipedItem = null;
+
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
@@ -201,6 +212,12 @@ public class ChangeEquipmentManager : MonoBehaviour
     equipedWeaponStatus.GetChild(3).gameObject.SetActive (false);
     equipedWeaponStatus.GetChild(4).gameObject.SetActive (false);
     equipedWeaponStatus.GetChild(5).gameObject.SetActive (false);
+
+    equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = "";
+    equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = "0";
+    equipedWeaponStatus.GetChild(3).GetChild(0).GetComponent<Text>().text = "0";
+    equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = "0";
+    equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = "0";
   }
     
   public void GenerateInventoryItem(Item selectedItem)

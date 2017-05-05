@@ -104,7 +104,7 @@ public class Tile : MonoBehaviour
 
       case TileTypes.Water:
       movementCost = 1;
-      impassible = true;
+      impassible = false;
       _Prefab = Resources.Load<GameObject> ("TilePrefab/Water");
       break;
       

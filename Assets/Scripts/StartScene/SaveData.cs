@@ -100,7 +100,7 @@ public class SaveData : MonoBehaviour
     dialogBox.transform.SetParent (transform.parent.parent);
     dialogBox.transform.localScale = Vector3.one;
     dialogBox.transform.localPosition = Vector2.zero;
-    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("MainMenuScene"));
+    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("LoadScene"));
     dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => OkDialogBox(data));
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => CancelDialogBox (dialogBox));
   }
@@ -133,12 +133,12 @@ public class SaveData : MonoBehaviour
       dialogBox.transform.SetParent (transform.parent.parent);
       dialogBox.transform.localScale = Vector3.one;
       dialogBox.transform.localPosition = Vector2.zero;
-      dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("StoryScene"));
+      dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("LoadScene"));
       dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => CancelDialogBox (dialogBox));
     } 
     else
     {
-      SceneManager.LoadScene ("StoryScene");
+      SceneManager.LoadScene ("LoadScene");
     }
   }
   

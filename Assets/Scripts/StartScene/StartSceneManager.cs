@@ -30,7 +30,7 @@ public class StartSceneManager : MonoBehaviour
     {
       PlayerPrefs.SetString (Const.Language, Application.systemLanguage.ToString ());
     } 
-    
+
     TemporaryData.GetInstance().choosenLanguage = PlayerPrefs.GetString(Const.Language,"Thai");
     
     PlayerPrefs.DeleteAll ();
@@ -40,6 +40,7 @@ public class StartSceneManager : MonoBehaviour
     openBook.SetActive (bookOpen);
     openBook.transform.GetChild (0).gameObject.SetActive (false);
     openBook.transform.GetChild (1).gameObject.SetActive (false);
+    PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene().name);
     
     if (!TemporaryData.GetInstance ().firstTimeOpenGame) 
     {
@@ -114,7 +115,7 @@ public class StartSceneManager : MonoBehaviour
   private void Update()
   {
     BlinkText ();
-    if(Input.GetMouseButtonDown(0)/*Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began*/)
+    if(/*Input.GetMouseButtonDown(0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     {
       if (!bookOpen) 
       {

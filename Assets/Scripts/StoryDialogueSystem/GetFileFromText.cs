@@ -72,12 +72,12 @@ public class GetTextAssetFile
             else if (entry.Length > 1) 
             {
               newStoryDialogue.characterName.Add (entry [1]);
-              newStoryDialogue.bgName.Add ("None");
+              newStoryDialogue.bgName.Add ("");
             } 
             else if (entry.Length <= 1)
             {
               newStoryDialogue.characterName.Add ("");
-              newStoryDialogue.bgName.Add ("None");
+              newStoryDialogue.bgName.Add ("");
             }
           } 
           else 
@@ -95,7 +95,7 @@ public class GetTextAssetFile
       {
         newStoryDialogue.allDialogue.Add ("-Not Complete-");
         newStoryDialogue.characterName.Add ("");
-        newStoryDialogue.bgName.Add ("None");
+        newStoryDialogue.bgName.Add ("");
       } 
       return true;
     }

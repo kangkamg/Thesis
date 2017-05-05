@@ -21,7 +21,11 @@ public class PlayerCharacter : Character
           {
             isActioning = false;
             transform.GetChild (0).GetComponent<Animator> ().SetInteger ("animatorIndex", 0);
-            
+            GameManager.GetInstance().playerUI.transform.GetChild (0).gameObject.SetActive (true);
+            GameManager.GetInstance().menu.transform.GetChild (0).gameObject.SetActive (true);
+            GameManager.GetInstance().menu.transform.GetChild (1).gameObject.SetActive (true);
+            if(!GameManager.GetInstance().isTouch) GameManager.GetInstance().playerUI.transform.GetChild (3).gameObject.SetActive (true);
+
             if (target != null)
             {
               GameManager.GetInstance ().RemoveMapHighlight ();

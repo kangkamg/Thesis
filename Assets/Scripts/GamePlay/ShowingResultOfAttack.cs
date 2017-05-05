@@ -16,12 +16,12 @@ public class ShowingResultOfAttack : MonoBehaviour
 
     if (Resources.Load<Sprite> ("Image/Character/" + selectedCharacter.name) != null)
     {
-      selectedData.GetChild (0).gameObject.SetActive (true);
+      selectedData.GetChild (0).GetComponent<Image> ().enabled = true;
       selectedData.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/"  + selectedCharacter.name); 
     }
     else 
     {
-      selectedData.GetChild (0).gameObject.SetActive (false);
+      selectedData.GetChild (0).GetComponent<Image> ().enabled = false;
     }
     selectedData.GetChild (0).GetChild(0).GetComponent<Text> ().text = selectedCharacter.name;
     selectedData.GetChild (1).GetChild(0).GetComponent<Text> ().text = selectedCharacter.currentHP.ToString();

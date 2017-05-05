@@ -1,16 +1,18 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GamePlay\CameraManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs">
     <Files>
-      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="365" Column="46" />
-      <File FileName="Assets\Scripts\Tile\TileHighLight.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Player\Character\Character.cs" Line="15" Column="26" />
-      <File FileName="Assets\Scripts\Player\Character\PlayerCharacter.cs" Line="16" Column="111" />
-      <File FileName="Assets\Scripts\Player\Character\AICharacter.cs" Line="35" Column="150" />
-      <File FileName="Assets\Scripts\MapCreator\MapSaveAndLoad.cs" Line="159" Column="34" />
-      <File FileName="Assets\Scripts\MapCreator\MapCreatorManager.cs" Line="32" Column="49" />
-      <File FileName="Assets\Scripts\StartScene\StartSceneManager.cs" Line="29" Column="7" />
-      <File FileName="Assets\Scripts\GamePlay\CameraManager.cs" Line="78" Column="28" />
+      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="1700" Column="3" />
+      <File FileName="Assets\Scripts\Item\InventoryManager.cs" Line="46" Column="14" />
+      <File FileName="Assets\Scripts\Item\ItemManager.cs" Line="107" Column="48" />
+      <File FileName="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs" Line="40" Column="38" />
+      <File FileName="Assets\Scripts\SystemManager.cs" Line="115" Column="86" />
+      <File FileName="Assets\Scripts\Player\ChangeEquipmentManager.cs" Line="220" Column="80" />
+      <File FileName="Assets\Scripts\Player\Character\CharacterStatus.cs" Line="41" Column="19" />
+      <File FileName="Assets\Scripts\Item\Item.cs" Line="25" Column="26" />
+      <File FileName="Assets\Scripts\StartScene\StartSceneManager.cs" Line="118" Column="106" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D1M1.txt" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\StoryDialogueSystem\GetFileFromText.cs" Line="98" Column="39" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

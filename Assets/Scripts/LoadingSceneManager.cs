@@ -79,19 +79,41 @@ public class LoadingSceneManager : MonoBehaviour
       }
     } 
 
+    else if (PlayerPrefs.GetString (Const.PreviousScene) == "StartScene")
+    {
+      if (TemporaryData.GetInstance().storyPlayingName == "Tutorial") 
+      {
+        async = SceneManager.LoadSceneAsync ("StoryScene");
+      }
+      else
+      {
+        async = SceneManager.LoadSceneAsync ("MainMenuScene");
+      }
+    } 
+
+    async.allowSceneActivation = false;
+
     while (!async.isDone) 
     {
-      _textComponent.text += stringToDisplay [currentCharacterIndex];
-      currentCharacterIndex++;
-
-      if (currentCharacterIndex < stringLength) 
+      if (async.progress <= 0.8f) 
       {
-        yield return new WaitForSeconds (0.5f);
+        _textComponent.text += stringToDisplay [currentCharacterIndex];
+        currentCharacterIndex++;
+        if (currentCharacterIndex < stringLength) 
+        {
+          yield return new WaitForSeconds (0.125f);
+        } 
+        else 
+        {
+          currentCharacterIndex = 7;
+          _textComponent.text = "Loading";
+        }
       } 
       else 
       {
-        currentCharacterIndex = 7;
-        _textComponent.text = "Loading";
+        _textComponent.text = "Complete";
+        yield return new WaitForSeconds (0.5f);
+        async.allowSceneActivation = true;
       }
     }
   }

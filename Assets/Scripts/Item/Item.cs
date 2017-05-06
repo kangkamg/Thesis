@@ -6,7 +6,7 @@ using UnityEngine;
 public class ItemStatus
 {
   public int ID;
-  public string name;
+  public string name = "";
   public int price;
   public int increaseHP;
   public int increaseAttack;

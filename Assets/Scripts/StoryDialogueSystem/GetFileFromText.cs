@@ -52,16 +52,13 @@ public class GetTextAssetFile
         
           if (!entry [0].Contains ("AddCharacter") && !entry [0].Contains ("AddItem") && !entry [0].Contains ("Ending"))
           {
-            for (int i = 0; i < entry.Length; i++)
+            if (entry.Length <= 1)
             {
-              if (entry.Length <= 1)
-              {
-                newStoryDialogue.allDialogue.Add ("-Not Complete-");
-              }
-              else
-              {
-                newStoryDialogue.allDialogue.Add (entry [i]);
-              }
+              newStoryDialogue.allDialogue.Add ("-Not Complete-");
+            }
+            else
+            {
+              newStoryDialogue.allDialogue.Add (entry [0]);
             }
         
             if (entry.Length > 2) 

@@ -29,6 +29,8 @@ public class Tutorial : MonoBehaviour
     {
       Destroy (tutorial);
       Time.timeScale = 1f;
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().Play ();
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().loop = true;
     }
   }
   

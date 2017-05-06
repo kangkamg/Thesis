@@ -23,6 +23,8 @@ public class MainMenuManager : MonoBehaviour
   
   public void Start()
   {
+    StartCoroutine (SystemManager.IncreasePlayedHrs ());
+    
     playerMenu.SetActive (false);
     bgMenu.SetActive (false);
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);

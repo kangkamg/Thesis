@@ -88,11 +88,18 @@ public class SystemManager
     }
   }
   
-  public static void SaveGameData()
+  public static IEnumerator IncreasePlayedHrs()
   {
-    float playedHrs = Time.realtimeSinceStartup;
-    
-    TemporaryData.GetInstance ().playerData.playedHrs += playedHrs;
+    while(true)
+    {
+      TemporaryData.GetInstance ().playerData.playedHrs += Time.fixedDeltaTime;
+      yield return 0;
+    }
+    yield return 0;
+  }
+  
+  public static void SaveGameData()
+  {    
     SaveAndLoadPlayerData.SaveData (TemporaryData.GetInstance ().playerData,TemporaryData.GetInstance().playerData.id);
   }
   

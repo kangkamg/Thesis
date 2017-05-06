@@ -8,6 +8,7 @@ public class ChangeAbility : MonoBehaviour
 {
   int changingAbilityID;
   public int changingAbilityOrdering;
+  public GameObject removeAbilityObj;
   public Transform changeAbleAbilitySlots;
   public Transform changingDetails;
   public Transform changeAbleDetails;
@@ -69,15 +70,37 @@ public class ChangeAbility : MonoBehaviour
     {
       Destroy (child.gameObject);
     }
-    Destroy(GameObject.Find("selectedArrow"));
     
+    List<AbilityStatus> learnedAbility = TemporaryData.GetInstance ().selectedCharacter.learnedAbility.Where (x => x.ability.abilityType == type || x.ability.abilityType == -type).ToList ();
     
-    List<AbilityStatus> changeAbleAbility = TemporaryData.GetInstance ().selectedCharacter.learnedAbility.Where (x => x.ability.abilityType == type || x.ability.abilityType == -type).ToList ();
+    List<AbilityStatus> changeAbleAbility = new List<AbilityStatus>();
     
-    if (changeAbleAbility.Count <= 0)
+    if (learnedAbility.Count <= 0) 
+    {
+      changeAbleAbilitySlots.transform.parent.parent.GetChild (1).gameObject.SetActive (true);
       changeAbleAbilitySlots.transform.parent.parent.GetChild (1).GetComponent<Text> ().text = "None Selectable Ability";
-    else
-      changeAbleAbilitySlots.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
+    }
+    else 
+    {
+      List<AbilityStatus> equipedAbility = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == type || x.ability.abilityType == -type).ToList ();
+      for (int i = 0; i < learnedAbility.Count; i++) 
+      {
+        if (equipedAbility.Where(x=> x.ability.ID == learnedAbility[i].ability.ID).Count() <= 0)
+        {
+          changeAbleAbility.Add (learnedAbility [i]);
+        }
+      }
+      
+      if (changeAbleAbility.Count > 0)
+      {
+        changeAbleAbilitySlots.transform.parent.parent.GetChild (1).gameObject.SetActive (false);
+      }
+      else
+      {
+        changeAbleAbilitySlots.transform.parent.parent.GetChild (1).gameObject.SetActive (true);
+        changeAbleAbilitySlots.transform.parent.parent.GetChild (1).GetComponent<Text> ().text = "None Selectable Ability";
+      }
+    }
       
     for (int i = 0; i < changeAbleAbility.Count; i++)
     {

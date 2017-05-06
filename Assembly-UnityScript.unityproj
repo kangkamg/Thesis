@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{53AB5240-1367-D2AE-0D77-22FF15E410B5}</ProjectGuid>
+    <ProjectGuid>{65525F99-72D0-BEF6-8496-9002C3F3191F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-UnityScript</AssemblyName>
@@ -51,14 +51,14 @@
      <Compile Include="Assets\Suriyun\Scripts\Camera Scripts\SmoothLookAt.js" />
      <Compile Include="Assets\Suriyun\Scripts\General Scripts\DragRigidbody.js" />
      <None Include="Assets\Resources\Materials\Shader\Unitychan_chara_eye.shader" />
-     <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D7M1.txt" />
      <None Include="Assets\Resources\Materials\Shader\readme.txt" />
      <None Include="Assets\Suriyun\README.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D2M4.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\Tutorial.txt" />
      <None Include="Assets\Suriyun\Update v1.4.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\Kraitong.txt" />
-     <None Include="Assets\Resources\DialogueFile\Thai\D1M1.txt" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D3M4.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
@@ -82,25 +82,25 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Data">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/Mono.Data.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Data.Sqlite">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Data.SqliteClient">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/Mono.Data.SqliteClient.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/Mono.Data.SqliteClient.dll</HintPath>
  </Reference>
  <Reference Include="System.Configuration">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Configuration.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/System.Configuration.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Data.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/System.Data.dll</HintPath>
  </Reference>
  <Reference Include="System.EnterpriseServices">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/System.EnterpriseServices.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/System.EnterpriseServices.dll</HintPath>
  </Reference>
  <Reference Include="System.Security">
- <HintPath>D:/5611610025/thesis/Assets/Plugins/System.Security.dll</HintPath>
+ <HintPath>D:/5611610025/Second/Assets/Plugins/System.Security.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

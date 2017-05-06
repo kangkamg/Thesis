@@ -2,6 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EffectiveAttack
+{
+  Slash = 1,
+  Pierce,
+  Strike,
+  Magic
+}
+
+public enum Element
+{
+  Earth = 1,
+  Water,
+  Fire,
+  Wind,
+  Lightning
+}
+
+
 [System.Serializable]
 public class CharacterBasicStatus
 {

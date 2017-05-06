@@ -8,11 +8,12 @@ public class ChangeEquipmentManager : MonoBehaviour
 { 
   public Transform changeAbleItem;
   public Transform weaponDetail;
+  public GameObject removeItemsObj;
 
   public List<Item> items = new List<Item>();
   public List<GameObject> slots = new List<GameObject> ();
 
-  Item _equipedItem = new Item();
+  Item changingEquipedItem = new Item();
 
   public void TryingItem(ItemData equipedItem)
   {
@@ -23,18 +24,24 @@ public class ChangeEquipmentManager : MonoBehaviour
     Transform secondWeaponStatus = this.transform.GetChild (0).GetChild(2);
     Transform isChanging = this.transform.GetChild (0).GetChild (3);
     
-    if (equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite != null) 
+    if (changingEquipedItem != null)
     {
       firstWeaponStatus.GetChild (0).gameObject.SetActive (true);
       firstWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = equipedWeaponStatus.GetChild (1).GetComponent<Image> ().sprite;
-    }
-    else
+      firstWeaponStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = changingEquipedItem.item.name;
+      firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = changingEquipedItem.item.increaseHP.ToString();
+      firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = changingEquipedItem.item.increaseAttack.ToString();
+      firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = changingEquipedItem.item.increaseDefense.ToString();
+      firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = changingEquipedItem.item.increaseCriRate.ToString();
+    } 
+    else 
+    {
       firstWeaponStatus.GetChild (0).gameObject.SetActive (false);
-    firstWeaponStatus.GetChild(0).GetChild(0).GetComponent<Text>().text = equipedWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text;
-    firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = equipedWeaponStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text;
+      firstWeaponStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = "0";
+      firstWeaponStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = "0";
+      firstWeaponStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = "0";
+      firstWeaponStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = "0";
+    }
     
     if (Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name) != null)
       secondWeaponStatus.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + equipedItem.items.item.name);
@@ -143,22 +150,43 @@ public class ChangeEquipmentManager : MonoBehaviour
     equipedWeaponStatus.GetChild(4).GetChild(0).GetComponent<Text>().text  = equipedItem.items.item.increaseDefense.ToString ();
     equipedWeaponStatus.GetChild(5).GetChild(0).GetComponent<Text>().text = equipedItem.items.item.increaseCriRate.ToString ();
     
-    GenerateInventoryItem (equipedItem.items);
+    ChangingItem (equipedItem.items);
+  }
+  
+  public void RemoveEquipedItem()
+  {
+    if (changingEquipedItem != null)
+    {
+      if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == changingEquipedItem).Count () > 0) 
+      {
+        for (int j = 0; j < TemporaryData.GetInstance ().playerData.inventory.Count; j++) 
+        {
+          if (TemporaryData.GetInstance ().playerData.inventory [j].ordering == TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == changingEquipedItem).First ().ordering)
+          {
+            TemporaryData.GetInstance ().playerData.inventory [j].equiped = false;
+            break;
+          }
+        }
+        Item changeItem = TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == changingEquipedItem).First ();
+        TemporaryData.GetInstance ().selectedCharacter.equipItem.Remove (changeItem);
+      }
+      ChangingItem (changingEquipedItem.item.itemType1);
+    }
   }
 
   private bool CheckingIfEquipedThisItemType(ItemData equipedItem)
   {
-    if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == _equipedItem).Count() > 0)
+    if (TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == changingEquipedItem).Count() > 0)
     {
       for (int j = 0; j < TemporaryData.GetInstance ().playerData.inventory.Count; j++) 
       {
-        if (TemporaryData.GetInstance ().playerData.inventory [j].ordering == TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == _equipedItem).First().ordering) 
+        if (TemporaryData.GetInstance ().playerData.inventory [j].ordering == TemporaryData.GetInstance ().selectedCharacter.equipItem.Where(x=>x == changingEquipedItem).First().ordering) 
         {
           TemporaryData.GetInstance ().playerData.inventory [j].equiped = false;
           break;
         }
       }
-      Item changeItem = TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == _equipedItem).First ();
+      Item changeItem = TemporaryData.GetInstance ().selectedCharacter.equipItem.Where (x => x == changingEquipedItem).First ();
       TemporaryData.GetInstance ().selectedCharacter.equipItem.Remove (changeItem);
       TemporaryData.GetInstance ().selectedCharacter.equipItem.Add (equipedItem.items);
       return true;
@@ -168,9 +196,10 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   public void ChangingItem(Item selectedItem)
   {
+    transform.GetChild (2).FindChild (selectedItem.item.itemType1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (selectedItem);
-
-    _equipedItem = selectedItem;
+    
+    changingEquipedItem = selectedItem;
 
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);
@@ -199,9 +228,10 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   public void ChangingItem(string itemtype1)
   {
+    transform.GetChild (2).FindChild (itemtype1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (itemtype1);
-
-    _equipedItem = null;
+    
+    changingEquipedItem = null;
 
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);
@@ -228,9 +258,18 @@ public class ChangeEquipmentManager : MonoBehaviour
     }
     slots.Clear ();
     items.Clear ();
-    Destroy(GameObject.Find("selectedArrow"));
     this.transform.GetChild (2).gameObject.SetActive (true);
 
+    if (changingEquipedItem != null)
+    {
+      GameObject removeObj = Instantiate (removeItemsObj);
+      removeObj.transform.SetParent (changeAbleItem.transform);
+      removeObj.transform.localScale = Vector3.one;
+      removeObj.transform.GetChild (0).GetComponent<Text> ().text = "Remove Equiped Item";
+      slots.Add (removeObj);
+      removeObj.GetComponent<Button> ().onClick.AddListener (() => RemoveEquipedItem ());
+    }
+    
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {
       if (TemporaryData.GetInstance().playerData.inventory [i].item.itemType1 == selectedItem.item.itemType1 && !TemporaryData.GetInstance().playerData.inventory[i].equiped)
@@ -303,6 +342,16 @@ public class ChangeEquipmentManager : MonoBehaviour
     slots.Clear ();
     items.Clear ();
     this.transform.GetChild (2).gameObject.SetActive (true);
+    
+    if (changingEquipedItem != null)
+    {
+      GameObject removeObj = Instantiate (removeItemsObj);
+      removeObj.transform.SetParent (changeAbleItem.transform);
+      removeObj.transform.localScale = Vector3.one;
+      removeObj.transform.GetChild (0).GetComponent<Text> ().text = "Remove Equiped Item";
+      slots.Add (removeObj);
+      removeObj.GetComponent<Button> ().onClick.AddListener (() => RemoveEquipedItem ());
+    }
 
     for (int i = 0; i < TemporaryData.GetInstance().playerData.inventory.Count; i++)
     {

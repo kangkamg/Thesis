@@ -115,13 +115,13 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     else
     {
       equipment.GetChild(0).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
-      equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      equipment.GetChild (0).GetChild (0).gameObject.SetActive (false);
       equipment.GetChild(0).GetChild (1).GetComponent<Text> ().text = "Empty";
       equipment.GetChild(1).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
       equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
       equipment.GetChild(1).GetChild (1).GetComponent<Text> ().text = "Empty";
       equipment.GetChild(2).GetComponent<Button> ().onClick.AddListener (() => GoToEquipmentPage ("Heart"));
-      equipment.GetChild (1).GetChild (0).gameObject.SetActive (false);
+      equipment.GetChild (2).GetChild (0).gameObject.SetActive (false);
       equipment.GetChild(2).GetChild (1).GetComponent<Text> ().text = "Empty";
     }
   }

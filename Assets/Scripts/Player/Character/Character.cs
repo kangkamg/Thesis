@@ -85,7 +85,7 @@ public class Character : MonoBehaviour
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
     targetAnim.SetInteger ("animatorIndex", 2);
     target.currentHP += GameManager.GetInstance().DamageResults();
-    
+    Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().PlayOneShot(Resources.Load<AudioClip>("Sound/Hit"),1f);
     if (GameManager.GetInstance().DamageResults() <= 0)
     {
       target.hpSlider.value -= Mathf.Abs (GameManager.GetInstance().DamageResults());
@@ -106,9 +106,10 @@ public class Character : MonoBehaviour
       GameManager.GetInstance().FloatingTextController (GameManager.GetInstance().DamageResults(), GameManager.GetInstance().showingResultOfAttack.transform, new Vector2(110,6.9f));
       GameManager.GetInstance().FloatingTextController  (GameManager.GetInstance().DamageResults(), target.transform);
     }
-    if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
     
-    else FinishingGaugeManager.GetInstance ().ChangeSliderValue (2.5f);
+    if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (6);
+    
+    else FinishingGaugeManager.GetInstance ().ChangeSliderValue (3f);
   }
   
   public void Standing()

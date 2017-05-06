@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
   public GameObject pauseMenu;
   public GameObject changingTurn;
   public GameObject objective;
+  public GameObject enemyData;
   public ShowingResultOfAttack showingResultOfAttack;
   public Transform playerController;
 
@@ -72,6 +73,7 @@ public class GameManager : MonoBehaviour
     pauseMenu.SetActive (false);
     showingResultOfAttack.gameObject.SetActive (false);
     playerUI.transform.GetChild (0).gameObject.SetActive (false);
+    enemyData.gameObject.SetActive (false);
     changingTurn.SetActive (false);
 
     if (!TemporaryData.GetInstance ().isTutorialDone)
@@ -82,7 +84,16 @@ public class GameManager : MonoBehaviour
 
   private void Start()
   {
-    if (!TemporaryData.GetInstance ().isTutorialDone) gameObject.AddComponent<Tutorial> ();
+    StartCoroutine (SystemManager.IncreasePlayedHrs ());
+    
+    if (!TemporaryData.GetInstance ().isTutorialDone)
+      gameObject.AddComponent<Tutorial> ();
+    else 
+    {
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().Play ();
+      
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().loop = true;
+    }
       StartCoroutine (InitGame ());
   }
   
@@ -1313,14 +1324,17 @@ public class GameManager : MonoBehaviour
     {
       RemoveDead ();  
       if (target.GetType () == typeof(AICharacter))
-        FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (15);
       else
-        FinishingGaugeManager.GetInstance ().ChangeSliderValue (5);
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (10);
     }
     
     if (isPlayerTurn) 
     {
-      playerUI.transform.GetChild (3).gameObject.SetActive (true);
+      if (!isTouch) 
+      {
+        playerUI.transform.GetChild (3).gameObject.SetActive (true);
+      }
       menu.transform.GetChild (0).gameObject.SetActive (true);
       menu.transform.GetChild (1).gameObject.SetActive (true);
     }
@@ -1820,16 +1834,105 @@ public class GameManager : MonoBehaviour
       playerController.GetComponent<PlayerController> ().RemoveSelected ();
   }
   
+  public void LookEnemyData()
+  {
+    isPause = true;
+    
+    enemyData.gameObject.SetActive (true);
+    foreach (Transform child in enemyData.transform.GetChild(1).GetChild(0))
+    {
+      Destroy (child.gameObject);
+    }
+    
+    List<int> enemyInMaps = new List<int> ();
+    
+    foreach (EnemyInMapData enemy in enemies) 
+    {
+      if (enemyInMaps.Count > 0)
+      {
+        if (enemyInMaps.Where (x => x == enemy.enemyID).Count () <= 0) 
+        {
+          enemyInMaps.Add (enemy.enemyID);
+          continue;
+        } 
+        else
+          continue;
+      }
+      enemyInMaps.Add (enemy.enemyID);
+    }
+    
+    for(int i = 0; i < enemyInMaps.Count; i++)
+    {
+      AIInformation newAiInfo = GetDataFromSql.GetAiInfomation (enemyInMaps[i]);
+      
+      GameObject enemyDataObj = Instantiate (Resources.Load<GameObject> ("GamePlay/EnemyData"));
+      
+      string enemyName = GetDataFromSql.GetCharacter (enemyInMaps [i]).characterName;
+      
+      if (Resources.Load<Sprite> ("Image/Character/" + enemyName) != null)
+      {
+        enemyDataObj.GetComponent<EnemyData> ().enemyImage.sprite = Resources.Load<Sprite> ("Image/Character/" + enemyName);
+      }
+      else 
+      {
+        enemyDataObj.GetComponent<EnemyData> ().enemyImage.gameObject.SetActive (false);
+      }
+      enemyDataObj.GetComponent<EnemyData> ().enemyName.text = enemyName;
+      enemyDataObj.GetComponent<EnemyData> ().droppedItem.text = "";
+        
+      for(int j = 0;j < newAiInfo.droppedItem.Count;j++)
+      {
+        string[] droppedItemInfo = newAiInfo.droppedItem [j].Split (" " [0]);
+        /*if (j > 0) 
+        {
+          enemyDataObj.GetComponent<EnemyData> ().droppedItem.text += "\n" + GetDataFromSql.GetItemFromID (int.Parse (droppedItemInfo [0].ToString ())).name;
+        } 
+        else
+        {
+          enemyDataObj.GetComponent<EnemyData> ().droppedItem.text = GetDataFromSql.GetItemFromID(int.Parse(droppedItemInfo [0].ToString())).name;
+        }*/
+      }
+      enemyDataObj.GetComponent<EnemyData> ().weakness.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + newAiInfo.effectiveAttack);
+      enemyDataObj.GetComponent<EnemyData> ().weakness.GetChild (1).GetComponent<Text> ().text = Enum.GetName (typeof(EffectiveAttack),(EffectiveAttack)newAiInfo.effectiveAttack);
+      enemyDataObj.GetComponent<EnemyData>().element.GetComponent<Text> ().text  = Enum.GetName (typeof(Element),(Element)newAiInfo.element);
+      
+      
+      enemyDataObj.transform.SetParent (enemyData.transform.GetChild(1).GetChild(0).transform);
+      enemyDataObj.transform.localScale = Vector3.one;
+    }
+    
+    if(enemyInMaps.Count > 2)
+    {
+      enemyData.transform.GetChild(1).GetChild(0).GetComponent<RectTransform> ().sizeDelta = 
+        new Vector2 (enemyData.transform.GetChild(1).GetChild(0).GetComponent<RectTransform> ().sizeDelta.x * (Mathf.FloorToInt(enemyInMaps.Count/2)), 
+        enemyData.transform.GetChild(1).GetChild(0).GetComponent<RectTransform> ().sizeDelta.y);
+    }
+    
+  }
+  
+  public void CloseEnemyData()
+  {
+    isPause = false;
+    
+    enemyData.gameObject.SetActive (false);
+    foreach (Transform child in enemyData.transform.GetChild(1).GetChild(0))
+    {
+      Destroy (child.gameObject);
+    }
+  }
+  
   public void PauseGame()
   {
     isPause = !isPause;
     if (isPause)
     {
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().Pause ();
       Time.timeScale = 0;
       pauseMenu.SetActive (true);
     } 
     else 
     {
+      Camera.main.transform.GetChild (0).GetComponent<AudioSource> ().UnPause();
       Time.timeScale = 1;
       pauseMenu.SetActive (false);
     }

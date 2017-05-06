@@ -23,7 +23,7 @@ public class SupMenuSceneManager : MonoBehaviour
   }
   private void Awake()
   {
-    _instance = this;
+    _instance = this; 
     if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "CharacterStatus")
     {
       allCharacterStatus.SetActive (true);
@@ -64,6 +64,8 @@ public class SupMenuSceneManager : MonoBehaviour
   
   private void Start()
   {
+    StartCoroutine (SystemManager.IncreasePlayedHrs ());
+    
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
       if (PlayerPrefs.GetString (Const.OpenSupMenuScene, "CharacterStatus") == "Party") 

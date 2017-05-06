@@ -44,45 +44,25 @@ public class DialogueManager : MonoBehaviour
 
   private void Start()
   { 
+    StartCoroutine (SystemManager.IncreasePlayedHrs ());
+    
     _textComponent.text = "";
 
     string _dialoguePath = TemporaryData.GetInstance ().storyPlayingName;
     
     storyDialogue = GetTextAssetFile.GetInstance().LoadText(_dialoguePath);
       
-    for (int i = 0; i < storyDialogue.allDialogue.Count; i++)
+    dialogueWord = storyDialogue.allDialogue;
+    dialogueSpeaker = storyDialogue.characterName;
+    dialogueBG = storyDialogue.bgName;
+    
+    for(int i = 0; i < dialogueWord.Count;i++)
     {
-      foreach (string speaker in storyDialogue.characterName) 
-      {
-        if (storyDialogue.allDialogue [i] == speaker) 
-        {
-          dialogueSpeaker.Add (storyDialogue.allDialogue [i]);
-          _isName = true;
-          break;
-        }
-      }
-      
-      foreach (string bgName in storyDialogue.bgName)
-      {
-        if (storyDialogue.allDialogue [i] == bgName)
-        {
-          dialogueBG.Add (storyDialogue.allDialogue [i]);
-          _isName = true;
-          break;
-        }
-      }
-      
-      if (_isName) 
-      {
-        _isName = false;
-        continue;
-      }
-      
-      if (storyDialogue.allDialogue [i] == "AddCharacter")
+      if (dialogueWord[i] == "AddCharacter")
       {
         string party = "";
         
-        if (storyDialogue.allDialogue [i + 4] == "false") 
+        if (dialogueWord [i + 4] == "false") 
         {
           party = " To Your Party";
         }
@@ -91,55 +71,79 @@ public class DialogueManager : MonoBehaviour
           party = " To Your Team";
         }
         
-        addingCharacter.Add (storyDialogue.allDialogue [i + 2]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 3]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 4]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 5]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 6]);
+        addingCharacter.Add (dialogueWord [i + 2]);
+        addingCharacter.Add (dialogueWord [i + 3]);
+        addingCharacter.Add (dialogueWord [i + 4]);
+        addingCharacter.Add (dialogueWord [i + 5]);
+        addingCharacter.Add (dialogueWord[i + 6]);
         
-        dialogueWord.Add ("Adding " + storyDialogue.allDialogue [i + 1] + party);
+        dialogueWord.Add ("Adding " +  dialogueWord [i + 1] + party);
         dialogueSpeaker.Add ("");
         dialogueBG.Add ("");
+        
+        
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
         break;
       }
-      else if (storyDialogue.allDialogue [i] == "AddCharacter(FirstTime)")
+      else if (dialogueWord [i] == "AddCharacter(FirstTime)")
       {
-        addingCharacter.Add (storyDialogue.allDialogue [i + 2]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 3]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 4]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 5]);
-        addingCharacter.Add (storyDialogue.allDialogue [i + 6]);
+        string name = dialogueWord [i + 1];
+        
+        addingCharacter.Add (dialogueWord [i + 2]);
+        addingCharacter.Add (dialogueWord [i + 3]);
+        addingCharacter.Add (dialogueWord [i + 4]);
+        addingCharacter.Add (dialogueWord [i + 5]);
+        addingCharacter.Add (dialogueWord [i + 6]);
 
-        dialogueWord.Add ("Adding " + storyDialogue.allDialogue [i + 1] + " In your teams go to add to your party in informations->party");
+        dialogueWord.Add ("Adding " + dialogueWord[i+1] + " In your teams go to add to your party in informations->party");
         dialogueSpeaker.Add ("");
         dialogueBG.Add ("");
+        
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
+        dialogueWord.Remove (dialogueWord [i]);
         break;
       }
-      else if (storyDialogue.allDialogue [i] == "AddItem")
+      else if (dialogueWord [i] == "AddItem")
       {
+        dialogueWord.Remove (dialogueWord [i]);
+        
         addItem = GetDataFromSql.GetReward (_dialoguePath);
         dialogueWord.Add ("You recieve new items");
         dialogueSpeaker.Add ("");
         dialogueBG.Add ("");
         break;
       }
-      else if (storyDialogue.allDialogue [i] == "Ending")
+      else if (dialogueWord [i] == "Ending")
       {
+        
+        dialogueWord.Remove (dialogueWord [i]);
+        
         dialogueWord.Add ("You recieve new story book");
         dialogueSpeaker.Add ("");
         dialogueBG.Add ("");
         break;
       }
-      else if (storyDialogue.allDialogue [i] == "Ending(FirstTime)")
+      else if (dialogueWord [i] == "Ending(FirstTime)")
       {
+        
+        dialogueWord.Remove (dialogueWord [i]);
+        
         dialogueWord.Add ("You recieve new story book go to look in informations->storybook");
         dialogueSpeaker.Add ("");
         dialogueBG.Add ("");
         break;
       }
-      
-
-      dialogueWord.Add(storyDialogue.allDialogue [i]);
     }    
      
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
@@ -237,6 +241,8 @@ public class DialogueManager : MonoBehaviour
     _textComponent.text = "";
    
     ShowCha (false, false, null, null);
+    LeftCharacter.GetComponent<Image> ().color = Color.white;
+    RightCharacter.GetComponent<Image> ().color = Color.white;
     talkingCharacter.SetActive (false);
 
     if (currentDialogueIndex == 0) 
@@ -293,111 +299,169 @@ public class DialogueManager : MonoBehaviour
           {
             ShowCha (false, false, null, null);
             talkingCharacter.SetActive (false);
+            oldLeft = "";
+            oldRight = "";
           } 
           else
           {
-            if (dialogueSpeaker [currentDialogueIndex] == oldLeft || dialogueSpeaker [currentDialogueIndex] == oldRight) 
+            if (dialogueSpeaker [currentDialogueIndex].Contains("Left")) 
             {
-              if (dialogueSpeaker [currentDialogueIndex] == oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) 
+              if (dialogueSpeaker [currentDialogueIndex].Replace("Left",null) == oldLeft) 
               {
-                if (!string.IsNullOrEmpty (oldRight)) 
+                if (string.IsNullOrEmpty (oldRight)) 
                 {
-                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
+                  if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null)
                   {
-                    ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
-                  }
-                  oldRight = dialogueSpeaker [currentDialogueIndex];
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-                } 
-                else 
-                {
-                  ShowCha (true, false, oldLeft, null);
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-                }
-              }
-              else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] == oldRight)
-              {
-                if (!string.IsNullOrEmpty (oldLeft))
-                {
-                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
-                  {
-                    ShowCha (true, true, dialogueSpeaker [currentDialogueIndex], oldRight);
-                  }
-                  oldLeft = dialogueSpeaker [currentDialogueIndex];
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-                }
-                else
-                {
-                  ShowCha (false, true, null, oldRight);
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-                }
-              } 
-            } 
-            else if (dialogueSpeaker [currentDialogueIndex] != oldLeft && dialogueSpeaker [currentDialogueIndex] != oldRight) 
-            {
-              if (!string.IsNullOrEmpty (oldLeft)) 
-              {
-                if (!string.IsNullOrEmpty (oldRight)) 
-                {
-                  ShowCha (false, false, null, null);
-                  oldLeft = null;
-                  oldRight = null;
-                  talkingCharacter.SetActive (false);
-                }
-                else 
-                {
-                  if (LeftCharacter.activeSelf)
-                  {
-                    if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
-                    {
-                      ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
-                    }
-                    oldRight = dialogueSpeaker [currentDialogueIndex];
-                    talkingCharacter.SetActive (true);
-                    talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+                    ShowCha (true, false, oldLeft, null);
                   } 
                   else
                   {
-                    if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
-                    {
-                      ShowCha (true, false, dialogueSpeaker [currentDialogueIndex], null);
-                    }
-                    oldLeft = dialogueSpeaker [currentDialogueIndex];
-                    talkingCharacter.SetActive (true);
-                    talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+                    ShowCha (false, false, oldLeft, null);
                   }
                 }
-              }
-              else 
-              {
-                if (!string.IsNullOrEmpty (oldRight)) 
-                {
-                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
-                  {
-                    ShowCha (true, true, dialogueSpeaker [currentDialogueIndex], oldRight);
-                  }
-                  oldLeft = dialogueSpeaker [currentDialogueIndex];
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
-                } 
                 else
                 {
-                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex]) != null) 
+                  if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
                   {
-                    ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex]);
+                    ShowCha (true, true, oldLeft, oldRight);
+                  } 
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
+                  {
+                    ShowCha (false, true, oldLeft, oldRight);
                   }
-                  oldRight = dialogueSpeaker [currentDialogueIndex];
-                  talkingCharacter.SetActive (true);
-                  talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex];
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (true, false, oldLeft, oldRight);
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (false, false, oldLeft, oldRight);
+                  }
                 }
+                LeftCharacter.GetComponent<Image> ().color = Color.white;
+                RightCharacter.GetComponent<Image> ().color = Color.gray;
+                talkingCharacter.SetActive (true);
+                talkingCharacter.GetComponentInChildren<Text> ().text = oldLeft;
+              }
+              else
+              {
+                if (string.IsNullOrEmpty (oldRight)) 
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Left",null)) != null)
+                  {
+                    ShowCha (true, false, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , null);
+                  } 
+                  else
+                  {
+                    ShowCha (false, false, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , null);
+                  }
+                }
+                else
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Left",null)) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
+                  {
+                    ShowCha (true, true, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , oldRight);
+                  } 
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Left",null)) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
+                  {
+                    ShowCha (false, true, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , oldRight);
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Left",null)) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (true, false, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , oldRight);
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Left",null)) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (false, false, dialogueSpeaker [currentDialogueIndex].Replace("Left",null) , oldRight);
+                  }
+                }
+                LeftCharacter.GetComponent<Image> ().color = Color.white;
+                RightCharacter.GetComponent<Image> ().color = Color.gray;
+                oldLeft = dialogueSpeaker [currentDialogueIndex].Replace ("Left", null);
+                talkingCharacter.SetActive (true);
+                talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex].Replace("Left",null) ;
+              }
+            } 
+            else if (dialogueSpeaker [currentDialogueIndex].Contains("Right")) 
+            {
+              if (dialogueSpeaker [currentDialogueIndex].Replace("Right",null) == oldRight) 
+              {
+                if (string.IsNullOrEmpty (oldLeft)) 
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + oldRight) != null)
+                  {
+                    ShowCha (false, true, null, oldRight);
+                  } 
+                  else
+                  {
+                    ShowCha (false, false, null, oldRight);
+                  }
+                }
+                else
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
+                  {
+                    ShowCha (true, true, oldLeft, oldRight);
+                  } 
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) != null )
+                  {
+                    ShowCha (false, true, oldLeft, oldRight);
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (true, false, oldLeft, oldRight);
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null && Resources.Load<Sprite> ("Image/Character/" + oldRight) == null )
+                  {
+                    ShowCha (false, false, oldLeft, oldRight);
+                  }
+                }
+                LeftCharacter.GetComponent<Image> ().color = Color.gray;
+                RightCharacter.GetComponent<Image> ().color = Color.white;
+                talkingCharacter.SetActive (true);
+                talkingCharacter.GetComponentInChildren<Text> ().text = oldRight;
+              }
+              else
+              {
+                if (string.IsNullOrEmpty (oldLeft)) 
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Right",null)) != null)
+                  {
+                    ShowCha (false, true, null, dialogueSpeaker [currentDialogueIndex].Replace("Right",null));
+                  } 
+                  else
+                  {
+                    ShowCha (false, false, null, dialogueSpeaker [currentDialogueIndex].Replace("Right",null));
+                  }
+                }
+                else
+                {
+                  if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Right",null)) != null && Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null )
+                  {
+                    ShowCha (true, true, oldLeft, dialogueSpeaker [currentDialogueIndex].Replace("Right",null) );
+                  } 
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Right",null)) == null && Resources.Load<Sprite> ("Image/Character/" + oldLeft) != null )
+                  {
+                    ShowCha (true, false, oldLeft , dialogueSpeaker [currentDialogueIndex].Replace("Right",null) );
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Right",null)) != null && Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null )
+                  {
+                    ShowCha (false, true, oldLeft , dialogueSpeaker [currentDialogueIndex].Replace("Right",null) );
+                  }
+                  else if (Resources.Load<Sprite> ("Image/Character/" + dialogueSpeaker [currentDialogueIndex].Replace("Right",null)) == null && Resources.Load<Sprite> ("Image/Character/" + oldLeft) == null )
+                  {
+                    ShowCha (false, false, oldLeft, dialogueSpeaker [currentDialogueIndex].Replace("Right",null) );
+                  }
+                }
+                LeftCharacter.GetComponent<Image> ().color = Color.gray;
+                RightCharacter.GetComponent<Image> ().color = Color.white;
+                oldRight = dialogueSpeaker [currentDialogueIndex].Replace ("Right", null);
+                talkingCharacter.SetActive (true);
+                talkingCharacter.GetComponentInChildren<Text> ().text = dialogueSpeaker [currentDialogueIndex].Replace("Right",null) ;
+              }
               }
             }
           }
-        }
       }
     }
     
@@ -467,9 +531,17 @@ public class DialogueManager : MonoBehaviour
 
     if (showRight) 
     {
-      RightCharacter.SetActive (true);
-      LeftCharacter.SetActive (showLeft);
-      RightCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character2);
+      if(character2 == "???" || Resources.Load<Sprite> ("Image/Character/" + character2) == null )
+      {
+        LeftCharacter.SetActive (showLeft);
+        RightCharacter.SetActive (false);
+      }
+      else
+      {
+        RightCharacter.SetActive (true);
+        LeftCharacter.SetActive (showLeft);
+        RightCharacter.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + character2);
+      }
     } 
     else
     {

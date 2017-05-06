@@ -14,6 +14,7 @@ public class TownSceneManager : MonoBehaviour
 
   public void Start()
   {
+    StartCoroutine (SystemManager.IncreasePlayedHrs ());
     shop.SetActive (true);
     shopSup.SetActive (false);
     shopBg.SetActive (false);

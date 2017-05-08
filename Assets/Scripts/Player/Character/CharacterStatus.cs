@@ -26,11 +26,11 @@ public class CharacterBasicStatus
   public int ID;
   public string characterName;
   public int maxHP;
-  public int maxHpGrowth;
+  public float maxHpGrowth;
   public int attack;
-  public int attackGrowth;
+  public float attackGrowth;
   public int defense;
-  public int defenseGrowth;
+  public float defenseGrowth;
   public float criRate;
   public float criRateGrowth;
   public int movementPoint;
@@ -47,7 +47,7 @@ public class CharacterStatus
   {
     get 
     { 
-      return (Mathf.RoundToInt (Mathf.Pow (characterLevel+1, 4) - Mathf.Pow(characterLevel,4)));
+      return (Mathf.RoundToInt (Mathf.Pow (characterLevel+1, 4) - Mathf.Pow(characterLevel-1,4)));
     }
     private set
     { 
@@ -68,7 +68,7 @@ public class CharacterStatus
       int ret = basicStatus.maxHP;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.maxHpGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.maxHpGrowth);
       }
       return ret;
     }
@@ -81,7 +81,7 @@ public class CharacterStatus
       int ret = basicStatus.attack;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.attackGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.attackGrowth);
       }
       return ret;
     }
@@ -94,7 +94,7 @@ public class CharacterStatus
       int ret = basicStatus.defense;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.defenseGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.defenseGrowth);
       }
       return ret;
     }
@@ -107,7 +107,7 @@ public class CharacterStatus
       float ret = basicStatus.criRate;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.criRateGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.criRateGrowth);
       }
       return ret;
     }
@@ -130,7 +130,7 @@ public class CharacterStatus
       int ret = basicStatus.maxHP;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.maxHpGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.maxHpGrowth);
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
@@ -149,7 +149,7 @@ public class CharacterStatus
       int ret = basicStatus.attack;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.attackGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.attackGrowth);
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
@@ -168,7 +168,7 @@ public class CharacterStatus
       int ret = basicStatus.defense;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.defenseGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.defenseGrowth);
       }
       for (int i = 0; i < equipItem.Count; i++)
       {
@@ -187,7 +187,7 @@ public class CharacterStatus
       float ret = basicStatus.criRate;
       if (characterLevel > 1)
       {
-        ret += characterLevel * basicStatus.criRateGrowth;
+        ret += Mathf.CeilToInt(characterLevel * basicStatus.criRateGrowth);
       }
       for (int i = 0; i < equipItem.Count; i++)
       {

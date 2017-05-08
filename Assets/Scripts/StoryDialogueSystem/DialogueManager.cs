@@ -251,7 +251,12 @@ public class DialogueManager : MonoBehaviour
       {
         if (dialogueBG [currentDialogueIndex] != "None" || !string.IsNullOrEmpty(dialogueBG [currentDialogueIndex]) )
         {
-          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + dialogueBG [currentDialogueIndex]);
+          if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("Library"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/Library");
+          else if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("Forest"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/Forest");
+          else if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("KraitongHouse"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/KraitongHouse");
         }
       }
       if(dialogueSpeaker.Count > 0)
@@ -276,7 +281,12 @@ public class DialogueManager : MonoBehaviour
       {
         if (dialogueBG [currentDialogueIndex] != "None" || !string.IsNullOrEmpty(dialogueBG [currentDialogueIndex]))
         {
-          BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/" + dialogueBG [currentDialogueIndex]);
+          if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("Library"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/Library");
+          else if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("Forest"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/Forest");
+          else if (("Image/StoryScene/" + dialogueBG [currentDialogueIndex]).ToString ().Contains ("KraitongHouse"))
+            BG.sprite = Resources.Load<Sprite> ("Image/StoryScene/KraitongHouse");
         }
       }
       

@@ -14,7 +14,7 @@ public class ChangeEquipmentManager : MonoBehaviour
   public List<GameObject> slots = new List<GameObject> ();
 
   Item changingEquipedItem = new Item();
-
+  
   public void TryingItem(ItemData equipedItem)
   {
     this.transform.GetChild (0).gameObject.SetActive (true);
@@ -196,11 +196,12 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   public void ChangingItem(Item selectedItem)
   {
+    
+    changingEquipedItem = selectedItem;
+    
     transform.GetChild (2).FindChild (selectedItem.item.itemType1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (selectedItem);
     
-    changingEquipedItem = selectedItem;
-
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);
     Transform equipedWeaponStatus = this.transform.GetChild (1);
@@ -228,10 +229,10 @@ public class ChangeEquipmentManager : MonoBehaviour
 
   public void ChangingItem(string itemtype1)
   {
+    changingEquipedItem = null;
+    
     transform.GetChild (2).FindChild (itemtype1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (itemtype1);
-    
-    changingEquipedItem = null;
 
     this.transform.GetChild (0).gameObject.SetActive (false);
     this.transform.GetChild (1).gameObject.SetActive (true);

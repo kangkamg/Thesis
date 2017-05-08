@@ -28,6 +28,23 @@ public class GetDataFromSql
       File.Copy(loadDb, filepath);
       #endif
     }
+    else
+    {
+      if(TemporaryData.GetInstance().version != Application.version)
+      {
+        PlayerPrefs.SetString (Const.Version, Application.version);
+        TemporaryData.GetInstance().version = Application.version;
+        #if UNITY_ANDROID
+        var loadDb = new WWW(Application.streamingAssetsPath + "/" + Databasename);
+        while(!loadDb.isDone) {Debug.Log("Error");}
+        File.WriteAllBytes(filepath, loadDb.bytes);
+        #elif UNITY_STANDALONE
+        var loadDb = Application.streamingAssetsPath + "/" + Databasename;
+        File.Copy(loadDb, filepath, true);
+        #endif
+      }
+    }
+    
     var dbPath = filepath;
     #endif
   
@@ -197,13 +214,13 @@ public class GetDataFromSql
         n.ID = reader.GetInt32 (0);
         n.characterName = reader.GetString (1);
         n.maxHP = (int)reader.GetFloat (2); 
-        n.maxHpGrowth= (int)reader.GetFloat (3) ;
+        n.maxHpGrowth= reader.GetFloat (3) ;
         n.attack = (int)reader.GetFloat (4);
-        n.attackGrowth = (int)reader.GetFloat (5);
+        n.attackGrowth = reader.GetFloat (5);
         n.defense = (int)reader.GetFloat (6);
-        n.defenseGrowth = (int)reader.GetFloat (7);
-        n.criRate = (int)reader.GetFloat (8);
-        n.criRateGrowth = (int)reader.GetFloat (9);
+        n.defenseGrowth = reader.GetFloat (7);
+        n.criRate = reader.GetFloat (8);
+        n.criRateGrowth = reader.GetFloat (9);
         n.movementPoint = (int)reader.GetFloat (10);
         string learnAbleAbility = reader.GetString (11);
         string[] learnAbleAb = learnAbleAbility.Split ("," [0]);
@@ -259,12 +276,12 @@ public class GetDataFromSql
         reader = null;
         dbcmd.Dispose ();
         dbcmd = null;
-
-        return n; 
+        
+        break;
       }
     }
     
-    return null;
+    return n;
   }
 
   public static List<ItemStatus> GetShopItem(List<int> passedMap)

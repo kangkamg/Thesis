@@ -96,8 +96,8 @@ public class CharacterStatusSceneManager : MonoBehaviour
       selectedCharacterStatus.GetChild (0).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.basicStatus.characterName.ToString ();
       selectedCharacterStatus.GetChild (1).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.characterLevel.ToString ();
       selectedCharacterStatus.GetChild (2).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.maxHp.ToString ();
-      selectedCharacterStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString ();
-      selectedCharacterStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString ();
+      selectedCharacterStatus.GetChild (3).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.defense.ToString ();
+      selectedCharacterStatus.GetChild (4).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.attack.ToString ();
       selectedCharacterStatus.GetChild (5).GetChild (0).GetComponent<Text> ().text = TemporaryData.GetInstance ().selectedCharacter.criRate.ToString ();
     } 
     else 

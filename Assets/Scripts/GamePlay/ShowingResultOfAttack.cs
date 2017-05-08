@@ -21,7 +21,13 @@ public class ShowingResultOfAttack : MonoBehaviour
     }
     else 
     {
-      selectedData.GetChild (0).GetComponent<Image> ().enabled = false;
+      if(selectedCharacter.GetType() == typeof(AICharacter))
+      {
+        selectedData.GetChild (0).GetComponent<Image> ().enabled = true;
+        selectedData.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/Monster");
+      }
+      else
+        selectedData.GetChild (0).GetComponent<Image> ().enabled = false;
     }
     selectedData.GetChild (0).GetChild(0).GetComponent<Text> ().text = selectedCharacter.name;
     selectedData.GetChild (1).GetChild(0).GetComponent<Text> ().text = selectedCharacter.currentHP.ToString();
@@ -34,7 +40,13 @@ public class ShowingResultOfAttack : MonoBehaviour
     }
     else 
     {
-      targetData.GetChild (0).gameObject.SetActive (false);
+      if(targetCharacter.GetType() == typeof(AICharacter))
+      {
+        targetData.GetChild (0).GetComponent<Image> ().enabled = true;
+        targetData.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/Monster");
+      }
+      else
+        targetData.GetChild (0).GetComponent<Image> ().enabled = false;
     }
     targetData.GetChild (0).GetChild(0).GetComponent<Text> ().text = targetCharacter.name;
     targetData.GetChild (1).GetChild(0).GetComponent<Text> ().text = targetCharacter.currentHP.ToString();

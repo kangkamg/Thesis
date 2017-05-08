@@ -57,6 +57,7 @@ public class TemporaryData
   private static TemporaryData instance;
   
   public string storyPlayingName;
+  public string version;
 
   public static TemporaryData GetInstance()
   {

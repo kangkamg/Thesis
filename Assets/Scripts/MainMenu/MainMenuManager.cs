@@ -25,6 +25,24 @@ public class MainMenuManager : MonoBehaviour
   {
     StartCoroutine (SystemManager.IncreasePlayedHrs ());
     
+     TemporaryData.GetInstance ().playerData.characters [0].characterLevel = 10;
+    
+      for(int i= 0; i < TemporaryData.GetInstance ().playerData.characters [0].basicStatus.learnAbleAbility.Count;i++)
+      {
+        AbilityStatus learning = new AbilityStatus ();
+        string[] learnAbleAb = TemporaryData.GetInstance ().playerData.characters [0].basicStatus.learnAbleAbility [i].Split (" " [0]);
+        for(int j = 0; j < learnAbleAb.Length; j=j+2)
+        {
+           if (int.Parse (learnAbleAb [j + 1]) <= TemporaryData.GetInstance ().playerData.characters [0].characterLevel && TemporaryData.GetInstance ().playerData.characters [0].learnedAbility.Where(x=>x.ability.ID == int.Parse(learnAbleAb[j])).Count() <= 0) 
+          {
+            learning.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
+            learning.level = 1;
+            learning.exp = 0;
+            TemporaryData.GetInstance ().playerData.characters [0].learnedAbility.Add (learning);
+           }
+        }
+      }
+      
     playerMenu.SetActive (false);
     bgMenu.SetActive (false);
     PlayerPrefs.SetString (Const.PreviousScene, SceneManager.GetActiveScene ().name);
@@ -280,11 +298,9 @@ public class MainMenuManager : MonoBehaviour
       {
         GameObject storiesButton = Instantiate (Resources.Load<GameObject> ("MainMenuScene/STORIESBUTTON"));
         storiesButton.transform.SetParent (_parent.GetChild (0));
-        storiesButton.transform.GetChild (0).GetComponent<Text> ().text = newMapStory [i + (storiesPages * 4)].storiesName;
+        storiesButton.transform.GetChild (0).GetComponent<LanguageTextChanged>().SetLanguage(newMapStory [i + (storiesPages * 4)].storiesName);
         storiesButton.transform.localScale = Vector3.one;
-        storiesButton.GetComponent<Button> ().onClick.AddListener (() => GoToStoriesBook (storiesButton.transform.GetChild (0).GetComponent<Text> ().text.ToString()));
-        
-        if(TemporaryData.GetInstance().playerData.passedMap.Where(x=>x==i+(storiesPages*4)).Count() <= 0)storiesButton.GetComponent<Button> ().interactable = false;
+        storiesButton.GetComponent<Button> ().onClick.AddListener (() => GoToStoriesBook (storiesButton.transform.GetChild (0).GetComponent<LanguageTextChanged>().keyLanguage));
       }
     }
     
@@ -344,9 +360,9 @@ public class MainMenuManager : MonoBehaviour
       if (i+(storiesPages*4) > newMapStory.Count-1 || i > 4) break;
       GameObject storiesButton = Instantiate(Resources.Load<GameObject>("MainMenuScene/STORIESBUTTON"));
       storiesButton.transform.SetParent (_parent.GetChild(0));
-      storiesButton.transform.GetChild (0).GetComponent<Text> ().text = newMapStory [i+(storiesPages*4)].storiesName;
+      storiesButton.transform.GetChild (0).GetComponent<LanguageTextChanged>().SetLanguage(newMapStory [i + (storiesPages * 4)].storiesName);
       storiesButton.transform.localScale = Vector3.one;
-      storiesButton.GetComponent<Button>().onClick.AddListener(()=>ShowMaps(storiesButton.transform.GetChild (0).GetComponent<Text> ().text.ToString()));
+      storiesButton.GetComponent<Button>().onClick.AddListener(()=>ShowMaps(  storiesButton.transform.GetChild (0).GetComponent<LanguageTextChanged>().keyLanguage));
     }
     
     if (storiesPages >= Mathf.FloorToInt (newMapStory.Count / 4))
@@ -392,9 +408,9 @@ public class MainMenuManager : MonoBehaviour
       GameObject mapButton = Instantiate(Resources.Load<GameObject>("MainMenuScene/STORIESBUTTON"));
       mapButton.transform.SetParent (_parent.GetChild(0));
       mapButton.transform.GetChild (0).name = mapInStories [i+(mapPages*4)].ToString();
-      mapButton.transform.GetChild (0).GetComponent<Text> ().text = mapInStories [i+(mapPages*4)].ToString();
+      mapButton.transform.GetChild (0).GetComponent<LanguageTextChanged> ().SetLanguage(mapInStories [i+(mapPages*4)].ToString());
       mapButton.transform.localScale = Vector3.one;
-      mapButton.GetComponent<Button>().onClick.AddListener(()=>ShowDialogBox(int.Parse(mapButton.transform.GetChild (0).GetComponent<Text> ().text)));
+      mapButton.GetComponent<Button>().onClick.AddListener(()=>ShowDialogBox(int.Parse( mapButton.transform.GetChild (0).GetComponent<LanguageTextChanged>().keyLanguage)));
       
       if (i != 0)
       {

@@ -149,7 +149,6 @@ public class ItemManager : MonoBehaviour
     dialogBox.transform.SetParent (showing.transform.parent.parent);
     dialogBox.transform.localScale = Vector3.one;
     dialogBox.transform.localPosition = Vector2.zero;
-    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("MainMenuScene"));
     dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Buying(data));
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => NotBuying (dialogBox,data));
     
@@ -220,7 +219,6 @@ public class ItemManager : MonoBehaviour
     dialogBox.transform.SetParent (showing.transform.parent.parent);
     dialogBox.transform.localScale = Vector3.one;
     dialogBox.transform.localPosition = Vector2.zero;
-    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => DialogBoxManager.GetInstance().AddChangeScene ("MainMenuScene"));
     dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Selling(item));
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => NotSelling (dialogBox,item));
     

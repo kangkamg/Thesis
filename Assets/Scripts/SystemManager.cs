@@ -42,6 +42,7 @@ public class SystemManager
       {
         if (characterStatus.experience < characterStatus.nextLevelExp) 
         {
+          showingSlider.parent.GetChild (1).gameObject.SetActive (false);
           characterStatus.experience++;
           getExp--;   
           showingSlider.GetComponent<Slider> ().value = Mathf.Lerp (showingSlider.GetComponent<Slider> ().value, (characterStatus.experience * 100) / characterStatus.nextLevelExp,
@@ -77,7 +78,7 @@ public class SystemManager
       string[] learnAbleAb = characterStatus.basicStatus.learnAbleAbility [i].Split (" " [0]);
       for (int j = 0; j < learnAbleAb.Length; j = j + 2)
       {
-        if (int.Parse (learnAbleAb [j + 1]) == characterStatus.characterLevel && characterStatus.learnedAbility.Where(x=>x.ability.ID == int.Parse(learnAbleAb[j])).Count() <= 0) 
+        if (int.Parse (learnAbleAb [j + 1]) <= characterStatus.characterLevel && characterStatus.learnedAbility.Where(x=>x.ability.ID == int.Parse(learnAbleAb[j])).Count() <= 0) 
         {
           learning.ability = GetDataFromSql.GetAbility (int.Parse (learnAbleAb [j]));
           learning.level = 1;

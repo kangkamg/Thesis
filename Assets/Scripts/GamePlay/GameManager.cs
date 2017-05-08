@@ -237,9 +237,11 @@ public class GameManager : MonoBehaviour
                         {
                           if (selectedCharacter.transform.position != oldPosition && selectedCharacter.gridPosition != oldGridPosition) 
                           {
+                            RemoveAttackHighLightOnly ();
                             selectedCharacter.gridPosition = oldGridPosition;
                             selectedCharacter.transform.position = oldPosition;
                             CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+                            HighlightTileAt (selectedCharacter.gridPosition, PrefabHolder.GetInstance ().AttackTile, usingAbility.ability.range, usingAbility.ability.rangeType);
                             break;
                           } 
                           else 
@@ -257,11 +259,16 @@ public class GameManager : MonoBehaviour
                   }
                 }
               }
-              if (hit.transform.tag == "Enemy") {
-                if (highlightedTileTargetInRange.Count > 0) {
-                  foreach (GameObject h in highlightedTileTargetInRange) {
-                    if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) {
-                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) {
+              if (hit.transform.tag == "Enemy") 
+              {
+                if (highlightedTileTargetInRange.Count > 0) 
+                {
+                  foreach (GameObject h in highlightedTileTargetInRange) 
+                  {
+                    if (h.transform.position.x == hit.transform.position.x && h.transform.position.z == hit.transform.position.z) 
+                    {
+                      if (highlightTileAttack.Where (x => x.transform.position.x == hit.transform.position.x && x.transform.position.z == hit.transform.position.z).Count () <= 0) 
+                      {
 
                         Tile desTile = CheckingMovementToAttackTarget (hit.transform);
 
@@ -270,7 +277,9 @@ public class GameManager : MonoBehaviour
                         selectedCharacter.target = hit.transform.GetComponent<Character> ();
 
                         break;
-                      } else {
+                      } 
+                      else
+                      {
                         AttackWithCurrentCharacter (map [(int)hit.transform.GetComponent<Character> ().gridPosition.x] [(int)hit.transform.GetComponent<Character> ().gridPosition.z]);
                         selectedCharacter.target = hit.transform.GetComponent<Character> ();
                         break;
@@ -1357,9 +1366,12 @@ public class GameManager : MonoBehaviour
     playerUI.transform.GetChild (0).GetChild (1).gameObject.SetActive (false);
     menu.transform.GetChild (0).gameObject.SetActive (false);
     
-    foreach (Renderer a in selectedCharacter.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+     if (selectedCharacter != null) 
     {
-      a.material.color = Color.gray;
+      foreach (Renderer a in selectedCharacter.transform.GetChild(0).GetComponent<CharacterModelManager>().materials) 
+      {
+        a.material.color = Color.gray;
+      }
     }
     
     if(mapObjective == 1)
@@ -1390,7 +1402,10 @@ public class GameManager : MonoBehaviour
 
   private IEnumerator WaitEndTurn()
   {
-    CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+    if (selectedCharacter != null) 
+    {
+      CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
+    }
     RemoveMapHighlight ();
     if (chaSelector != null) 
     {
@@ -1542,7 +1557,15 @@ public class GameManager : MonoBehaviour
       playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + _selectedCharacter.name);
     }
     else
-      playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Image> ().enabled = false;
+    {
+      if(_selectedCharacter.GetType() == typeof(AICharacter))
+      {
+        playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Image> ().enabled = true;
+        playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/Monster");
+      }
+      else
+        playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetComponent<Image> ().enabled = false;
+    }
     
     playerUI.transform.GetChild (0).GetChild (0).GetChild (1).GetChild (0).GetComponent<Text> ().text = _selectedCharacter.name.ToString ();
     playerUI.transform.GetChild (0).GetChild (0).GetChild (2).GetChild (0).GetComponent<Text> ().text = _selectedCharacter.characterStatus.characterLevel.ToString ();
@@ -1669,18 +1692,22 @@ public class GameManager : MonoBehaviour
         addResult.givenExp += Mathf.RoundToInt((character [i].GetComponent<AICharacter> ().aiInfo.givenExp * character [i].characterStatus.characterLevel)/1.5f);
         addResult.givenGold += Mathf.RoundToInt((character [i].GetComponent<AICharacter> ().aiInfo.givenExp * character [i].characterStatus.characterLevel)/1.75f);
           
+        foreach (AbilityStatus a in character[i].characterStatus.equipedAbility)
+        {
+          GetUsedAbility.RemoveAbility (character[i].ID);
+        }
         Destroy (character [i].gameObject);
         character.Remove (character[i]);
         break;
       }
       else if (character[i].currentHP <= 0 && character[i].GetType() == typeof (PlayerCharacter))
       {
-        Destroy (character [i].gameObject);
-        character.Remove (character[i]);
         foreach (AbilityStatus a in character[i].characterStatus.equipedAbility)
         {
-          GetUsedAbility.RemoveAbility (i);
+          GetUsedAbility.RemoveAbility (character[i].ID);
         }
+        Destroy (character [i].gameObject);
+        character.Remove (character[i]);
         break;
       }
     }
@@ -1689,17 +1716,7 @@ public class GameManager : MonoBehaviour
     {
       for (int i = 0; i < addResult.droppedItem.Count; i++) 
       {
-        if (TemporaryData.GetInstance ().result.droppedItem.Count > 0)
-        {
-          if (TemporaryData.GetInstance ().result.droppedItem.Where (x => x.itemStatus.ID == addResult.droppedItem [i].itemStatus.ID).Count () <= 0)
-            TemporaryData.GetInstance ().result.droppedItem.Add (addResult.droppedItem [i]);
-          else
-            TemporaryData.GetInstance ().result.droppedItem.Where (x => x.itemStatus.ID == addResult.droppedItem [i].itemStatus.ID).First ().amount += 1;
-        }
-        else 
-        {
-          TemporaryData.GetInstance ().result.droppedItem.Add (addResult.droppedItem [i]);
-        }
+        TemporaryData.GetInstance ().result.droppedItem.Add (addResult.droppedItem [i]);
       }
     }
     
@@ -1753,6 +1770,13 @@ public class GameManager : MonoBehaviour
     else
     {
       results.transform.GetChild (0).GetChild (0).GetChild (0).GetComponent<Text> ().text = "You Lose";
+      if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0))) 
+      {
+        if (!TemporaryData.GetInstance ().playerData.passedMap.Contains (PlayerPrefs.GetInt (Const.MapNo, 0))) 
+        {
+          TemporaryData.GetInstance ().playerData.storyID--;
+        }
+      }
     }
     results.SetActive (true);
       
@@ -1777,26 +1801,59 @@ public class GameManager : MonoBehaviour
   
   private void AddingResultItem()
   {
+    List<GameObject> slots = new List<GameObject> ();
     for (int i = TemporaryData.GetInstance ().result.droppedItem.Count-1; i >= 0; i--) 
     {
       Item addedItem = new Item ();
       addedItem = new Item ();
       addedItem.item = TemporaryData.GetInstance ().result.droppedItem [0].itemStatus;
       addedItem.equiped = false;
-      addedItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count;
+      addedItem.ordering = TemporaryData.GetInstance ().playerData.inventory.Count-1;
       TemporaryData.GetInstance ().playerData.inventory.Add (addedItem);
       
-      GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
-      itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild(0));
-      itemObj.transform.localScale = Vector3.one;
+      if (slots.Count <= 0) 
+      {
+        GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
+        itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild (0));
+        itemObj.transform.localScale = Vector3.one;
       
-      if(Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name) != null)
-        itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
-      else
-        itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + addedItem.item.itemType1);
+        if (Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name) != null)
+          itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
+        else
+          itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + addedItem.item.itemType1);
       
-      itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString();
-      itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString();
+        itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString ();
+        itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString ();
+        
+        slots.Add (itemObj);
+      }
+      else 
+      {
+        for (int j = 0; j < slots.Count; j++) 
+        {
+          if (slots [j].transform.GetChild (1).GetComponent<Text> ().text != addedItem.item.name) 
+          {
+            GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
+            itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild (0));
+            itemObj.transform.localScale = Vector3.one;
+
+            if (Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name) != null)
+              itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
+            else
+              itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + addedItem.item.itemType1);
+
+            itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString ();
+            itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString ();
+
+            slots.Add (itemObj);
+          }
+          else
+          {
+            string amount =  (int.Parse(slots[j].transform.GetChild (2).GetComponent<Text> ().text ) +1).ToString();
+            slots[j].transform.GetChild (2).GetComponent<Text> ().text = amount;
+          }
+        }
+      }
       TemporaryData.GetInstance ().result.droppedItem.RemoveAt (0);
     }
   }
@@ -1875,7 +1932,7 @@ public class GameManager : MonoBehaviour
       }
       else 
       {
-        enemyDataObj.GetComponent<EnemyData> ().enemyImage.gameObject.SetActive (false);
+        enemyDataObj.GetComponent<EnemyData> ().enemyImage.sprite = Resources.Load<Sprite> ("Image/Character/Monster");
       }
       enemyDataObj.GetComponent<EnemyData> ().enemyName.text = enemyName;
       enemyDataObj.GetComponent<EnemyData> ().droppedItem.text = "";
@@ -1883,14 +1940,14 @@ public class GameManager : MonoBehaviour
       for(int j = 0;j < newAiInfo.droppedItem.Count;j++)
       {
         string[] droppedItemInfo = newAiInfo.droppedItem [j].Split (" " [0]);
-        /*if (j > 0) 
+        if (j > 0) 
         {
           enemyDataObj.GetComponent<EnemyData> ().droppedItem.text += "\n" + GetDataFromSql.GetItemFromID (int.Parse (droppedItemInfo [0].ToString ())).name;
         } 
         else
         {
           enemyDataObj.GetComponent<EnemyData> ().droppedItem.text = GetDataFromSql.GetItemFromID(int.Parse(droppedItemInfo [0].ToString())).name;
-        }*/
+        }
       }
       enemyDataObj.GetComponent<EnemyData> ().weakness.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + newAiInfo.effectiveAttack);
       enemyDataObj.GetComponent<EnemyData> ().weakness.GetChild (1).GetComponent<Text> ().text = Enum.GetName (typeof(EffectiveAttack),(EffectiveAttack)newAiInfo.effectiveAttack);
@@ -1948,5 +2005,12 @@ public class GameManager : MonoBehaviour
   {
     SceneManager.LoadScene ("MainMenuScene");
     Time.timeScale = 1;
+    if (GetTextAssetFile.GetInstance ().Load ("D" + TemporaryData.GetInstance ().playerData.storyID + "M" + PlayerPrefs.GetInt (Const.MapNo, 0))) 
+    {
+      if (!TemporaryData.GetInstance ().playerData.passedMap.Contains (PlayerPrefs.GetInt (Const.MapNo, 0))) 
+      {
+        TemporaryData.GetInstance ().playerData.storyID--;
+      }
+    }
   }
 }

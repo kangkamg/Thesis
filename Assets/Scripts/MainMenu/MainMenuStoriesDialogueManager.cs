@@ -74,7 +74,7 @@ public class MainMenuStoriesDialogueManager : MonoBehaviour
 
     while (true) 
     {
-      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+      if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && _isStringBeingReveled) 
       {
         if (TemporaryData.GetInstance ().playerData.readedStories.Where (x => x == _storiesName).Count () <= 0) 
         {
@@ -108,7 +108,7 @@ public class MainMenuStoriesDialogueManager : MonoBehaviour
 
       if (currentCharacterIndex < stringLength) 
       {
-        if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) 
+        if (/*Input.GetMouseButtonDown (0)*/Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Stationary) 
         {
           yield return new WaitForSeconds (SecondBetweenCharacters * 0.1f);
         }

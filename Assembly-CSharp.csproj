@@ -68,6 +68,9 @@
      <Compile Include="Assets\Scripts\Item\ItemData.cs" />
      <Compile Include="Assets\Scripts\Item\ItemManager.cs" />
      <Compile Include="Assets\Scripts\Item\Weapon.cs" />
+     <Compile Include="Assets\Scripts\Language\ChangeLanguage.cs" />
+     <Compile Include="Assets\Scripts\Language\LanguageDatabase.cs" />
+     <Compile Include="Assets\Scripts\Language\LanguageTextChanged.cs" />
      <Compile Include="Assets\Scripts\LoadingSceneManager.cs" />
      <Compile Include="Assets\Scripts\MainMenu\MainMenuManager.cs" />
      <Compile Include="Assets\Scripts\MainMenu\MainMenuStoriesDialogueManager.cs" />
@@ -115,15 +118,21 @@
      <Compile Include="Assets\Suriyun\SuriyunPlugins\PartsCollections.cs" />
      <Compile Include="Assets\Suriyun\SuriyunPlugins\SavePrefab.cs" />
      <None Include="Assets\Resources\Materials\Shader\Unitychan_chara_eye.shader" />
-     <None Include="Assets\Resources\DialogueFile\Thai\D7M1.txt" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
      <None Include="Assets\Resources\Materials\Shader\readme.txt" />
      <None Include="Assets\Suriyun\README.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\D3M4.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\Tutorial.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\Kraitong.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D2M4.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\D1M1.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\Tutorial.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\D0M1.txt" />
      <None Include="Assets\Suriyun\Update v1.4.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\Kraitong.txt" />
-     <None Include="Assets\Resources\DialogueFile\Thai\D0M1.txt" />
+     <None Include="Assets\Resources\DialogueFile\Thai\D1M1.txt" />
      <None Include="Assets\Resources\DialogueFile\Thai\D3M4.txt" />
+     <None Include="Assets\Resources\DialogueFile\English\D2M4.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

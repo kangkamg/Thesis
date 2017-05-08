@@ -48,7 +48,7 @@ public class GetTextAssetFile
       {
         do 
         {
-          string[] entry = line [0].Split ("," [0]);
+          string[] entry = line [0].Split (";" [0]);
         
           if (!entry [0].Contains ("AddCharacter") && !entry [0].Contains ("AddItem") && !entry [0].Contains ("Ending"))
           {

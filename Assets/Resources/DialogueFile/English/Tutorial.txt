@@ -1,14 +1,14 @@
-﻿อ๊ะ ในที่สุดท่านก็มา,???,Library
-ข้าคือผู้ดูแลที่นี่ Librarian ถ้าอย่างนั้นเริ่มผจญภัย ช่วยโลกหนังสือ กันเลย,LibrarianLeft,
-เอ๊ะ ท่านถามว่า ที่นี่คือที่ไหนเหรอ,LibrarianLeft,
-ที่นี่คือ โลกแห่งหนังสือที่รวบรวมหนังสือ ไว้มากมาย หอสมุด "ราก" ยังไงละ ถ้างั้นก็ ไปผจญภัยกันเลย,LibrarianLeft, 
-หืม ท่านก็รู้แล้วนี่ว่าที่นี่ คือที่ไหน จะมีปัญหาอะไรอีกละ,LibrarianLeft,
-เอาเถอะ ช่วยไม่ได้ ข้าคงต้องอธิบายท่าน ให้ละเอียดกว่านี้ซินะ,LibrarianLeft,
-อย่างที่บอกไป ที่นี่คือโลกแห่งหนังสือ แต่ว่า หนังสือของที่นี่ยังไม่สมบูรณ์หรอกนะ,LibrarianLeft,
-ข้าเลยต้องอัญเชิญท่านมา เพื่อช่วยข้าทำให้หนังสือสมบูรณ์ยังไงละ,LibrarianLeft,
-ก็นะ หนังสือมันเยอะเกินไป ข้าทำคนเดียว ไม่ไหว,LibrarianLeft,
-อ๊ะ ส่วนวิธีทำให้สมบูรณ์นั้นก็แสนง่าย ท่านก็แค่เข้าไปผจญภัยในหนังสือเล่มนั้นๆ จนลุล่วงถึงสุดท้าย,LibrarianLeft,
-แต่ใช่ว่า ท่านต้องลงไปทำด้วยตัวเองหรอกนะ ก็แค่ควบคุมเล่าตัวละครในหนังสือเล่มนั้น เท่านั้นล่ะ,LibrarianLeft, 
-และไม่ต้องเป็นห่วง พวกตัวละครไม่รู้เรื่อง หรอก เขาจะแค่เคลื่อนไหว กับแสดง ไปตามบทบาท เท่านั้น,LibrarianLeft,
-เอาล่ะ ดูเหมือนว่า ท่านจะเข้าใจสถานการณ์ มากขึ้นแล้วสินะ จะได้ไปกันซักที,LibrarianLeft,
-...ดูแล้ว ท่านยังสงสัยอะไรบางอย่างสินะ เอาเป็นว่าเดี๋ยวข้า จะคอยสอนท่านแล้วกัน ทำตามด้วยล่ะ,LibrarianLeft, 
+﻿Oh, finally you came.;???;Library
+I'm the caretaker here. Librarian, let's start the adventure to help the book world.;LibrarianLeft;
+Oh, you ask where is this?;LibrarianLeft;
+This is the world of books, "Rark" the library, Let's go adventure.;LibrarianLeft;
+Hmm, you know this is where, what the matter ?;LibrarianLeft;
+Ok, I can will explain more specific than this.;LibrarianLeft;
+As I told, this is the world of books, but the books here are not complete.;LibrarianLeft;
+I have to invite you. To help me complete the book.;LibrarianLeft;
+It's too much books, I can not do it alone.;LibrarianLeft;
+The way to complete it is very simple. You just go on adventure in that book. Until finally settled.;LibrarianLeft;
+But you do not have to do it yourself. Just control the character in the book only.;LibrarianLeft;
+And do not worry. The characters do not know, they only move with the role.;LibrarianLeft;
+Ah, you seem to understand the situation. More then I have to go.;LibrarianLeft;
+...You still seem have some doubts. Just be right, I will teach you.;LibrarianLeft;

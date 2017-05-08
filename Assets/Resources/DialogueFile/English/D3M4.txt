@@ -1,42 +1,42 @@
-﻿อ๊ากก หนอย พวกแก ฝากไว้ก่อนเถอะ,Chalawan,Forest
-อ๊ะ มันจะหนีไปแล้ว,TapaokaewRight,
-ไม่มีทาง ย๊าก,KarnjanaLeft,
-อ๊ากกกก,Chalawan(Alone),
-ทันทีที่ร่างพญากุมภีร์ ล้มสัมผัสพื้น ก็กลับแปรเปลี่ยน เป็นจระเข้ขนาดใหญ่,,
-เห้อ เรียบร้อย เท่านี้ เมืองคงสงบเหมือนเดิม,Karnjana(Alone),
-อืม ขอบคุณเธอมาก... จริงสิ พี่ตะเภาทอง ต้องไปหา พี่ตะเภาทองแล้ว,TapaokaewRight,
-น้องตะเภาแก้ว ใช่รึเปล่า,TapaotongLeft,
-อ๊ะ พี่ พี่คะ,TapaokaewRight,
-หืม นี่เธอ ไม่เป็นอะไรเลยเหรอ,KarnjanaRight,
-เธอคนนี้คือ,TapaotongLeft,
-อ๊ะ เธอชื่อกานจนา เป็นคนจัดการ เจ้าชาละวันน่ะ,TapaokaewRight,
-ฉันตะเภาทองนะ เป็นพี่สาวของตะเภาแก้ว,TapaotongLeft,
-ฉันรู้แล้วล่ะ แต่ว่า เธอไม่บาดเจ็บ อะไรเลยเหรอ,KarnjanaRight,
-อือ เจ้าจระเข้นั่น คาบฉันมาขังไว้น่ะ แล้วอยู่ๆอาคม ที่มันใช้ปิดประตูไว้ ก็คลายออก ฉันเลยออกมาได้,TapaotongLeft,
-หืม จับมาขังไว้อย่างเดียวเหรอ แปลกจังแหะ,KarnjanaRight,
-ช่างเถอะน่า เรื่องนั้น พี่กลับมาได้ก็ดีแล้ว เราก็กลับบ้านกันเถอะ,TapaokaewRight,
-อืม,TapaotongLeft,
-แล้วเธอละ กานจนา จะกลับไปรับรางวัล กับพ่อฉันรึเปล่า,TapaokaewRight,
-อ๊ะ ไม่เอาหรอก เงินเยอะขนาดนั้น ฉันดูแลไม่ไหว คงกลับไปรับรางวัล จากเจ้าเมือง แล้วก็ไปล่ะ,KarnjanaLeft,
-...... ถ้างั้นฉันขอเดินทาง ไปกับเธอด้วยแล้วกัน,TapaokaewRight,
-หา ทำไมล่ะ,KarnjanaLeft,
-อ้าว ก็เธอบอกว่าไม่เอาเงินนี่นา แต่ยังไงเธอต้อง แต่งงานกับฉันอยู่ดี,TapaokaewRight,
-เดี๋ยวนะ เราสองคนเป็นผู้หญิง...,KarnjanaLeft,
-เราก็ไม่ได้แต่งงาน กันนี่นา ฉันแค่ขอเดินทาง กับเธอเท่านั้น ไม่เห็นเป็นไร,TapaokaewRight,
-... เอ่อ,KarnjanaLeft,
-ที่สำคัญเธอบอกว่า ไม่เอาเงินนี่นา ไม่ได้บอกว่า จะไม่เอาฉันไปด้วย กลับคำที่หลังน่ะ แย่มากเลยนะ,TapaokaewRight,
-แล้วก็ ถ้าฉันยังอยู่ที่นี่ต่อ ก็ต้องโดนจับแต่งงานอยู่ดี พี่ตะเภาทอง ก็ไม่ว่าอะไรใช่ไหมคะ,Tapaokaew(Alone),
-เห้อ เอาอีกแล้ว เอาเถอะ ถึงยังไง ไปกับคนที่จัดการ เจ้าชาละวันได้ คงดีกว่า ไปกับพวกขุนนางแก่ละนะ,TapaotongRight,
-เดี๋ยวพี่จะบอกพ่อ ให้แล้วกัน ว่าเธอแต่งงานกับ คนที่จัดการ ชาละวันแล้วน่ะ,TapaotongRight,
-ขอบคุณคะ ถ้างั้นก็ไปกันเถอะ กานจนา,TapaokaewLeft,
-...เอ่อ ...อ่า เห้อ ตามใจเธอแล้วกัน,Karnjana(Alone),
-โอ๊ะ กลับมาแล้วเหรอ ดูสิ หนังสือเล่มนั้นสว่างขึ้นแล้ว,Librarian(Alone),Library
-นั้นแปลว่า ท่านได้ทำให้ เรื่องนั้นสมบูรณ์แล้ว,LibrarianLeft,
-อ๊ะ แต่ไม่ใช่แค่นั้นหรอกนะ ทุกครั้ง ที่ท่านจบหนึ่งเรื่อง ท่านจะได้รับ หนังสือของเนื้อเรื่อง "แท้จริง" เป็นรางวัล,LibrarianLeft,
-และท่านสามารถเข้าไปอ่าน ได้ที่ Informations->StoryBook,LibrarianLeft,
-และเมื่อท่านอ่านจบ ท่านจะได้รับบางสิ่ง เป็นของตอบแทนด้วยนะ,LibrarianLeft,
-หืม แล้วนี่ท่านมัวรออะไรอยู่ล่ะ ยังมีอีกหลายเล่มให้ท่านจัดการนะ รีบไปซะสิ,LibrarianLeft,
-โอ๊ะ ข้าลืมไปเลย ข้ายังไม่ได้ปลดล็อค เรื่องอื่นๆน่ะ อืมมมม,LibrarianLeft,
-เอาเป็นว่า ท่านเข้าไปเล่นในเรื่องเดิม หรือจะนั่งรอก็ได้ ไว้ข้าจะปลดล็อคให้นะ ฮาฮาฮ่า...,LibrarianLeft,
-แล้วนี่จะมาจ้องหน้าข้า อีกทำไมเนี่ย ไปได้แล้วไป,LibrarianLeft,
+﻿Aurghh You guys!!;Chalawan;Forest
+Oops, it will flee.;TapaokaewRight;
+No way!!!;KarnjanaLeft;
+Aurghh;Chalawan(Alone);
+When the body of the crocodile king touch the ground It changes to a big crocodile;;
+Well, the city become peaceful as it was.;Karnjana(Alone);
+Thank you so much ... Actually, my sister, I need to find my sister;TapaokaewRight;
+Is that you? Tapaokaew;TapaotongLeft;
+Sis. BigSis.;TapaokaewRight;
+Hmm, you're injured.;KarnjanaRight;
+Who is she?;TapaotongLeft;
+Ah, her name is Karnjana, who kill Chalawan;TapaokaewRight;
+I'm a Tapaotong sister of Tapaokaew;TapaotongLeft;
+I know, but you did not hurt anywhere.;KarnjanaRight;
+Yes, that crocodile locked me up with magic. But it loosened, so I came out.;TapaotongLeft;
+Hmm, it's only locked you up. Weird.;KarnjanaRight;
+It's all right, Let's go home together;TapaokaewRight;
+Ok;TapaotongLeft;
+Then Karnjana, will you return to take the prize from my dad;TapaokaewRight;
+Oh, I do not want that much money, I can not take care it, I will get prize from the governor and leaves.;KarnjanaLeft;
+...... Then I will go with you, Ok?;TapaokaewRight;
+Huh Why?;KarnjanaLeft;
+You say you don't want the treasure but not don't want to marry with me. Right?;TapaokaewRight;
+Wait, we both are girls....;KarnjanaLeft;
+We did not get married. I just want to go explore the world with you.;TapaokaewRight;
+... Hmmm;KarnjanaLeft;
+And you say you don't want money but not me. If you don't take me with you, you are really bad people.;TapaokaewRight;
+If I'm still here I have to get married, you don't have any matter right sis?;Tapaokaew(Alone);
+Hmm, it's okay;TapaotongRight;
+I will tell our father that you married with the man who kill the Chalawan;TapaotongRight;
+Thank you so much!. Then let's go Karnjana.;TapaokaewLeft;
+...Hmm Okay...;Karnjana(Alone);
+Oh, you are back, see that book is glowing;Librarian(Alone);Library
+That mean that story is finished;LibrarianLeft;
+Moreover, you will get the "real" story of that story as reward;LibrarianLeft;
+You can read in Informations->StoryBook;LibrarianLeft;
+And when you finished read it you will get item as reward;LibrarianLeft;
+Hm what do you want? go and complete other story!!;LibrarianLeft;
+Oh I forgot, I am not unlocked other story for you;LibrarianLeft;
+Ok you need to wait or play the old story first hahaha...;LibrarianLeft;
+Why you still sit and look at me. Go!!;LibrarianLeft;
 Ending(FirstTime)

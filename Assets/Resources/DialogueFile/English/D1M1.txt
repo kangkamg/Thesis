@@ -1,24 +1,24 @@
-﻿ก็ไม่เท่าไรแหะ ทำไมถึงไม่มีใครจัดการได้สักทีน้า,Karnjana,Forest
-ระวัง!!,???(Alone),
-ก๊าซ,Crocodile(Alone),
-ห๊ะ แย่ละ มาข้างหลังตั้งแต่เมื่อไร,KarnjanaLeft,
-ฟิ้ว ฉึก,,
-หว่า เกือบไปแล้ว หืม ลูกธนูนี่นา,KarnjanaLeft,
-ของฉันเองแหละ,TapaokaewRight,
-โอ๊ะ ขอบใจมากนะ เอ่อ...,KarnjanaLeft,
-ฉันชื่อ ตะเภาแก้ว,TapaokaewRight,
-ขอบคุณมากนะ ตะเภาแก้ว ฉันกานจนา แต่ว่า ฉันได้ข่าวมาว่าแถวนี้ จระเข้ออกอาละวาดอยู่นี่ ทำไมผู้หญิง ถึงมาแถวนี้คนเดียวล่ะ,KarnjanaLeft,
-หืม... แล้วเธอล่ะมาทำอะไร เธอก็เป็นผู้หญิงเหมือนกัน ไม่ใช่เหรอ,TapaokaewRight,
-แต่เธอดูบอบบางกว่าฉันนะ,KarnjanaLeft,
-แต่ฉันพึ่งช่วยเธอไว้นี่ แสดงว่า ฉันก็ดูแลตัวเองได้ ใช่รึเปล่า,TapaokaewRight,
-... อืม เอาเถอะ แต่ว่าตกลงเธอมาทำอะไร ที่นี่ล่ะ,KarnjanaLeft,
-ฉันจะไปช่วย ตะเภาแก้ว พี่สาวฉัน ที่โดนเจ้าชาละวัน จับไปน่ะ แล้วเธอล่ะ... อย่าบอกนะว่าเธอ อยากแต่งงานกับฉันน่ะ,TapaokaewRight,
-ห๊ะ แต่งงาน!!,KarnjanaLeft,
-ก็พ่อฉันประกาศว่า ใครที่จัดการเจ้าชาละวันได้ จะยกฉัน กับสมบัติอีกครึ่งนึงให้น่ะ หรือว่า เธอหวังสมบัติหรือ,TapaokaewRight,
-ฉันไม่เห็นจะรู้เรื่องนั้นเลย ที่มานี่เพราะเขาประกาศ หาคนจัดการแค่นั้นเอง พอดีฉันพึ่งหาเรือได้ เลยพึ่งมาถึงน่ะ,KarnjanaLeft,
-หืม งั้นหรอกเหรอ,TapaokaewRight,
-เดี๋ยวสิ เธอบอกว่าจะไปช่วย พี่สาวสินะ ไม่ใช่ว่าตอนนี้พี่สาวเธอ...,KarnjanaLeft,
-ไม่มีทาง ฉันไม่เชื่อหรอกว่า พี่ตะเภาแก้ว จะตายไปแล้ว หรือต่อให้เธอตายแล้วจริง ฉันก็จะแก้แค้นให้พี่สาวฉันเอง อีกอย่าง ฉันไม่ยอมแต่งงาน กับคนที่ไม่รู้จักหรอก,TapaokaewRight,
-ถ้างั้นก็ มาร่วมกับฉันไหมล่ะ สองหัวย่อมดีกว่าหัวเดียวนะ มีอะไรจะได้ช่วยๆกัน,KarnjanaLeft,
-แบบนั้นก็ได้ ฉันทำได้แค่ยิงธนูเท่านั้นล่ะ มีเธอคอยล่อก็ดีเหมือนกัน,Tapaokaew(Alone),
-AddCharacter(FirstTime),Tapaokaew,1002,2,false,2000,4000
+﻿Not much, why anyone can not manage it?;Karnjana;Forest
+Beware!!;???(Alone);
+GRRRRR!!;Crocodile(Alone);
+Ahh, when it come behind me.;KarnjanaLeft;
+Shoot;;
+Almost get attacked, huh?, arrow?;KarnjanaLeft;
+My own;TapaokaewRight;
+Oh, thank you very much...;KarnjanaLeft;
+My name is Tapaokaew;TapaokaewRight;
+Thank you very much Tapaokaew but I have news that this area has crocodile rampant, why do women come here alone?;KarnjanaLeft;
+Hm... then why do you here, you are women too;TapaokaewRight;
+But you looks more weakness than me;KarnjanaLeft;
+Well, I'm just helping you here, showing that I can take care of myself, right?;TapaokaewRight;
+Hmm, then what are you doing here?;KarnjanaLeft;
+I'm going to help Tapaotong, my sister, who was caught by Chalawan. And you?. Do not tell me you want to marry me;TapaokaewRight;
+Married!!;KarnjanaLeft;
+My father announced that. Who would manage to kill Chalawan, would give me and a half of treasure to them, or did you expect a treasure?;TapaokaewRight;
+I do not know that. I comes here because gorvernor announced to find someone to kill crocodile. I can not find the boat so I just came here.;KarnjanaLeft;
+Hmm? That is it;TapaokaewRight;
+You said you would go help your sister, does not mean now your sister...;KarnjanaLeft;
+I have no way of believing that my sister is die. If she died, I will take revenge for my sister. And I do not want to marry with people I do not know;TapaokaewRight;
+So do you want to join me, Two heads are better than one. We can help each other;KarnjanaLeft;
+Okay, I can only shoot the arrows. Have you been tempted is very good.;Tapaokaew(Alone);
+AddCharacter(FirstTime);Tapaokaew;1002;2;false;2000;4000

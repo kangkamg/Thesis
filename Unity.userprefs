@@ -1,11 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GamePlay\GameManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Resources\DialogueFile\Thai\Tutorial.txt">
     <Files>
-      <File FileName="Assets\Scripts\StoryDialogueSystem\DialogueManager.cs" Line="265" Column="117" />
-      <File FileName="Assets\Scripts\StoryDialogueSystem\GetFileFromText.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="907" Column="6" />
-      <File FileName="Assets\Scripts\Player\ShowingCharacterStatusManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\StoryDialogueSystem\GetFileFromText.cs" Line="51" Column="21" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D0M1.txt" Line="23" Column="95" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D1M1.txt" Line="1" Column="1" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D3M4.txt" Line="1" Column="1" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D2M4.txt" Line="1" Column="1" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\Tutorial.txt" Line="14" Column="100" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

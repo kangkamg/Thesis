@@ -25,7 +25,7 @@ public class MainMenuManager : MonoBehaviour
   {
     StartCoroutine (SystemManager.IncreasePlayedHrs ());
     
-     TemporaryData.GetInstance ().playerData.characters [0].characterLevel = 10;
+    /* TemporaryData.GetInstance ().playerData.characters [0].characterLevel = 10;
     
       for(int i= 0; i < TemporaryData.GetInstance ().playerData.characters [0].basicStatus.learnAbleAbility.Count;i++)
       {
@@ -41,7 +41,7 @@ public class MainMenuManager : MonoBehaviour
             TemporaryData.GetInstance ().playerData.characters [0].learnedAbility.Add (learning);
            }
         }
-      }
+      }*/
       
     playerMenu.SetActive (false);
     bgMenu.SetActive (false);
@@ -490,6 +490,7 @@ public class MainMenuManager : MonoBehaviour
   {
     PlayerPrefs.SetInt (Const.MapNo, mapID);
     
+    playerMenu.transform.GetChild (3).gameObject.SetActive (false);
     GameObject dialogBox = GameObject.Instantiate (DialogBoxManager.GetInstance ().GenerateDialogBox ("Enter this map ?", true));
 
     dialogBox.transform.SetParent (GameObject.Find("MenuCanvas").transform);
@@ -644,6 +645,7 @@ public class MainMenuManager : MonoBehaviour
 
   public void CancelDialogBox(GameObject dialogBox)
   {
+    playerMenu.transform.GetChild (3).gameObject.SetActive (true);
     Destroy (dialogBox);
     if (playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.activeSelf) 
     {

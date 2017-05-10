@@ -149,7 +149,7 @@ public class ItemManager : MonoBehaviour
     dialogBox.transform.SetParent (showing.transform.parent.parent);
     dialogBox.transform.localScale = Vector3.one;
     dialogBox.transform.localPosition = Vector2.zero;
-    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Buying(data));
+    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Buying(dialogBox, data));
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => NotBuying (dialogBox,data));
     
     foreach (Transform child in GameObject.Find("ShopCanvas").transform.GetChild(1).GetChild(2))
@@ -160,8 +160,9 @@ public class ItemManager : MonoBehaviour
     GameObject.Find("ShopCanvas").transform.GetChild(1).GetChild(3).gameObject.SetActive (false);
   }
   
-  private void Buying(ItemStatus data)
+  private void Buying(GameObject dialogBox, ItemStatus data)
   {
+    Destroy (dialogBox);
     if (TemporaryData.GetInstance ().playerData.gold >= data.price) 
     {
       Item newItem = new Item ();
@@ -219,7 +220,7 @@ public class ItemManager : MonoBehaviour
     dialogBox.transform.SetParent (showing.transform.parent.parent);
     dialogBox.transform.localScale = Vector3.one;
     dialogBox.transform.localPosition = Vector2.zero;
-    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Selling(item));
+    dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => Selling(dialogBox, item));
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => NotSelling (dialogBox,item));
     
     foreach (Transform child in GameObject.Find("ShopCanvas").transform.GetChild(1).GetChild(2))
@@ -231,8 +232,9 @@ public class ItemManager : MonoBehaviour
     
   }
   
-  private void Selling(Item data)
+  private void Selling(GameObject dialogBox, Item data)
   {
+    Destroy (dialogBox);
     TemporaryData.GetInstance ().playerData.inventory.RemoveAt (data.ordering);
     TemporaryData.GetInstance ().playerData.gold += data.item.price/2;
     GenerateInventoryItems (data.item.itemType1);

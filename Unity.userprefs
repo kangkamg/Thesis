@@ -1,13 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Resources\DialogueFile\Thai\Tutorial.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Item\ItemManager.cs">
     <Files>
-      <File FileName="Assets\Scripts\StoryDialogueSystem\GetFileFromText.cs" Line="51" Column="21" />
-      <File FileName="Assets\Resources\DialogueFile\Thai\D0M1.txt" Line="23" Column="95" />
+      <File FileName="Assets\Scripts\StoryDialogueSystem\GetFileFromText.cs" Line="1" Column="1" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\D0M1.txt" Line="1" Column="1" />
       <File FileName="Assets\Resources\DialogueFile\Thai\D1M1.txt" Line="1" Column="1" />
       <File FileName="Assets\Resources\DialogueFile\Thai\D3M4.txt" Line="1" Column="1" />
       <File FileName="Assets\Resources\DialogueFile\Thai\D2M4.txt" Line="1" Column="1" />
-      <File FileName="Assets\Resources\DialogueFile\Thai\Tutorial.txt" Line="14" Column="100" />
+      <File FileName="Assets\Resources\DialogueFile\Thai\Tutorial.txt" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\MainMenu\MainMenuManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Item\InventoryManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Item\ItemManager.cs" Line="160" Column="91" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

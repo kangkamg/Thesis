@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 99a4ece3530c8704ca3c714c686c78a9
+timeCreated: 1494494387
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: BSRU BANSOMDEJ
+  fontNames:
+  - BSRU BANSOMDEJ
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

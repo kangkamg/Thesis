@@ -188,6 +188,7 @@ public class GetDataFromSql
         n.givenExp = reader.GetInt32 (3);
         n.effectiveAttack = reader.GetInt32 (4);
         n.element = reader.GetInt32 (5);
+        n.maxRageGauge = reader.GetInt32 (6);
       }
     }
     reader.Close ();

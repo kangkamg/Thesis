@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
   public bool isChangingTurn = false;
   
   public bool hitButton = false;
+  public bool isCritical = false;
 
   public AbilityStatus usingAbility;
 
@@ -620,25 +621,25 @@ public class GameManager : MonoBehaviour
     
     List<UsingAbilityManager> abilityObjs = new List<UsingAbilityManager> ();
     
-    List<AbilityStatus> normalAttack = selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).ToList (); 
+    AbilityStatus normalAttack = null;
+    if(selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).Count() > 0)
+      normalAttack = selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 1 || x.ability.abilityType == -1).First (); 
     
     AbilityStatus specialAttack = null;
     if(selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).Count() > 0)
       specialAttack = selectedCharacter.characterStatus.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).First ();
       
-      for (int i = 0; i < 2; i++) 
-      {
         GameObject abilityObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UsedAbility"));
         abilityObj.transform.SetParent (playerUI.transform.GetChild (0).GetChild (1).GetChild(1));
         abilityObj.transform.localScale = Vector3.one;
-        if (i <= normalAttack.Count-1)
+        if (normalAttack != null)
         {
-          if(Resources.Load<Sprite> ("Ability/Normal/" +  normalAttack[i].ability.ID) != null)
-          abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + normalAttack[i].ability.ID);
+          if(Resources.Load<Sprite> ("Ability/Normal/" +  normalAttack.ability.ID) != null)
+          abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + normalAttack.ability.ID);
           else
-          abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + normalAttack[i].ability.abilityEff);
+          abilityObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + normalAttack.ability.abilityEff);
         
-          abilityObj.GetComponent<UsingAbilityManager> ().data = normalAttack [i];
+          abilityObj.GetComponent<UsingAbilityManager> ().data = normalAttack;
           abilityObjs.Add (abilityObj.GetComponent<UsingAbilityManager> ());
           abilityObj.GetComponent<Toggle> ().group = playerUI.transform.GetChild (0).GetChild (1).GetChild (1).GetComponent<ToggleGroup> ();
           if (GetUsedAbility.GetCoolDown (selectedCharacter.ID, abilityObj.GetComponent<UsingAbilityManager> ().data.ability.ID) != -99 && GetUsedAbility.GetCoolDown (selectedCharacter.ID, abilityObj.GetComponent<UsingAbilityManager> ().data.ability.ID) != 0)
@@ -662,7 +663,6 @@ public class GameManager : MonoBehaviour
           abilityObj.transform.GetChild (1).GetComponent<Slider> ().maxValue = 1;
           abilityObj.transform.GetChild (1).GetComponent<Slider> ().value = 1;
         }
-      }
       GameObject specialAbObj = Instantiate (Resources.Load<GameObject> ("GamePlay/UsedAbility"));
       specialAbObj.transform.SetParent (playerUI.transform.GetChild (0).GetChild (1).GetChild(1));
       specialAbObj.transform.localScale = Vector3.one;
@@ -1238,26 +1238,6 @@ public class GameManager : MonoBehaviour
           selectedCharacter.transform.GetChild(0).rotation = Quaternion.LookRotation (Vector3.RotateTowards (selectedCharacter.transform.GetChild(0).forward, target.transform.position - selectedCharacter.transform.position, 360f, 0.0f));
           if (usingAbility.ability.abilityType > 0)
           {
-            float multiply = 1f;
-            if (target.GetType() == typeof(AICharacter)) 
-            {
-              if (target.GetComponent<AICharacter> ().aiInfo.effectiveAttack == usingAbility.ability.abilityEff)
-                multiply = 1.35f;
-              else
-                multiply = 0.9f;
-            }
-            
-            bool isCritical = false;
-            int randomCri = UnityEngine.Random.Range (0, 101);
-            
-            if (randomCri <= selectedCharacter.characterStatus.criRate) isCritical = true;
-            
-            if(isCritical)
-              amountOfDamage = -((Mathf.FloorToInt (((selectedCharacter.characterStatus.attack * usingAbility.power * multiply) - target.characterStatus.defense)*1.5f)));
-            else
-              amountOfDamage = -(Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power * multiply) - target.characterStatus.defense);
-            
-            if (amountOfDamage >= 0) amountOfDamage = -1;
             if (usingAbility.ability.gaugeUse > 0 && selectedCharacter.GetType () == typeof(PlayerCharacter))
               FinishingGaugeManager.GetInstance ().ChangeSliderValue (-usingAbility.ability.gaugeUse);
             else if (usingAbility.ability.gaugeUse > 0 && selectedCharacter.GetType () == typeof(AICharacter))
@@ -1292,31 +1272,43 @@ public class GameManager : MonoBehaviour
     
     int i = 0;
     selectedCharacter.isActioning = true;
-    //CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
+    CameraManager.GetInstance ().FocusCamera (selectedCharacter.transform.position, target.transform.position);
     
     if (target.GetType () == typeof(AICharacter))
     {
-      if (target.characterStatus.basicStatus.ID < 3000)
-      {
-        if(target.GetComponent<AICharacter> ().rageGuage < 2)
+      if(target.GetComponent<AICharacter> ().rageGuage < target.GetComponent<AICharacter> ().aiInfo.maxRageGauge )
           target.GetComponent<AICharacter> ().rageGuage += 1;
-      } 
-      else
-      {
-        if(target.GetComponent<AICharacter> ().rageGuage < 5)
-          target.GetComponent<AICharacter> ().rageGuage += 1;
-      }
     }
     Animator anim = selectedCharacter.transform.GetChild(0).GetComponent<Animator> ();
     Animator targetAnim = target.transform.GetChild(0).GetComponent<Animator> ();
     
     while (i < usingAbility.hitAmount) 
     {
+      
+      float multiply = 1f;
+      if (target.GetType() == typeof(AICharacter)) 
+      {
+        if (target.GetComponent<AICharacter> ().aiInfo.effectiveAttack == usingAbility.ability.abilityEff)
+          multiply = 1.25f;
+        else
+          multiply = 0.9f;
+      }
+
+      int randomCri = UnityEngine.Random.Range (0, 101);
+
+      if (randomCri <= selectedCharacter.characterStatus.criRate) isCritical = true;
+
+      if(isCritical)
+        amountOfDamage = -((Mathf.FloorToInt (((selectedCharacter.characterStatus.attack * usingAbility.power * multiply) - target.characterStatus.defense)*1.5f)));
+      else
+        amountOfDamage = -(Mathf.FloorToInt (selectedCharacter.characterStatus.attack * usingAbility.power * multiply) - target.characterStatus.defense);
+
+      if (amountOfDamage >= 0) amountOfDamage = -1;
+      
       if (usingAbility.ability.abilityType == 3)
         anim.Play ("FinalAttacking");
       else
         anim.Play  ("Attacking");
-      
       do 
       {
         showingResultOfAttack.UpdateStatus (selectedCharacter, target, Mathf.Abs(amountOfDamage));
@@ -1327,7 +1319,7 @@ public class GameManager : MonoBehaviour
     }
     
     selectedCharacter.skillText.transform.parent.gameObject.SetActive (false);
-    //CameraManager.GetInstance ().ResetCamera ();
+    CameraManager.GetInstance ().MoveCameraToTarget (selectedCharacter.transform);
     
     if (target.currentHP <= 0) 
     {
@@ -1829,29 +1821,26 @@ public class GameManager : MonoBehaviour
       }
       else 
       {
-        for (int j = 0; j < slots.Count; j++) 
+        if (slots.Where (x => x.transform.GetChild (1).GetComponent<Text> ().text == addedItem.item.name).Count () > 0) 
         {
-          if (slots [j].transform.GetChild (1).GetComponent<Text> ().text != addedItem.item.name) 
-          {
-            GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
-            itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild (0));
-            itemObj.transform.localScale = Vector3.one;
+          string amount = (int.Parse (slots.Where (x => x.transform.GetChild (1).GetComponent<Text> ().text == addedItem.item.name).First().transform.GetChild(2).GetComponent<Text>().text) + 1).ToString ();
+          slots.Where (x => x.transform.GetChild (1).GetComponent<Text> ().text == addedItem.item.name).First().transform.GetChild(2).GetComponent<Text>().text = amount;
+        } 
+        else 
+        {
+          GameObject itemObj = Instantiate (Resources.Load<GameObject> ("Item/ItemGet"));
+          itemObj.transform.SetParent (results.transform.GetChild (0).GetChild (4).GetChild (0));
+          itemObj.transform.localScale = Vector3.one;
 
-            if (Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name) != null)
-              itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
-            else
-              itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + addedItem.item.itemType1);
-
-            itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString ();
-            itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString ();
-
-            slots.Add (itemObj);
-          }
+          if (Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name) != null)
+            itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/" + addedItem.item.name);
           else
-          {
-            string amount =  (int.Parse(slots[j].transform.GetChild (2).GetComponent<Text> ().text ) +1).ToString();
-            slots[j].transform.GetChild (2).GetComponent<Text> ().text = amount;
-          }
+            itemObj.transform.GetChild (0).GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Item/Texture/BookOf" + addedItem.item.itemType1);
+
+          itemObj.transform.GetChild (1).GetComponent<Text> ().text = addedItem.item.name.ToString ();
+          itemObj.transform.GetChild (2).GetComponent<Text> ().text = TemporaryData.GetInstance ().result.droppedItem [0].amount.ToString ();
+
+          slots.Add (itemObj);
         }
       }
       TemporaryData.GetInstance ().result.droppedItem.RemoveAt (0);
@@ -1866,7 +1855,7 @@ public class GameManager : MonoBehaviour
 
     instance.transform.SetParent (GameObject.Find ("Canvas").transform,false);
     instance.transform.position = screenPosition;
-    instance.SetText (value);
+    instance.SetText (value, isCritical);
   }
   
   public void FloatingTextController(int value, Transform location, Vector3 Position)
@@ -1878,7 +1867,7 @@ public class GameManager : MonoBehaviour
     instance.transform.localPosition = Position;
     instance.transform.localScale = Vector3.one;
     instance.GetComponent<RectTransform> ().sizeDelta = new Vector2 (160, 60);
-    instance.SetText (value);
+    instance.SetText (value, isCritical);
   }
   
   public void OpenController()

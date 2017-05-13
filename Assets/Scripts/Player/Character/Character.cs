@@ -107,9 +107,13 @@ public class Character : MonoBehaviour
       GameManager.GetInstance().FloatingTextController  (GameManager.GetInstance().DamageResults(), target.transform);
     }
     
-    if (target.GetType () == typeof(AICharacter)) FinishingGaugeManager.GetInstance ().ChangeSliderValue (6);
-    
-    else FinishingGaugeManager.GetInstance ().ChangeSliderValue (3f);
+    if (GameManager.GetInstance ().usingAbility.ability.abilityType == 1) 
+    {
+      if (target.GetType () == typeof(AICharacter))
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (6);
+      else
+        FinishingGaugeManager.GetInstance ().ChangeSliderValue (3f);
+    }
   }
   
   public void Standing()

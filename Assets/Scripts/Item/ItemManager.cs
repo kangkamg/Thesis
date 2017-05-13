@@ -75,7 +75,7 @@ public class ItemManager : MonoBehaviour
     {
       if (allItem.Count < 1)
       {
-        showing.transform.parent.parent.GetChild (1).GetComponent<Text> ().text = "Empty Inventory";
+        showing.transform.parent.parent.GetChild (1).GetComponent<Text> ().text = "Don't Have Buyable Item";
         showing.transform.parent.parent.GetChild (1).gameObject.SetActive (true);
       }
       else showing.transform.parent.parent.GetChild (1).gameObject.SetActive (false);

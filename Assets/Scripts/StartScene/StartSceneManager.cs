@@ -81,15 +81,18 @@ public class StartSceneManager : MonoBehaviour
           learning.level = 1;
           learning.exp = 0;
           adding.learnedAbility.Add (learning);
-
-          equiped = new AbilityStatus ();
-          equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
-          equiped.level = 1;
-          equiped.exp = 0;
-          adding.equipedAbility.Add (equiped);
         }
       }
     }
+    
+    equiped = new AbilityStatus ();
+    equiped = adding.learnedAbility [0];
+    adding.equipedAbility.Add (equiped);
+
+    equiped = new AbilityStatus ();
+    equiped = adding.learnedAbility [1];
+    adding.equipedAbility.Add (equiped);
+    
     adding.partyOrdering = 0;
     adding.experience = 0;
 

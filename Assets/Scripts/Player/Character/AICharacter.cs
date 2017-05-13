@@ -11,6 +11,7 @@ public class AIInformation
   public int givenGold;
   public int effectiveAttack;
   public int element;
+  public int maxRageGauge;
 }
 
 public class AICharacter : Character

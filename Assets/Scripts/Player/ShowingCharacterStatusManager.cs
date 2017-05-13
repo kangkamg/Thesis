@@ -51,27 +51,17 @@ public class ShowingCharacterStatusManager : MonoBehaviour
     if(TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).Count() > 0)
       specialAttacks = TemporaryData.GetInstance ().selectedCharacter.equipedAbility.Where (x => x.ability.abilityType == 3 || x.ability.abilityType == -3).ToList ();
     
-    for (int i = 0; i < 2; i++)
-    {
       GameObject normalAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
       normalAtkObj.transform.SetParent (attack.GetChild (0).GetChild(0));
       normalAtkObj.transform.localScale = Vector3.one;
-      normalAtkObj.GetComponent<AbilityInformation> ().ordering = i;
-      if (i <= normalAttacks.Count - 1) 
-      {
-        AbilityStatus equipedStatus = normalAttacks [i];
+      normalAtkObj.GetComponent<AbilityInformation> ().ordering = 1;
+      AbilityStatus equipedStatus = normalAttacks[0] ;
         if(Resources.Load<Sprite> ("Ability/Normal/" +  equipedStatus.ability.ID) != null)
           normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + equipedStatus.ability.ID);
         else
           normalAtkObj.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Ability/Normal/" + equipedStatus.ability.abilityEff);
         normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (equipedStatus);
         abilityInSlots.Add (normalAtkObj.GetComponent<AbilityInformation> ());
-      }
-      else
-      {
-        normalAtkObj.GetComponent<AbilityInformation> ().SetUpAbilityStatus (1);
-      }
-    }
     
     GameObject specialAtkObj = Instantiate (Resources.Load<GameObject> ("SupMenu/CharacterStatusPrefabs/Ability"));
     specialAtkObj.transform.SetParent (attack.GetChild (1).GetChild(0));

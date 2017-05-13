@@ -31,7 +31,7 @@ public class SystemManager
             characterStatus.characterLevel += 1;
             characterStatus.experience = 0;
             showingSlider.GetComponent<Slider> ().value = 0;
-            AddingAbility (characterStatus);
+            AddingAbility (characterStatus, showingSlider);
             showingSlider.parent.GetChild (1).gameObject.SetActive (true);
             showingSlider.parent.GetChild (1).GetComponent<Animator> ().Play ("LevelUpFloating");
           }
@@ -55,9 +55,10 @@ public class SystemManager
             characterStatus.characterLevel += 1;
             characterStatus.experience = 0;
             showingSlider.GetComponent<Slider> ().value = 0;
-            AddingAbility (characterStatus);
+            AddingAbility (characterStatus, showingSlider);
             showingSlider.parent.GetChild (1).gameObject.SetActive (true);
             showingSlider.parent.GetChild (1).GetComponent<Animator> ().Play ("LevelUpFloating");
+            yield return new WaitForSeconds (1f);
           }
           
           if(getExp <= 0) isFinishLevelUp = true;
@@ -70,7 +71,7 @@ public class SystemManager
     yield return 0;
   }
               
-  public static void AddingAbility(CharacterStatus characterStatus)
+  public static void AddingAbility(CharacterStatus characterStatus, Transform showingSlider)
   {
     for (int i = 0; i < characterStatus.basicStatus.learnAbleAbility.Count; i++) 
     {
@@ -84,6 +85,8 @@ public class SystemManager
           learning.level = 1;
           learning.exp = 0;
           characterStatus.learnedAbility.Add (learning);
+          showingSlider.parent.GetChild (2).gameObject.SetActive (true);
+          showingSlider.parent.GetChild (2).GetComponent<Animator> ().Play ("LevelUpFloating");
         }
       }
     }
@@ -130,15 +133,18 @@ public class SystemManager
           learning.level = 1;
           learning.exp = 0;
           adding.learnedAbility.Add (learning);
-
-          equiped = new AbilityStatus ();
-          equiped.ability = GetDataFromSql.GetAbility(int.Parse(learnAbleAb [j]));
-          equiped.level = 1;
-          equiped.exp = 0;
-          adding.equipedAbility.Add (equiped);
         }
       }
     }
+    
+    equiped = new AbilityStatus ();
+    equiped = adding.learnedAbility [0];
+    adding.equipedAbility.Add (equiped);
+    
+    equiped = new AbilityStatus ();
+    equiped = adding.learnedAbility [1];
+    adding.equipedAbility.Add (equiped);
+    
     adding.partyOrdering = 0;
     adding.experience = 0;
     

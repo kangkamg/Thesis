@@ -138,8 +138,6 @@ public class CameraManager : MonoBehaviour
   {
     isFocus = true;
     following = false;
-    
-    this.GetComponent<Camera> ().orthographicSize = Mathf.RoundToInt(Vector3.Distance (_selectedCharacter, _target));
 
     transform.position = (_selectedCharacter+_target)/2;
   }

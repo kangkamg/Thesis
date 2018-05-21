@@ -132,7 +132,7 @@ public class Tile : MonoBehaviour
 
   private void GenerateVisuals()
   {
-    GameObject container = transform.FindChild ("Visuals").gameObject;
+    GameObject container = transform.Find ("Visuals").gameObject;
 
     for (int i = 0; i < container.transform.childCount; i++) 
     {

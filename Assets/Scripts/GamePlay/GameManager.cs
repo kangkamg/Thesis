@@ -1740,7 +1740,7 @@ public class GameManager : MonoBehaviour
     {
       if (playerCharacterID.Where (x => x == party [i].basicStatus.ID).Count () > 0) 
       {
-        GameObject characterInParty = Instantiate (Resources.Load<GameObject> ("ResultCharacter"));
+        GameObject characterInParty = Instantiate (Resources.Load<GameObject> ("GamePlay/ResultCharacter"));
         characterInParty.transform.SetParent (results.transform.GetChild (0).GetChild (3));
         characterInParty.GetComponent<Image> ().sprite = Resources.Load<Sprite> ("Image/Character/" + party [i].basicStatus.characterName);
         characterInParty.transform.localScale = new Vector3 (1, 1, 1);

@@ -14,7 +14,7 @@ public class InventoryManager : MonoBehaviour
 
   private void Start()
   {
-    transform.GetChild (0).FindChild ("Heart").GetComponent<Toggle> ().isOn = true;
+    transform.GetChild (0).Find ("Heart").GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem ("Heart");
   }
     

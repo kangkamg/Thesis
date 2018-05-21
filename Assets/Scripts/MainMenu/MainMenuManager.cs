@@ -67,7 +67,7 @@ public class MainMenuManager : MonoBehaviour
           child.gameObject.SetActive (false);
         }
         playerMenu.transform.GetChild (2).GetChild (1).gameObject.SetActive (true);
-        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.Find (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
       } 
       else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Adventures")
       {
@@ -77,7 +77,7 @@ public class MainMenuManager : MonoBehaviour
           child.gameObject.SetActive (false);
         }
         playerMenu.transform.GetChild (2).GetChild (0).gameObject.SetActive (true);
-        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.Find (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
       }
       else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "Shop") 
       {
@@ -87,7 +87,7 @@ public class MainMenuManager : MonoBehaviour
           child.gameObject.SetActive (false);
         }
         playerMenu.transform.GetChild (2).GetChild (2).gameObject.SetActive (true);
-        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.Find (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
       } 
       else if (PlayerPrefs.GetString (Const.WhatOpenInMenuScene, "") == "FinishedStories") 
       {
@@ -96,10 +96,10 @@ public class MainMenuManager : MonoBehaviour
         {
           child.gameObject.SetActive (false);
         }
-        playerMenu.transform.GetChild (2).FindChild("FinishedStories").gameObject.SetActive (true);
-        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
+        playerMenu.transform.GetChild (2).Find("FinishedStories").gameObject.SetActive (true);
+        playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.Find (PlayerPrefs.GetString (Const.WhatOpenInMenuScene)).GetComponent<Image> ().color;
         
-        GenerateFinishedStories (PlayerPrefs.GetInt(Const.StoryType,0),playerMenu.transform.GetChild (2).FindChild ("FinishedStories"));
+        GenerateFinishedStories (PlayerPrefs.GetInt(Const.StoryType,0),playerMenu.transform.GetChild (2).Find ("FinishedStories"));
       } 
       else playerMenu.SetActive (false);
       bgMenu.SetActive (false);
@@ -144,7 +144,7 @@ public class MainMenuManager : MonoBehaviour
     {
       child.gameObject.SetActive (false);
     }
-    playerMenu.transform.GetChild(2).FindChild (name).gameObject.SetActive (true);
+    playerMenu.transform.GetChild(2).Find (name).gameObject.SetActive (true);
     PlayerPrefs.SetString (Const.WhatOpenInMenuScene, name);
   }
   
@@ -155,8 +155,8 @@ public class MainMenuManager : MonoBehaviour
     {
       child.gameObject.SetActive (false);
     }
-    playerMenu.transform.GetChild(2).FindChild (name).gameObject.SetActive (true);
-    playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.FindChild (name).GetComponent<Image> ().color;
+    playerMenu.transform.GetChild(2).Find (name).gameObject.SetActive (true);
+    playerMenu.transform.GetChild (1).GetComponent<Image> ().color = mainMenu.transform.Find (name).GetComponent<Image> ().color;
     PlayerPrefs.SetString (Const.WhatOpenInMenuScene, name);
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
@@ -222,19 +222,19 @@ public class MainMenuManager : MonoBehaviour
     {
       child.gameObject.SetActive (false);
     }
-    playerMenu.transform.GetChild(2).FindChild ("Stories").gameObject.SetActive (true);
+    playerMenu.transform.GetChild(2).Find ("Stories").gameObject.SetActive (true);
     storyTypes = storyType;
     storiesPages = 0;
-    GenerateStories (storyType, playerMenu.transform.GetChild(2).FindChild ("Stories"));
+    GenerateStories (storyType, playerMenu.transform.GetChild(2).Find ("Stories"));
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
-      foreach (Transform child in playerMenu.transform.GetChild(2).FindChild("Stories").GetChild(0)) 
+      foreach (Transform child in playerMenu.transform.GetChild(2).Find("Stories").GetChild(0)) 
       {
         child.GetComponent<Button>().interactable = false;
       }
 
-      playerMenu.transform.GetChild (2).FindChild ("Stories").GetChild (0).GetChild (0).GetComponent<Button>().interactable = true;
+      playerMenu.transform.GetChild (2).Find ("Stories").GetChild (0).GetChild (0).GetComponent<Button>().interactable = true;
       
       if (GameObject.Find ("tutorialhand") == null) 
       {
@@ -261,11 +261,11 @@ public class MainMenuManager : MonoBehaviour
     {
       child.gameObject.SetActive (false);
     }
-    playerMenu.transform.GetChild(2).FindChild ("FinishedStories").gameObject.SetActive (true);
+    playerMenu.transform.GetChild(2).Find ("FinishedStories").gameObject.SetActive (true);
     PlayerPrefs.SetInt (Const.StoryType, storyType);
     storyInBookTypes = storyType;
     storiesPages = 0;
-    GenerateFinishedStories (storyType, playerMenu.transform.GetChild(2).FindChild ("FinishedStories"));
+    GenerateFinishedStories (storyType, playerMenu.transform.GetChild(2).Find ("FinishedStories"));
   }
   
   public void GenerateFinishedStories(int storyType, Transform _parent)
@@ -342,8 +342,8 @@ public class MainMenuManager : MonoBehaviour
       child.gameObject.SetActive (false);
     }
     
-    playerMenu.transform.GetChild(2).FindChild ("StoriesInBook").gameObject.SetActive (true);
-    playerMenu.transform.GetChild (2).FindChild ("StoriesInBook").GetComponent<MainMenuStoriesDialogueManager> ().InitDialogue (storiesName, playerMenu.transform.FindChild("BackButton"));
+    playerMenu.transform.GetChild(2).Find ("StoriesInBook").gameObject.SetActive (true);
+    playerMenu.transform.GetChild (2).Find ("StoriesInBook").GetComponent<MainMenuStoriesDialogueManager> ().InitDialogue (storiesName, playerMenu.transform.Find("BackButton"));
   }
   
   public void GenerateStories(int storyType, Transform _parent)
@@ -453,19 +453,19 @@ public class MainMenuManager : MonoBehaviour
     {
       child.gameObject.SetActive (false);
     }
-    playerMenu.transform.GetChild(2).FindChild ("Map").gameObject.SetActive (true);
+    playerMenu.transform.GetChild(2).Find ("Map").gameObject.SetActive (true);
     storiesName = storyName;
     mapPages = 0;
-    GenerateMapData (storiesName, playerMenu.transform.GetChild(2).FindChild ("Map"));
+    GenerateMapData (storiesName, playerMenu.transform.GetChild(2).Find ("Map"));
     
     if (!TemporaryData.GetInstance ().isTutorialDone) 
     {
-      foreach (Transform child in playerMenu.transform.GetChild(2).FindChild("Map").GetChild(0)) 
+      foreach (Transform child in playerMenu.transform.GetChild(2).Find("Map").GetChild(0)) 
       {
         child.gameObject.SetActive (false);
       }
 
-      playerMenu.transform.GetChild (2).FindChild ("Map").GetChild (0).GetChild (0).gameObject.SetActive (true);
+      playerMenu.transform.GetChild (2).Find ("Map").GetChild (0).GetChild (0).gameObject.SetActive (true);
 
       if (GameObject.Find ("tutorialhand") == null) 
       {
@@ -499,7 +499,7 @@ public class MainMenuManager : MonoBehaviour
     dialogBox.transform.GetChild (1).GetComponent<Button> ().onClick.AddListener (() => GoPlayScene ());
     dialogBox.transform.GetChild (2).GetComponent<Button> ().onClick.AddListener (() => CancelDialogBox (dialogBox));
     
-    foreach (Transform child in playerMenu.transform.GetChild(2).FindChild ("Map").GetChild(0))
+    foreach (Transform child in playerMenu.transform.GetChild(2).Find ("Map").GetChild(0))
     {
       if (int.Parse(child.GetChild (0).name) != mapID)
       {
@@ -581,79 +581,79 @@ public class MainMenuManager : MonoBehaviour
   
   public void BackButton()
   {
-    if (playerMenu.transform.GetChild (2).FindChild ("Adventures").gameObject.activeSelf) 
+    if (playerMenu.transform.GetChild (2).Find ("Adventures").gameObject.activeSelf) 
     {
       playerMenu.SetActive (false);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Informations").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Informations").gameObject.activeSelf) 
     {
       playerMenu.SetActive (false);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Shop").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Shop").gameObject.activeSelf) 
     {
       playerMenu.SetActive (false);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Options").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Options").gameObject.activeSelf) 
     {
       playerMenu.SetActive (false);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Stories").gameObject.activeSelf) 
     {
-      playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.SetActive (false);
-      playerMenu.transform.GetChild (2).FindChild ("Adventures").gameObject.SetActive (true);
+      playerMenu.transform.GetChild (2).Find ("Stories").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).Find ("Adventures").gameObject.SetActive (true);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Map").gameObject.activeSelf) 
     {
-      playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).Find ("Map").gameObject.SetActive (false);
       ShowMapMenu (storyTypes);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("StoriesBook").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("StoriesBook").gameObject.activeSelf) 
     {
-      playerMenu.transform.GetChild (2).FindChild ("StoriesBook").gameObject.SetActive (false);
-      playerMenu.transform.GetChild (2).FindChild ("Informations").gameObject.SetActive (true);
+      playerMenu.transform.GetChild (2).Find ("StoriesBook").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).Find ("Informations").gameObject.SetActive (true);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("FinishedStories").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("FinishedStories").gameObject.activeSelf) 
     {
-      playerMenu.transform.GetChild (2).FindChild ("FinishedStories").gameObject.SetActive (false);
-      playerMenu.transform.GetChild (2).FindChild ("StoriesBook").gameObject.SetActive (true);
+      playerMenu.transform.GetChild (2).Find ("FinishedStories").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).Find ("StoriesBook").gameObject.SetActive (true);
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("StoriesInBook").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("StoriesInBook").gameObject.activeSelf) 
     {
-      playerMenu.transform.GetChild (2).FindChild ("StoriesInBook").gameObject.SetActive (false);
-      playerMenu.transform.GetChild (2).FindChild ("FinishedStories").gameObject.SetActive (true);
-      GenerateFinishedStories (storyInBookTypes, playerMenu.transform.GetChild (2).FindChild ("FinishedStories"));
+      playerMenu.transform.GetChild (2).Find ("StoriesInBook").gameObject.SetActive (false);
+      playerMenu.transform.GetChild (2).Find ("FinishedStories").gameObject.SetActive (true);
+      GenerateFinishedStories (storyInBookTypes, playerMenu.transform.GetChild (2).Find ("FinishedStories"));
     }
   }
   
   public void NextPageStoriesBook(int i)
   {
     storiesPages += i;
-    GenerateFinishedStories (PlayerPrefs.GetInt(Const.StoryType), playerMenu.transform.GetChild (2).FindChild ("FinishedStories"));
+    GenerateFinishedStories (PlayerPrefs.GetInt(Const.StoryType), playerMenu.transform.GetChild (2).Find ("FinishedStories"));
   }
   
   public void NextPageStories(int i)
   {
     storiesPages += i;
-    GenerateStories (storyTypes, playerMenu.transform.GetChild (2).FindChild ("Stories"));
+    GenerateStories (storyTypes, playerMenu.transform.GetChild (2).Find ("Stories"));
   }
   
   public void NextPageMap(int i)
   {
     mapPages += i;
-    GenerateMapData (storiesName, playerMenu.transform.GetChild (2).FindChild ("Map"));
+    GenerateMapData (storiesName, playerMenu.transform.GetChild (2).Find ("Map"));
   }
 
   public void CancelDialogBox(GameObject dialogBox)
   {
     playerMenu.transform.GetChild (3).gameObject.SetActive (true);
     Destroy (dialogBox);
-    if (playerMenu.transform.GetChild (2).FindChild ("Stories").gameObject.activeSelf) 
+    if (playerMenu.transform.GetChild (2).Find ("Stories").gameObject.activeSelf) 
     {
-      GenerateStories (storyTypes, playerMenu.transform.GetChild (2).FindChild ("Stories"));
+      GenerateStories (storyTypes, playerMenu.transform.GetChild (2).Find ("Stories"));
     }
-    else if (playerMenu.transform.GetChild (2).FindChild ("Map").gameObject.activeSelf) 
+    else if (playerMenu.transform.GetChild (2).Find ("Map").gameObject.activeSelf) 
     {
-      GenerateMapData (storiesName, playerMenu.transform.GetChild (2).FindChild ("Map"));
+      GenerateMapData (storiesName, playerMenu.transform.GetChild (2).Find ("Map"));
     }
   }
 }

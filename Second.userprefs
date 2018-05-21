@@ -1,14 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\SystemManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GamePlay\GameManager.cs">
     <Files>
       <File FileName="Assets\Scripts\Player\ChangeAbility.cs" Line="165" Column="1" />
       <File FileName="Assets\Scripts\Ability\ChangingAbilityInformation.cs" Line="1" Column="1" />
       <File FileName="Assets\Scripts\MainMenu\MainMenuManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\SystemManager.cs" Line="56" Column="44" />
-      <File FileName="Assets\Scripts\StartScene\StartSceneManager.cs" Line="72" Column="69" />
-      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="1869" Column="79" />
-      <File FileName="Assets\Scripts\GamePlay\FloatingText.cs" Line="19" Column="4" />
+      <File FileName="Assets\Scripts\SystemManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\StartScene\StartSceneManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GamePlay\GameManager.cs" Line="1736" Column="121" />
+      <File FileName="Assets\Scripts\GamePlay\FloatingText.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

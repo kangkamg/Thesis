@@ -199,7 +199,7 @@ public class ChangeEquipmentManager : MonoBehaviour
     
     changingEquipedItem = selectedItem;
     
-    transform.GetChild (2).FindChild (selectedItem.item.itemType1).GetComponent<Toggle> ().isOn = true;
+    transform.GetChild (2).Find (selectedItem.item.itemType1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (selectedItem);
     
     this.transform.GetChild (0).gameObject.SetActive (false);
@@ -231,7 +231,7 @@ public class ChangeEquipmentManager : MonoBehaviour
   {
     changingEquipedItem = null;
     
-    transform.GetChild (2).FindChild (itemtype1).GetComponent<Toggle> ().isOn = true;
+    transform.GetChild (2).Find (itemtype1).GetComponent<Toggle> ().isOn = true;
     GenerateInventoryItem (itemtype1);
 
     this.transform.GetChild (0).gameObject.SetActive (false);

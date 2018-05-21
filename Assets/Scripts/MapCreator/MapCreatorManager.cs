@@ -299,19 +299,19 @@ public class MapCreatorManager : MonoBehaviour
   public void RemoveEnemy(Vector3 gridPosition)
   {
     enemies.Remove(enemies.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("enemy").gameObject);
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.Find("enemy").gameObject);
   }
   
   public void RemovePlayer(Vector3 gridPosition)
   {
     players.Remove(players.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("player").gameObject);
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.Find("player").gameObject);
   }
   
   public void RemoveObstacle(Vector3 gridPosition)
   {
     objs.Remove(objs.Where (x => x.locX == gridPosition.x && x.locZ == gridPosition.z).First ());
-    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.FindChild("obstacle").gameObject);
+    Destroy (map [(int)gridPosition.x] [(int)gridPosition.z].transform.Find("obstacle").gameObject);
   }
   
   public void CreatePlayerPos(Transform tilePos, bool Adding = true)

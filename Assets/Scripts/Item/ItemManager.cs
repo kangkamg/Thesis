@@ -26,7 +26,7 @@ public class ItemManager : MonoBehaviour
     canBuy = GetDataFromSql.GetShopItem (TemporaryData.GetInstance().playerData.passedMap);
     goldText.text = TemporaryData.GetInstance ().playerData.gold.ToString ();
     
-    GameObject.Find ("ShopCanvas").transform.GetChild (1).FindChild ("SupMenu").FindChild ("Heart").GetComponent<Toggle> ().isOn = true;
+    GameObject.Find ("ShopCanvas").transform.GetChild (1).Find ("SupMenu").Find ("Heart").GetComponent<Toggle> ().isOn = true;
   }
 
   public void GenerateItem(string itemsType)

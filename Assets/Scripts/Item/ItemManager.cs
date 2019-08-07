@@ -54,11 +54,16 @@ public class ItemManager : MonoBehaviour
         items.GetComponent<ItemData> ().items.item = canBuy [i];
         items.transform.GetChild (1).GetComponent<Text> ().text = items.GetComponent<ItemData> ().items.item.name.ToString();
         items.transform.GetChild (2).GetComponent<Text> ().text = items.GetComponent<ItemData> ().items.item.price.ToString();
-        Sprite sprite = new Sprite();
-        if (Resources.Load<Sprite> ("Item/Texture/" + canBuy [i].name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + canBuy [i].name);
-        else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + canBuy [i].itemType1);
-         
-        items.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
+
+        if (Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name) != null)
+        {
+            items.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name);
+        }
+        else
+        {
+            items.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
+        }
+
         items.transform.localScale = Vector3.one;
         items.GetComponent<Button> ().onClick.AddListener (() => BuyingItem (items.GetComponent<ItemData>().items.item, items));
         if (TemporaryData.GetInstance ().playerData.gold < canBuy [i].price) items.GetComponent<Button> ().interactable = false;
@@ -101,11 +106,16 @@ public class ItemManager : MonoBehaviour
       items.GetComponent<ItemData> ().items = inventoryItem [i];
       items.transform.GetChild (1).GetComponent<Text> ().text = items.GetComponent<ItemData> ().items.item.name.ToString();
       items.transform.GetChild (2).GetComponent<Text> ().text = (items.GetComponent<ItemData> ().items.item.price/2).ToString();
-      Sprite sprite = new Sprite();
-      if (Resources.Load<Sprite> ("Item/Texture/" + inventoryItem [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + inventoryItem [i].item.name);
-      else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + inventoryItem [i].item.itemType1);
 
-      items.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
+        if (Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name) != null)
+        {
+           items.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name);
+        }
+        else
+        {
+           items.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
+        }
+
       items.transform.localScale = Vector3.one;
       items.GetComponent<Button> ().onClick.AddListener (() => SellingItem (items.GetComponent<ItemData>().items, items));
       allItem.Add (items);

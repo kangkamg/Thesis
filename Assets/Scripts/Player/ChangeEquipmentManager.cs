@@ -298,13 +298,17 @@ public class ChangeEquipmentManager : MonoBehaviour
           slots.Add (itemObj);
           itemObj.GetComponent<ItemData> ().items = TemporaryData.GetInstance().playerData.inventory [i];
 
-          Sprite sprite = new Sprite();
-          if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
-          else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
+        if (Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name) != null)
+        {
+            itemObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name);
+        }
+        else
+        {
+            itemObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
+        }
 
-          itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
+        itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.GetComponent<ItemData> ().amount = 1;
-          itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
           itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
 
@@ -380,14 +384,18 @@ public class ChangeEquipmentManager : MonoBehaviour
           itemObj.transform.SetParent (changeAbleItem.transform);
           slots.Add (itemObj);
           itemObj.GetComponent<ItemData> ().items = TemporaryData.GetInstance().playerData.inventory [i];
-         
-          Sprite sprite = new Sprite();
-          if (Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name) != null) sprite = Resources.Load<Sprite> ("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory [i].item.name);
-          else sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
 
-          itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
+        if (Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name) != null)
+        {
+            itemObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/" + TemporaryData.GetInstance().playerData.inventory[i].item.name);
+        }
+        else
+        {
+            itemObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>("Item/Texture/BookOf" + TemporaryData.GetInstance().playerData.inventory[i].item.itemType1);
+        }
+
+        itemObj.GetComponent<ItemData> ().items.ordering = TemporaryData.GetInstance().playerData.inventory[i].ordering;
           itemObj.GetComponent<ItemData> ().amount = 1;
-          itemObj.transform.GetChild (0).GetComponent<Image>().sprite = sprite;
           itemObj.transform.GetChild (1).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().items.item.name.ToString();
           itemObj.transform.GetChild (2).GetComponent<Text> ().text = itemObj.GetComponent<ItemData> ().amount.ToString ();
           itemObj.transform.localScale = Vector3.one;
